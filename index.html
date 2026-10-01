@@ -89,6 +89,7 @@ nav button.on{color:var(--accentInk);border-top-color:var(--accent);background:c
 
 .court-card{padding:14px;display:flex;flex-direction:column;gap:10px}
 .court-card.on{border-color:var(--accent)}
+.chipG{font-size:10px;opacity:.65;font-weight:700;margin-left:2px}
 .courtTop{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .gLabel{font:800 15px 'Bricolage Grotesque'}
 .courtName{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
@@ -253,6 +254,24 @@ input.txt:focus,select.txt:focus{outline:0;border-color:var(--accent)}
 .sheetM h3{font:800 18px 'Bricolage Grotesque';margin:0 0 4px}
 .fl{display:block;font:600 10.5px 'Outfit';letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:12px 0 5px}
 /* two columns of short labelled boxes — the rules card, mainly */
+/* an on/off switch */
+.sw{position:relative;width:42px;height:24px;border-radius:99px;border:1px solid var(--borderL);
+  background:var(--surface);cursor:pointer;padding:0;flex:none;transition:background .15s}
+.sw i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--dim);
+  transition:transform .15s,background .15s}
+.sw.on{background:var(--accent);border-color:var(--accent)}
+.sw.on i{transform:translateX(18px);background:#fff}
+.accGrid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);margin-top:12px;border:1px solid var(--border);
+  border-radius:11px;overflow:hidden}
+.accGrid>div{padding:9px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center}
+.accH{font:700 10px 'Outfit';letter-spacing:.11em;text-transform:uppercase;color:var(--muted);
+  background:var(--surface);justify-content:center}
+.accH:first-child{justify-content:flex-start}
+.accT{font-weight:600;font-size:13.5px}
+.accC{justify-content:center}
+.accRow{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:10px 0;
+  border-bottom:1px solid var(--border)}
+.accRow:last-child{border-bottom:0}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px}
 .frow .fl{margin-top:8px}
 .frow .txt{width:100%}
@@ -260,6 +279,13 @@ input.txt:focus,select.txt:focus{outline:0;border-color:var(--accent)}
 .sheetM input[type=text],.sheetM input[type=password],.sheetM select{width:100%;height:38px;background:var(--card);
   border:1px solid var(--border);color:var(--text);border-radius:9px;padding:0 11px;font:500 14px 'Outfit'}
 .sheetM input:focus,.sheetM select:focus{outline:0;border-color:var(--accent)}
+.pwWrap{position:relative}
+.sheetM .pwWrap input{padding-right:46px}
+.pwEye{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:40px;height:34px;
+  display:flex;align-items:center;justify-content:center;border:0;background:none;
+  color:var(--dim);cursor:pointer;border-radius:7px;padding:0}
+.pwEye:hover,.pwEye[aria-pressed="true"]{color:var(--accent)}
+.pwEye:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 .hint{color:var(--dim);font-size:12px;line-height:1.55;margin:6px 0 0}
 .eyebrow{font:700 10px 'Outfit';letter-spacing:.13em;text-transform:uppercase;color:var(--dim)}
 
@@ -350,6 +376,14 @@ input.txt:focus,select.txt:focus{outline:0;border-color:var(--accent)}
   opacity:0;transition:opacity .25s;pointer-events:none;max-width:88vw;text-align:center}
 .toast.on{opacity:1}
 .liveDot{color:var(--accent);font-size:9px;vertical-align:2px}
+/* each round of a group's fixtures gets a heading, so twenty matches read as
+   five short sets rather than one long column */
+.rndHd{display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+  font:700 10.5px 'Outfit';letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
+  padding:14px 4px 6px;border-bottom:1px solid var(--borderL)}
+.rndHd:first-of-type{padding-top:4px}
+.rndHd span:last-child{letter-spacing:.04em;color:var(--dim)}
+.rndHd span.ok{color:var(--accent)}
 /* a result that is not a finished game under the rules now in force */
 .oddsc{display:block;color:var(--gold);font-size:12px;line-height:1;margin-top:2px;cursor:help}
 td.name .txt{cursor:default}
@@ -431,6 +465,64 @@ td.name .txt.link:hover{color:var(--accent)}
   table.routes tr:nth-child(even) td{background:#f6f8fa}
   table.routes tr:nth-child(even) td.done{background:#e8efe8}
 
+  /* section headings on a sheet — Standings, Score Margin, a group's name —
+     all in the same weight as the fixture headings, so the page has one voice */
+  #printArea h4.psec{font:800 12.5px 'Outfit',Arial,sans-serif;letter-spacing:.04em;text-transform:uppercase;
+    margin:4.5mm 0 1.6mm;padding:0 0 1mm;border-bottom:1.6px solid #1d2229;color:#111}
+  #printArea h4.psec span{font-weight:500;color:#555;letter-spacing:0;text-transform:none}
+  #printArea .gsT .gridT{margin-top:0}
+  /* tables sized from the sheet: --trh row depth, --tfs type */
+  /* the page layout uses a .grid class too, and it was turning these tables
+     into CSS grids — which is why a standings table shrank to half the page */
+  #printArea table.grid{display:table;width:100%}
+  #printArea .gsT table.grid{width:100%}
+  #printArea .gsT table.grid td{height:var(--trh,6mm);font-size:var(--tfs,10.5px);padding:0 2mm}
+  #printArea .gsT table.grid td.nm{font-size:var(--tfs,10.5px)}
+  #printArea .gsT table.grid th{font-size:8px;padding:1.2mm 1.5mm;height:auto}
+  #printArea .gsT table.grid th.v{font-size:8px;line-height:1.15}
+  #printArea table.grid.st{table-layout:fixed;width:100%}
+  #printArea table.grid.st td.nm{overflow:hidden;text-overflow:ellipsis}
+  #printArea table.grid.st th{text-align:center}
+  #printArea table.grid.st th:nth-child(2){text-align:left}
+  #printArea table.grid.st col.cR{width:8%}
+  #printArea table.grid.st col.cN{width:7%}
+  #printArea table.grid.st col.cS{width:8%}
+  #printArea table.grid.st col.cD{width:10%}
+  #printArea table.grid.st col.cH{width:8%}
+  /* the standings page: two even columns, a clear gap after every table */
+  #printArea .cols.sc2{gap:8mm}
+  #printArea .sgrp{margin-bottom:5mm;page-break-inside:avoid}
+  #printArea .sgrp h4.psec{margin-top:0}
+  /* knockout boxes big enough to write in */
+  #printArea .kobig table.ko{font-size:var(--kfs,12px)}
+  #printArea .kobig table.ko td{height:var(--krh,9mm);font-size:var(--kfs,12px);padding:0 2.5mm}
+  #printArea .kobig table.ko td.c,#printArea .kobig table.ko td.wl{width:16mm;font-weight:800}
+  #printArea .kobig table.ko td.seed{width:18mm;font-size:.75em}
+  #printArea .kobig table.ko th{font-size:9px;padding:1.4mm 2.5mm}
+  #printArea .kobig table.ko th.c{width:16mm}
+  #printArea .kobig .rows{gap:5mm;margin-bottom:5mm}
+  #printArea .kobig .rows>table{flex:0 0 calc(50% - 2.5mm);min-width:calc(50% - 2.5mm);max-width:calc(50% - 2.5mm)}
+  #printArea .kobig .rlbl{font-size:11px;padding:1.6mm 0;margin:3mm 0 3mm}
+  #printArea .kobig table.podium3{margin-top:6mm}
+  #printArea .kobig td.pod .pn{font-size:15px}
+  /* fixtures by round */
+  #printArea .rblk{margin:0 0 2.6mm;page-break-inside:avoid}
+  #printArea .rblk h4{font:800 11.5px 'Outfit',Arial,sans-serif;letter-spacing:.03em;text-transform:uppercase;
+    margin:0 0 1.1mm;padding:0 0 .9mm;border-bottom:1.6px solid #1d2229;color:#111}
+  #printArea table.rt{width:100%;border-collapse:collapse;table-layout:fixed;font-size:var(--fs)}
+  #printArea table.rt th{background:#e8ecf2;color:#59616d;font-size:7px;font-weight:700;letter-spacing:.09em;
+    text-transform:uppercase;border:1px solid #a3abb6;padding:.7mm 2mm;text-align:left;white-space:nowrap}
+  #printArea table.rt td{border:1px solid #a3abb6;height:var(--rh);padding:0 2mm;text-align:left;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#111}
+  #printArea table.rt td.w{font-weight:800}
+  #printArea table.rt th.ct,#printArea table.rt td.ct{width:14mm;text-align:center}
+  #printArea table.rt th.tm,#printArea table.rt td.tm{width:16mm;text-align:center;color:#444}
+  #printArea table.rt th.gp,#printArea table.rt td.gp{width:9mm;text-align:center;font-weight:700}
+  #printArea table.rt th.n,#printArea table.rt td.n{width:8mm;text-align:center;color:#666;font-size:.85em}
+  #printArea table.rt th.sc,#printArea table.rt td.sc{width:15mm;text-align:center;font-weight:800}
+  #printArea table.rt th.rf,#printArea table.rt td.rf{width:26mm}
+  /* the gap between the two halves of a row, as on the scoreboard */
+  #printArea table.rt th.gap,#printArea table.rt td.gap{width:5mm;border-top:0;border-bottom:0;background:#fff}
   /* the match cards fill the page too — twenty of them get deep boxes to write
      in by hand, forty-five tighten up rather than running off the bottom */
   table.mc.fit td{height:var(--rh);font-size:var(--fs)}
@@ -691,7 +783,7 @@ const EVENT_SUB   = '35 Split · 21 August 2026';
 const ORGANISER   = 'RISE Sports';
 const CONTACT     = '9987029222';
 const BUILD = 'build 2026-10-01';   // bump this whenever the file is re-uploaded
-const ADMIN_DEFAULT = 'Hello43556';         // the organiser password, out of the box
+const ADMIN_DEFAULT = 'Hello43556';         // the admin password, out of the box
 const MAX_TEAMS = 8;
 const MAX_COURTS = 6;     // courts a single group can be spread over
 const MAX_ORGANISERS = 3; // marks that lead the page
@@ -878,9 +970,38 @@ function courtLabel(g){
 }
 /* "Court 12" has to fit in the corner of a fixture row, so it shrinks to C12 */
 function shortCourt(name){
-  const m=/^court\s*(\w+)$/i.exec(String(name||'').trim());
-  return m?('C'+m[1]):String(name||'').slice(0,6);
+  const s=String(name||'').trim();
+  if(/^court\s*\w+$/i.test(s)){ const n=courtNo(s); if(n) return 'C'+n; }
+  return s.slice(0,6);
 }
+/* the court with the word "Court" taken off, for a column already headed Court */
+function courtBare(name){
+  const m=/^court\s+(.+)$/i.exec(String(name||'').trim());
+  return m?m[1]:String(name||'');
+}
+/* The rounds of a group as they should be read: the round-robin rounds in the
+   order of the tournament sheet, and inside a round the matches in the order
+   they go on. Used by the fixture list on screen and on paper. */
+function groupRounds(g){
+  const G=S.groups[g];
+  const by=roundsOf((G.matches||[]).slice().sort((a,b)=>a.n-b.n));
+  return Object.keys(by).map(Number).sort((a,b)=>a-b).map(r=>({
+    no:r, list:by[r].slice().sort((a,b)=>((a.slot||0)-(b.slot||0))||(a.n-b.n)) }));
+}
+/* ---------- the clock ----------
+   Optional. With a first-match time and a length per match, every slot gets a
+   time and the fixture sheets print it, so a pair can see roughly when they are
+   on. Left blank, no time appears anywhere. */
+function slotTime(k){
+  const st=String((S.meta&&S.meta.start)||'').trim();
+  const mm=/^(\d{1,2}):(\d{2})/.exec(st); if(!mm) return '';
+  const len=Math.max(1,parseInt(S.meta.slotMins,10)||20);
+  let t=(+mm[1])*60+(+mm[2])+k*len;
+  t=((t%1440)+1440)%1440;
+  const h=Math.floor(t/60), mi=t%60, h12=((h+11)%12)+1;
+  return h12+':'+String(mi).padStart(2,'0')+' '+(h<12?'AM':'PM');
+}
+const timed = () => !!slotTime(0);
 
 /* ---------- the order of play ----------
    Courts do not run in lockstep: one finishes a game while another is still
@@ -905,7 +1026,17 @@ function shortCourt(name){
    The result is deterministic, so no device has to publish it. */
 function scheduleGroup(G){
   const n=Math.max(1,normCourts(G.courts,G.court).length);
-  const byRound=roundsOf(G.matches||[]);
+  /* On a single court nothing needs dealing: the order of play is the order on
+     the tournament sheet, one match after another. Letting the rest-sorting
+     loose here would quietly swap matches inside a round, so the slot printed
+     beside a match would no longer agree with where it sits in the list. */
+  if(n===1){
+    (G.matches||[]).sort((a,b)=>a.n-b.n).forEach((m,i)=>{ m.slot=i; m.c=0; });
+    return G;
+  }
+  /* rounds are read off the original match order, never off a list this
+     function has already re-sorted, so running it twice gives the same day */
+  const byRound=roundsOf((G.matches||[]).slice().sort((a,b)=>a.n-b.n));
   const rounds=Object.keys(byRound).map(Number).sort((a,b)=>a-b);
   const last={};            // pair -> the slot it last played in
   let slot=0, dealt=0;      // dealt counts every match placed, so the courts share evenly
@@ -1131,6 +1262,24 @@ function leaguePairs(n){
   return out;
 }
 
+/* ---------- who sees which tab ---------- */
+const TAB_LIST = [['courts','Courts'],['fixtures','Fixtures'],['table','Standings'],
+                  ['finals','Finals'],['groups','Groups'],['data','Data']];
+const ACCESS_DEFAULT = {
+  tabs:{ view:     {courts:false,fixtures:true,table:true,finals:true,groups:false,data:false},
+         scorer:   {courts:true, fixtures:true,table:true,finals:true,groups:true, data:true},
+         organiser:{courts:true, fixtures:true,table:true,finals:true,groups:true, data:true} },
+  org:{ groups:true, print:true, share:true }
+};
+function normAccess(a){
+  const d=clone(ACCESS_DEFAULT); a=a||{};
+  ['view','scorer','organiser'].forEach(r=>{ TAB_LIST.forEach(([k])=>{
+    const v=a.tabs&&a.tabs[r]&&a.tabs[r][k]; if(typeof v==='boolean') d.tabs[r][k]=v; }); });
+  ['groups','print','share'].forEach(k=>{ const v=a.org&&a.org[k]; if(typeof v==='boolean') d.org[k]=v; });
+  return d;
+}
+const ACCESS = () => (S.access=S.access&&S.access.tabs?S.access:normAccess(S.access));
+
 const STORE_KEY = 'pboss35_v2';
 let S = load();
 
@@ -1171,14 +1320,19 @@ function blank(preset){
            draw:clone(P.draw), preset:preset||'six',
            groups:g, ko:{}, diamond:{}, platinum:{},
            tab:'courts', grp:P.groups[0], fin:'diamond', edit:false, courtSel:'', tblGrp:'',
-           role:'view', mode:'entry', theme:'dark', templates:[],
-           adminHash:'', scorerHash:'', open:{}, ref:null };
+           role:'view', mode:'entry', theme:'light', themeV:2, templates:[],
+           adminHash:'', scorerHash:'', orgHash:'', access:clone(ACCESS_DEFAULT), open:{}, ref:null };
 }
 function load(){
   try{const r=localStorage.getItem(STORE_KEY); if(r){const p=JSON.parse(r);
     if(p&&p.groups){ p.ko=p.ko||{}; p.diamond=p.diamond||{}; p.platinum=p.platinum||{};
-      p.fin=p.fin||'diamond'; p.mode=p.mode||'entry'; p.theme=p.theme||'dark';
-      p.adminHash=p.adminHash||''; p.scorerHash=p.scorerHash||'';
+      p.fin=p.fin||'diamond'; p.mode=p.mode||'entry'; p.theme=p.theme||'light';
+      /* Dark used to be the default, so a device that has opened the app before
+         has "dark" saved without anyone choosing it. Light is the default now:
+         every device moves over once, and a choice made after that is kept. */
+      if(p.themeV!==2){ p.theme='light'; p.themeV=2; }
+      p.adminHash=p.adminHash||''; p.scorerHash=p.scorerHash||''; p.orgHash=p.orgHash||'';
+      p.access=normAccess(p.access);
       p.open=p.open||{}; p.templates=p.templates||[]; p.ref=null; p.courtSel=p.courtSel||'';
       p.tblGrp=p.tblGrp||'';
       p.meta=p.meta||{title:EVENT_TITLE,sub:EVENT_SUB,contact:CONTACT,organiser:ORGANISER};
@@ -1375,7 +1529,7 @@ function leagueTable(store,srcRefs){
 }
 /* ===================== pair edit / move ===================== */
 function openPair(g, name){
-  if(!isAdmin()) return toast('Only the organiser can change teams');
+  if(!canEditGroups()) return toast('Only the admin or an organiser can change teams');
   const others=GROUPS.filter(k=>k!==g);
   openModal(`<h3>${esc(name)}</h3>
     <p class="hint">Currently in Group ${g} · ${esc(courtLabel(g))}</p>
@@ -1398,6 +1552,7 @@ function openPair(g, name){
     </div>`);
 }
 function applyPair(g, oldName){
+  if(!canEditGroups()) return toast('Admin or organiser only');
   const nu=(document.getElementById('pairName').value||'').trim();
   const dest=document.getElementById('pairMove').value;
   if(!nu){ toast('Name cannot be empty'); return; }
@@ -1423,6 +1578,7 @@ function applyPair(g, oldName){
   save(); closeModal();
 }
 function removePair(g,name){
+  if(!canEditGroups()) return toast('Admin or organiser only');
   if(!confirm('Remove '+name+' from the tournament? Their results are cleared.')) return;
   const G=S.groups[g], i=G.teams.indexOf(name);
   if(i>=0){ G.teams.splice(i,1);
@@ -1446,9 +1602,24 @@ function removePair(g,name){
    a public key, so a determined person can get past it. It stops the realistic
    case — a player picking up a stray phone, a spectator poking at the link.
    Real enforcement would need Supabase auth with row-level security. */
-const isAdmin  = () => S.role==='admin';
-const canScore = () => S.role==='admin'||S.role==='scorer';
-const roleName = () => S.role==='admin'?'ADMIN':S.role==='scorer'?'SCORER':'VIEW';
+/* Four levels, each with everything below it:
+     admin      — you. Setup, passwords, resets, backups, the access switches.
+     organiser  — runs the day: edits groups and teams, prints, shares images
+                  and WhatsApp summaries, and scores. Each of those three
+                  extras can be switched off by the admin.
+     scorer     — shown as Referee: enters and edits scores, runs the console.
+     view       — follows along.
+   Which tabs each level sees is the admin's call too (S.access). */
+const isAdmin     = () => S.role==='admin';
+const isOrganiser = () => S.role==='organiser';
+const canScore    = () => S.role==='admin'||S.role==='organiser'||S.role==='scorer';
+const ROLE_LABEL  = {admin:'Admin', organiser:'Organiser', scorer:'Referee', view:'Viewer'};
+const roleName    = () => ({admin:'ADMIN',organiser:'ORGANISER',scorer:'REFEREE'})[S.role]||'VIEW';
+const orgMay      = k => isAdmin() || (isOrganiser() && ACCESS().org[k]!==false);
+const canEditGroups = () => orgMay('groups');
+const canExport     = () => orgMay('print');
+const canShare      = () => orgMay('share');
+
 
 async function hashPin(p){
   const salted='pboss35|'+(sync.event||'')+'|'+p;
@@ -1468,16 +1639,16 @@ async function adminMatches(v){
   return h===await hashPin(ADMIN_DEFAULT);       // still on the shipped password
 }
 const scorerPinSet = () => !!(S.scorerHash&&S.scorerHash.length);
+const orgPinSet    = () => !!(S.orgHash&&S.orgHash.length);
 
 /* ---------- the one door ---------- */
 function openAccess(){ openModal(accessModal()); }
 function accessModal(err){
   if(S.role!=='view') return signedInModal();
   return `<h3>Unlock this device</h3>
-    <p class="hint">Scoring is locked. Enter the scorer PIN to record results, or the organiser
-    password for full control.</p>
+    <p class="hint">Enter your PIN — referee or organiser — or the admin password.</p>
     ${err?`<div class="alert bad" style="margin-top:10px"><span>⚠</span><span>${esc(err)}</span></div>`:''}
-    <label class="fl">Scorer PIN or organiser password</label>
+    <label class="fl">PIN or password</label>
     <input type="password" id="accIn" autocomplete="current-password"
       onkeydown="if(event.key==='Enter')tryAccess()">
     <div class="row" style="margin-top:16px">
@@ -1485,8 +1656,9 @@ function accessModal(err){
       <button class="btn" onclick="closeModal()">Cancel</button>
     </div>
     <div class="alert ok" style="margin-top:14px"><span>ℹ</span><span>
-      <b>Scorer</b> enters and edits scores and runs the court console.<br>
-      <b>Organiser</b> also edits teams, prints, exports and resets.</span></div>`;
+      <b>Referee</b> enters and edits scores and runs the court console.<br>
+      <b>Organiser</b> also edits groups and teams, prints and shares results.<br>
+      <b>Admin</b> also sets up the event, the passwords and who sees what.</span></div>`;
 }
 async function tryAccess(){
   const v=document.getElementById('accIn').value;
@@ -1494,58 +1666,93 @@ async function tryAccess(){
   if(await adminMatches(v)){
     S.role='admin';
     if(!S.adminHash){ S.adminHash=await hashPin(v); }   // pin down the shipped default
-    save(); closeModal(); render(); toast('Organiser mode — full control');
+    save(); closeModal(); render(); toast('Admin mode — full control');
     if(sync.on) drainQueue(6);
     return;
   }
-  if(scorerPinSet() && await hashPin(v)===S.scorerHash){
-    S.role='scorer'; save(); closeModal(); render(); toast('Scorer mode — scores only');
+  const h=await hashPin(v);
+  if(orgPinSet() && h===S.orgHash){
+    S.role='organiser'; save(); closeModal(); render(); toast('Organiser mode');
     return;
   }
-  openModal(accessModal(scorerPinSet()
-    ? 'That is neither the scorer PIN nor the organiser password.'
-    : 'No scorer PIN has been set yet. Use the organiser password.'));
+  if(scorerPinSet() && h===S.scorerHash){
+    S.role='scorer'; save(); closeModal(); render(); toast('Referee mode — scores only');
+    return;
+  }
+  openModal(accessModal(scorerPinSet()||orgPinSet()
+    ? 'That PIN or password is not right.'
+    : 'No PINs have been set yet. Use the admin password.'));
+}
+function roleBlurb(){
+  if(isAdmin()) return 'This device can do everything: setup, scores, teams, printing, sharing, resets and the passwords.';
+  if(isOrganiser()) return 'This device can enter scores'+(canEditGroups()?', edit groups and teams':'')+
+    (canExport()?', print':'')+(canShare()?', share images and WhatsApp summaries':'')+'. Setup and resets are the admin\'s.';
+  return 'This device can enter and edit scores and run the court console. Everything else belongs to the organiser and admin.';
+}
+function pinBlock(kind){
+  const org=kind==='org', set=org?orgPinSet():scorerPinSet(), nm=org?'Organiser':'Referee';
+  return `<div class="eyebrow" style="margin:16px 2px 6px">${nm} PIN</div>
+    <div class="alert ${set?'ok':'warn'}"><span>${set?'●':'○'}</span><span>
+      ${set?`A ${nm.toLowerCase()} PIN is set. Hand it to your ${org?'organisers':'referees'}.`
+        :`No ${nm.toLowerCase()} PIN yet.`}</span></div>
+    <label class="fl">${set?'Replace the '+nm.toLowerCase()+' PIN':'Set a '+nm.toLowerCase()+' PIN'}</label>
+    <input type="password" id="${org?'opin':'spin'}" placeholder="At least 4 characters">
+    <div class="row" style="margin-top:10px">
+      <button class="btn acc" onclick="${org?'setOrgPin()':'setScorerPin()'}">${set?'Replace PIN':'Set PIN'}</button>
+      ${set?`<button class="btn dgr" onclick="${org?'clearOrgPin()':'clearScorerPin()'}">Remove PIN</button>`:''}
+    </div>`;
 }
 function signedInModal(){
-  return `<h3>${isAdmin()?'Organiser mode':'Scorer mode'}</h3>
-    <p class="hint">${isAdmin()
-      ? 'This device can do everything: scores, teams, printing, exports and resets.'
-      : 'This device can enter and edit scores and run the court console. Teams, printing, exports and resets belong to the organiser.'}</p>
+  return `<h3>${ROLE_LABEL[S.role]} mode</h3>
+    <p class="hint">${roleBlurb()}</p>
     ${isAdmin()?`
-      <div class="eyebrow" style="margin:16px 2px 6px">Scorer PIN</div>
-      <div class="alert ${scorerPinSet()?'ok':'warn'}"><span>${scorerPinSet()?'●':'○'}</span><span>
-        ${scorerPinSet()?'A scorer PIN is set. Court devices can unlock with it.'
-          :'No scorer PIN yet — only this password can unlock a device.'}</span></div>
-      <label class="fl">${scorerPinSet()?'Replace the scorer PIN':'Set a scorer PIN'}</label>
-      <input type="password" id="spin" placeholder="At least 4 characters">
-      <div class="row" style="margin-top:10px">
-        <button class="btn acc" onclick="setScorerPin()">${scorerPinSet()?'Replace PIN':'Set PIN'}</button>
-        ${scorerPinSet()?`<button class="btn dgr" onclick="clearScorerPin()">Remove PIN</button>`:''}
-      </div>
-      <div class="eyebrow" style="margin:18px 2px 6px">Organiser password</div>
+      ${pinBlock('org')}
+      ${pinBlock('ref')}
+      <p class="hint">The two PINs must be different. Who sees which tab is set in Setup → Access.</p>
+      <div class="eyebrow" style="margin:18px 2px 6px">Admin password</div>
       <label class="fl">Current password</label><input type="password" id="ap0">
       <label class="fl">New password</label><input type="password" id="ap1">
       <label class="fl">Type it again</label><input type="password" id="ap2">
       <div class="row" style="margin-top:10px">
-        <button class="btn" onclick="changeAdmin()">Change organiser password</button>
+        <button class="btn" onclick="changeAdmin()">Change admin password</button>
       </div>`:''}
     <div class="row" style="margin-top:16px">
       <button class="btn" style="flex:1" onclick="signOut()">Sign out of this device</button>
       <button class="btn acc" onclick="closeModal()">Done</button>
     </div>`;
 }
+async function setOrgPin(){
+  if(!isAdmin()) return;
+  const v=document.getElementById('opin').value||'';
+  if(v.length<4) return toast('Use at least 4 characters');
+  const h=await hashPin(v);
+  if(h===S.scorerHash) return toast('That is the referee PIN — use a different one');
+  if(await adminMatches(v)) return toast('That is the admin password — use a different one');
+  S.orgHash=h; save(); toast('Organiser PIN set');
+  if(sync.on) drainQueue(6);
+  openModal(signedInModal());
+}
+function clearOrgPin(){
+  if(!isAdmin()) return;
+  if(!confirm('Remove the organiser PIN? Devices already unlocked stay unlocked, but no new device can join as an organiser.')) return;
+  S.orgHash=''; save(); toast('Organiser PIN removed');
+  if(sync.on) drainQueue(6);
+  openModal(signedInModal());
+}
 async function setScorerPin(){
   if(!isAdmin()) return;
   const v=document.getElementById('spin').value||'';
   if(v.length<4) return toast('Use at least 4 characters');
-  S.scorerHash=await hashPin(v); save(); toast('Scorer PIN set — share it with the court devices');
+  if(await hashPin(v)===S.orgHash) return toast('That is the organiser PIN — use a different one');
+  if(await adminMatches(v)) return toast('That is the admin password — use a different one');
+  S.scorerHash=await hashPin(v); save(); toast('Referee PIN set — share it with the court devices');
   if(sync.on) drainQueue(6);
   openModal(signedInModal());
 }
 function clearScorerPin(){
   if(!isAdmin()) return;
-  if(!confirm('Remove the scorer PIN? Devices already unlocked stay unlocked, but no new device can join as a scorer.')) return;
-  S.scorerHash=''; save(); toast('Scorer PIN removed');
+  if(!confirm('Remove the referee PIN? Devices already unlocked stay unlocked, but no new device can join as a referee.')) return;
+  S.scorerHash=''; save(); toast('Referee PIN removed');
   if(sync.on) drainQueue(6);
   openModal(signedInModal());
 }
@@ -1556,7 +1763,7 @@ async function changeAdmin(){
   const a=document.getElementById('ap1').value||'', b=document.getElementById('ap2').value||'';
   if(a.length<6) return toast('Use at least 6 characters');
   if(a!==b) return toast('The two new passwords do not match');
-  S.adminHash=await hashPin(a); save(); toast('Organiser password changed');
+  S.adminHash=await hashPin(a); save(); toast('Admin password changed');
   if(sync.on) drainQueue(6);
   openModal(signedInModal());
 }
@@ -1888,14 +2095,13 @@ function putFocus(f){
 
 /* ===================== render ===================== */
 function TABS(){
-  /* A spectator wants three things: what is being played, where everyone
-     stands, and how the finals are going. The rest is running the event. */
-  if(!canScore()) return [['fixtures','Fixtures'],['table','Standings'],['finals','Finals']];
-  const t=[['courts','Courts'],['fixtures','Fixtures'],['table','Standings'],
-           ['finals','Finals'],['groups','Groups']];
-  if(isAdmin()) t.push(['setup','Setup']);
-  t.push(['data','Data']);
-  return t;
+  /* The admin sees everything. Everyone else sees what the admin has
+     switched on for their level in Setup → Access. */
+  if(isAdmin()){
+    const t=TAB_LIST.filter(([k])=>k!=='data'); t.push(['setup','Setup'],['data','Data']); return t; }
+  const on=ACCESS().tabs[S.role]||ACCESS().tabs.view;
+  const t=TAB_LIST.filter(([k])=>on[k]);
+  return t.length?t:[['fixtures','Fixtures']];
 }
 /* signing out of a tab that no longer exists must not leave a blank page */
 function validTab(){
@@ -1910,7 +2116,7 @@ function render(){
   applyDocTitle();
   const views={courts:vCourts,fixtures:vFixtures,table:vTable,
                finals:vFinals,groups:vGroups,setup:vSetup,data:vData};
-  if(!views[S.tab]||(S.tab==='setup'&&!isAdmin())) S.tab='courts';
+  if(!views[S.tab]||(S.tab==='setup'&&!isAdmin())) S.tab=TABS()[0][0];
   if(!S.groups[S.grp]) S.grp=GROUPS[0];
   const body=views[S.tab]();
   document.getElementById('wrap').innerHTML=headerHTML()+body+footerHTML();
@@ -1999,67 +2205,65 @@ function section(id, title, done, total, bodyFn){
 const tieDone = codes => codes.filter(c=>{const t=S.ko[c];return t&&t.sa!=null&&t.sb!=null;}).length;
 
 /* ---------- Courts ---------- */
-/* One card per court, not per group: a referee standing on court 3 wants to
-   know what is next on court 3. With one court per group this is exactly the
-   board it always was; with a group spread over several, each court gets its
-   own card and its own on-deck match. Tapping one opens that court's order of
-   play underneath. */
+/* ---------- Courts ----------
+   Pick a court and you are straight into its matches, score boxes and all —
+   the way a referee standing on that court actually works. A chip for every
+   court across the tournament; under it the court's matches in the order they
+   go on, with the next one called out at the top. */
+function courtSel(){
+  const list=allCourts(); if(!list.length) return null;
+  return list.find(c=>c.id===S.courtSel)||list[0];
+}
 function vCourts(){
   const list=allCourts();
   if(!list.length) return `<div class="card" style="padding:20px"><div class="note">No courts yet —
     they are named in the <b>Groups</b> tab.</div></div>`;
-  const board=`<div class="grid g2">`+list.map(c=>{
-    const ms=courtMatches(c.g,c.ci), d=ms.filter(played).length, t=ms.length;
-    const nx=ms.find(m=>!played(m));
-    const G=S.groups[c.g], multi=courtsOf(c.g).length>1;
-    const sel=S.courtSel===c.id;
-    return `<div class="card court-card${sel?' on':''}">
-      <div class="courtTop"><div class="gLabel">Group ${c.g}</div><div class="courtName">${esc(c.name)}</div></div>
-      <div class="prog"><i style="width:${t?d/t*100:0}%"></i></div>
-      <div class="courtName">${t?`${d} of ${t} played${multi?' on this court':''} · ${G.teams.length} teams`
-        :(G.teams.length?'Nothing scheduled here':'No teams yet')}</div>
-      <div class="nextM">
-        <div class="nextLbl">${nx?'On deck · Match '+nx.n:(t?'Court finished':'Add teams in the Groups tab')}</div>
-        ${nx?`<div class="vsRow"><div class="t">${esc(nx.a)}</div><div class="vs">VS</div>
-              <div class="t" style="text-align:right">${esc(nx.b)}</div></div>
-              ${canScore()&&S.mode==='ref'?`<button class="btn sm acc" style="width:100%;margin-top:9px"
-                onclick="openRef('g:${c.g}:${nx.n}')">Referee this match</button>`:''}`
-            :`<div class="done">${t?'All results in — check Standings':'No fixtures yet'}</div>`}
-      </div>
-      <div class="row">
-        <button class="btn" style="flex:1" onclick="pickCourt('${c.id}')">${sel?'Hide order of play':'Order of play'}</button>
-        <button class="btn" style="flex:1" onclick="S.grp='${c.g}';go('fixtures')">Fixtures</button>
-      </div>
-    </div>`;}).join('')+`</div>`;
-  return board+(S.courtSel?courtRun(S.courtSel):'');
-}
-function pickCourt(id){ S.courtSel=(S.courtSel===id)?'':id; save(); render(); }
-/* one court's matches, in the order they will actually be played */
-function courtRun(id){
-  const c=allCourts().find(x=>x.id===id); if(!c) return '';
-  const ms=courtMatches(c.g,c.ci), done=ms.filter(played).length, nx=ms.find(m=>!played(m));
-  const multi=courtsOf(c.g).length>1;
+  const sel=courtSel(), g=sel.g, ci=sel.ci;
+  const ms=courtMatches(g,ci), done=ms.filter(played).length, nx=ms.find(m=>!played(m));
+  const multi=courtsOf(g).length>1;
+
+  const chips=`<div class="chips">`+list.map(c=>{
+    const cm=courtMatches(c.g,c.ci), fin=cm.length&&cm.every(played);
+    return `<div class="chip ${c.id===sel.id?'on':''}" onclick="S.courtSel='${c.id}';save();render()">${
+      esc(c.name)} <span class="chipG">${c.g}</span>${fin?' ✓':''}</div>`; }).join('')+`</div>`;
+
+  const bar=canExport()?`<div class="expbar">
+    <span class="expSet"><span class="expLbl">${esc(sel.name)}</span>
+      <button class="btn sm" onclick="doPrint('data','court:${g}:${ci}')">With scores</button>
+      <button class="btn sm" onclick="doPrint('blank','court:${g}:${ci}')">Blank</button></span>
+    <span class="expSet"><span class="expLbl">All ${list.length} courts</span>
+      <button class="btn sm" onclick="doPrint('data','courts')">With scores</button>
+      <button class="btn sm" onclick="doPrint('blank','courts')">Blank</button></span>
+    <span class="expSet"><span class="expLbl">Order of play</span>
+      <button class="btn sm" onclick="doPrint('data','play')">With scores</button>
+      <button class="btn sm" onclick="doPrint('blank','play')">Blank</button></span>
+  </div>`:'';
+
   const head=`<div class="ctHead">
-    <div class="ctH1">${esc(c.name)}</div>
-    <div class="ctH2">Group ${esc(c.g)} · ${ms.length} match${ms.length===1?'':'es'} · ${done} played${
-      multi?' · Group '+esc(c.g)+' runs on '+esc(courtLabel(c.g)):''}</div>
+    <div class="ctH1">${esc(sel.name)}</div>
+    <div class="ctH2">Group ${esc(g)} · ${ms.length} match${ms.length===1?'':'es'} · ${done} played${
+      multi?' · Group '+esc(g)+' runs on '+esc(courtLabel(g)):''}</div>
     ${nx?`<div class="ctNext"><span class="nextLbl">Up next · Match ${nx.n}${
-        multi?' · slot '+((nx.slot||0)+1):''}</span>
+        slotTime(nx.slot||0)?' · '+slotTime(nx.slot||0):''}</span>
       <b>${esc(nx.a)}</b> <span class="vs">v</span> <b>${esc(nx.b)}</b></div>`
       :`<div class="ctNext"><span class="done">${ms.length?'Every match on this court is played'
         :'Nothing scheduled here yet'}</span></div>`}
   </div>`;
-  if(!ms.length) return head;
-  return head+(isAdmin()?`<div class="expbar">
-      <button class="btn sm acc" onclick="doPrint('data','court:${c.g}:${c.ci}')">🖨 ${esc(c.name)} sheet</button>
-      <button class="btn sm" onclick="doPrint('blank','court:${c.g}:${c.ci}')">Blank sheet</button>
-      <button class="btn sm" onclick="doPrint('data','courts')">All ${allCourts().length} courts</button>
-    </div>`:'')
-    +(canScore()?modeBar():'')
-    +`<div class="card">${ms.map(m=>matchRow('g:'+c.g+':'+m.n,m,true)).join('')}</div>`
-    +(multi?`<div class="note" style="margin-top:12px">Group ${esc(c.g)}'s matches are dealt across
-      ${esc(courtLabel(c.g))} so no pair is ever called to two courts at once. The slot is the wave of
-      matches going on across all of them at the same time.</div>`:'');
+  if(!ms.length) return chips+bar+head;
+
+  /* a group spread over several courts plays in rounds, so the court's list is
+     cut into those rounds; on its own court a group is simply one list */
+  let body;
+  if(multi){
+    body=groupRounds(g).map(rd=>{ const mine=rd.list.filter(m=>(m.c||0)===ci);
+      if(!mine.length) return '';
+      const t=slotTime(mine[0].slot||0), d=mine.filter(played).length;
+      return `<div class="rndHd"><span>Round ${rd.no}${t?' · '+t:''}</span>
+        <span class="${d===mine.length?'ok':''}">${d}/${mine.length}</span></div>`
+        + mine.map(m=>matchRow('g:'+g+':'+m.n,m,true)).join(''); }).join('');
+  } else body=ms.map(m=>matchRow('g:'+g+':'+m.n,m,true)).join('');
+
+  return chips+(canScore()?modeBar():'')+bar+head+`<div class="card">${body}</div>`;
 }
 
 /* ---------- Fixtures: scoring only, names are not editable here ---------- */
@@ -2070,7 +2274,12 @@ function vFixtures(){
   const left=`<div class="card">
     <div class="hd"><b>Group ${g} fixtures</b>
       <span style="color:var(--dim);font-size:11px">${esc(courtLabel(g))} · ${G.matches.filter(played).length}/${G.matches.length}</span></div>
-    ${G.matches.length? G.matches.map(m=>matchRow('g:'+g+':'+m.n,m)).join('')
+    ${G.matches.length&&courtsOf(g).length===1? G.matches.map(m=>matchRow('g:'+g+':'+m.n,m)).join('')
+      : G.matches.length? groupRounds(g).map(rd=>{
+        const done=rd.list.filter(played).length, t=slotTime(rd.list[0].slot||0);
+        return `<div class="rndHd"><span>Round ${rd.no}${t?' · '+t:''}</span>
+          <span class="${done===rd.list.length?'ok':''}">${done}/${rd.list.length}</span></div>`
+          + rd.list.map(m=>matchRow('g:'+g+':'+m.n,m)).join(''); }).join('')
       : `<div style="padding:22px;text-align:center" class="note">No fixtures yet — add pairs in the
          <b>Groups</b> tab and they build themselves.</div>`}
     </div>`;
@@ -2121,18 +2330,18 @@ function matchRow(ref,m,onCourt){
 
 /* ---------- Groups: rosters, courts, moves. No scoring. ---------- */
 function vGroups(){
-  const canEdit=isAdmin();
-  return (canEdit?`<div class="expbar">
-      <button class="btn sm acc" onclick="openModal(shareModal('groups'))">↗ Share / PDF</button>
-      <button class="btn sm" onclick="doPrint('data','teams')">Team list PDF</button>
-      <button class="btn sm" onclick="doPrint('data','standings')">Standings PDF</button>
-    </div>`:'')+
+  const canEdit=canEditGroups();
+  const bar=(canShare()?`<button class="btn sm acc" onclick="exportStandingsImage('')">🖼 Standings image</button>
+      <button class="btn sm acc" onclick="openModal(shareModal('groups'))">↗ Share / WhatsApp</button>`:'')+
+    (canExport()?`<button class="btn sm" onclick="doPrint('data','teams')">Team list PDF</button>
+      <button class="btn sm" onclick="doPrint('data','standings')">Standings PDF</button>`:'');
+  return (bar?`<div class="expbar">${bar}</div>`:'')+
     (canEdit?`<div class="note" style="margin-bottom:12px">Rename a pair, move one between groups,
       add or remove pairs, and set the courts each group plays on — a group can run on up to ${MAX_COURTS},
       and its matches are shared out across them. Fixtures rebuild automatically — any pairing that still
       exists keeps the score it already had.</div>`
     :`<div class="alert warn" style="margin-bottom:12px"><span>👁</span><span><b>${
-      canScore()?'Scorer mode':'View mode'}.</b> Teams are set by the organiser${
+      canScore()?'Referee mode':'View mode'}.</b> Teams are set by the organiser${
       canScore()?', so they are read-only here':''}.</span></div>`)+
     `<div class="grid g2">`+GROUPS.map(g=>{
       const G=S.groups[g];
@@ -2177,13 +2386,13 @@ function courtEditor(g){
   </div>`;
 }
 function setCourtName(g,i,v){
-  if(!isAdmin()) return toast('Organiser only');
+  if(!canEditGroups()) return toast('Admin or organiser only');
   const c=courtsOf(g); c[i]=(v||'').trim()||c[i];
   S.groups[g].courts=normCourts(c); save(); render(); toast('Saved');
   if(sync.on) drainQueue(6);
 }
 function addCourt(g){
-  if(!isAdmin()) return toast('Organiser only');
+  if(!canEditGroups()) return toast('Admin or organiser only');
   const c=courtsOf(g);
   if(c.length>=MAX_COURTS) return toast(MAX_COURTS+' courts is the most for one group');
   c.push('Court '+nextCourtNo());
@@ -2192,7 +2401,7 @@ function addCourt(g){
   if(sync.on) drainQueue(6);
 }
 function removeCourt(g,i){
-  if(!isAdmin()) return toast('Organiser only');
+  if(!canEditGroups()) return toast('Admin or organiser only');
   const c=courtsOf(g);
   if(c.length<2) return toast('A group needs at least one court');
   const onIt=courtMatches(g,i).length;
@@ -2204,6 +2413,7 @@ function removeCourt(g,i){
   if(sync.on) drainQueue(6);
 }
 function renameTeam(g,i,v){
+  if(!canEditGroups()) return toast('Admin or organiser only');
   const G=S.groups[g], old=G.teams[i], nu=v.trim();
   if(!nu||nu===old){render();return;}
   if(G.teams.some((t,j)=>j!==i&&t===nu)){toast('That pair is already in this group');render();return;}
@@ -2211,6 +2421,7 @@ function renameTeam(g,i,v){
   save(); render(); toast('Renamed');
 }
 function addTeam(g){
+  if(!canEditGroups()) return toast('Admin or organiser only');
   const el=document.getElementById('new_'+g), v=(el?el.value:'').trim();
   if(!v){toast('Type a pair name first');return;}
   const G=S.groups[g]; if(G.teams.includes(v)){toast('That pair is already in this group');return;}
@@ -2243,13 +2454,12 @@ function vTable(){
   const chips=GROUPS.length>1?`<div class="chips">`+[['','All groups']].concat(GROUPS.map(g=>[g,'Group '+g]))
     .map(([k,l])=>`<div class="chip ${f===k?'on':''}" onclick="S.tblGrp='${k}';save();render()">${l}</div>`)
     .join('')+`</div>`:'';
-  return (isAdmin()?`<div class="expbar">
-      <button class="btn sm acc" onclick="exportStandingsImage('${f}')">🖼 Save as image${f?' · Group '+f:''}</button>
-      <button class="btn sm acc" onclick="openModal(shareModal('groups'))">↗ Share / PDF</button>
-      <button class="btn sm" onclick="doPrint('data','standings')">Standings PDF</button>
-      <button class="btn sm" onclick="exportCSV()">Spreadsheet (CSV)</button>
-      <button class="btn sm dgr" onclick="openModal(resetModal())">Reset scores…</button>
-    </div>`:'')+chips+
+  const bar=(canShare()?`<button class="btn sm acc" onclick="exportStandingsImage('${f}')">🖼 Save / share as image${f?' · Group '+f:''}</button>
+      <button class="btn sm acc" onclick="openModal(shareModal('groups'))">↗ Share / WhatsApp</button>`:'')+
+    (canExport()?`<button class="btn sm" onclick="doPrint('data','standings')">Standings PDF</button>
+      <button class="btn sm" onclick="exportCSV()">Spreadsheet (CSV)</button>`:'')+
+    (isAdmin()?`<button class="btn sm dgr" onclick="openModal(resetModal())">Reset scores…</button>`:'');
+  return (bar?`<div class="expbar">${bar}</div>`:'')+chips+
     `<div class="note" style="margin-bottom:12px">Wins, then point difference, then head-to-head, then points scored.
     Qualification follows the draw: the badge on each pair says which league they have reached.</div>
     <div class="grid ${f?'':'g2'}">`+(f?[f]:GROUPS).map(g=>tableCard(g,false)).join('')+`</div>`;
@@ -2260,11 +2470,12 @@ function vFinals(){
     [['diamond','◆ '+nmD()],['platinum','● '+nmP()],['gold','★ '+nmG()]].map(([k,l])=>
       `<div class="chip ${S.fin===k?'on':''}" onclick="S.fin='${k}';render()">${l}</div>`).join('')+`</div>`;
   const body=S.fin==='diamond'?vDiamond():S.fin==='platinum'?vPlatinum():vGold();
-  const bar=isAdmin()?`<div class="expbar">
-    <button class="btn sm acc" onclick="openModal(shareModal('finals'))">↗ Share / PDF</button>
-    <button class="btn sm" onclick="doPrint('data','finals')">Save as PDF</button>
-    <button class="btn sm" onclick="doPrint('blank','finals')">Blank draw sheet</button>
-    <button class="btn sm dgr" onclick="resetScores('finals')">Reset finals scores</button></div>`:'';
+  const inner=(canShare()?`<button class="btn sm acc" onclick="exportFinalsImage()">🖼 Save / share as image</button>
+    <button class="btn sm acc" onclick="openModal(shareModal('finals'))">↗ Share / WhatsApp</button>`:'')+
+    (canExport()?`<button class="btn sm" onclick="doPrint('data','finals')">Save as PDF</button>
+    <button class="btn sm" onclick="doPrint('blank','finals')">Blank draw sheets</button>`:'')+
+    (isAdmin()?`<button class="btn sm dgr" onclick="resetScores('finals')">Reset finals scores</button>`:'');
+  const bar=inner?`<div class="expbar">${inner}</div>`:'';
   return chips + modeBar() + bar + body;
 }
 function tieCard(code,x,y,label){
@@ -2421,22 +2632,19 @@ function vData(){
   return `<div class="grid g2">
     <div class="card" style="padding:16px">
       <div class="hd" style="padding:0 0 10px"><b>Scoring &amp; devices</b></div>
-      <p class="note">One device per court runs in Scorer mode and publishes; every other phone opens the
-      same link and follows along. The scoring password belongs to the whole event and travels with the
-      sync, so a phone that has never scored still has to know it.</p>
+      <p class="note">One device per court runs in Referee mode and publishes; every other phone opens the
+      same link and follows along. The PINs belong to the whole event and travel with the sync, so a phone
+      that has never scored still has to be told one.</p>
       <p class="note" style="margin-top:8px">Scores save to this device the moment they are typed. If the
-      tab closes or the phone dies, reopening the same link brings everything back — still in scorer mode.</p>
+      tab closes or the phone dies, reopening the same link brings everything back — still unlocked.</p>
       <div class="row" style="margin-top:12px">
         <button class="btn acc" onclick="openModal(syncModal())">Sync settings</button>
         <button class="modebtn ${canScore()?'on':''}" style="padding:9px 14px" onclick="openAccess()">
-          ${S.role==='admin'?'Organiser mode':S.role==='scorer'?'Scorer mode':'Unlock this device'}</button>
+          ${S.role==='view'?'Unlock this device':ROLE_LABEL[S.role]+' mode'}</button>
       </div>
-      <div class="alert ${S.role==='admin'?'ok':S.role==='scorer'?'warn':'bad'}" style="margin-top:12px">
-        <span>${S.role==='admin'?'★':S.role==='scorer'?'✎':'👁'}</span><span><b>${
-          S.role==='admin'?'Organiser':S.role==='scorer'?'Scorer':'Viewer'}</b><br>${
-          S.role==='admin'?'Scores, teams, printing, exports, resets and the passwords.'
-          :S.role==='scorer'?'Scores and the court console. Teams, printing, exports and resets are the organiser\'s.'
-          :'Follows the live scores and changes nothing.'}</span></div>
+      <div class="alert ${S.role==='view'?'bad':S.role==='scorer'?'warn':'ok'}" style="margin-top:12px">
+        <span>${({admin:'★',organiser:'◆',scorer:'✎'})[S.role]||'👁'}</span><span><b>${ROLE_LABEL[S.role]}</b><br>${
+          S.role==='view'?'Follows the live scores and changes nothing.':roleBlurb()}</span></div>
     </div>
     <div class="card" style="padding:16px">
       <div class="hd" style="padding:0 0 10px"><b>Appearance</b></div>
@@ -2490,13 +2698,13 @@ function viewNote(){
   </div>`;
 }
 function exportJSON(){
-  if(!isAdmin()) return toast('Organiser only');
+  if(!isAdmin()) return toast('Admin only');
   const b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(b);
   a.download='pickleboss-35split-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); toast('Backup exported');
 }
 function importJSON(el){
-  if(!isAdmin()) return toast('Organiser only');
+  if(!isAdmin()) return toast('Admin only');
   const f=el.files[0]; if(!f)return; const r=new FileReader();
   r.onload=e=>{try{const p=JSON.parse(e.target.result); if(!p.groups)throw 0;
     S=Object.assign(blank(),p); S.ref=null; save(); render(); toast('Backup imported');}
@@ -2511,7 +2719,39 @@ function openModal(html){
   modalOpen=true;
   document.getElementById('modalRoot').innerHTML=
     `<div class="scrim" onclick="if(event.target===this)closeModal()"><div class="sheetM">${html}</div></div>`;
+  addPeek();
   const f=document.querySelector('.sheetM input'); if(f) setTimeout(()=>f.focus(),40);
+}
+/* Every password and PIN box gets an eye at its right-hand end, so what has
+   been typed can be checked before it is sent — a mistyped PIN on a phone
+   keyboard is otherwise a guessing game. It starts hidden every time. */
+const EYE_OPEN='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '+
+  'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/>'+
+  '<circle cx="12" cy="12" r="3"/></svg>';
+const EYE_SHUT='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '+
+  'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/>'+
+  '<path d="M10.6 5.1A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6C3.9 8.4 2 12 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/>'+
+  '<path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+function addPeek(){
+  document.querySelectorAll('.sheetM input[type=password]').forEach(inp=>{
+    if(inp.parentElement.classList.contains('pwWrap')) return;
+    const w=document.createElement('div'); w.className='pwWrap';
+    inp.parentNode.insertBefore(w,inp); w.appendChild(inp);
+    const b=document.createElement('button');
+    b.type='button'; b.className='pwEye'; b.innerHTML=EYE_OPEN;
+    b.setAttribute('aria-label','Show what is typed'); b.setAttribute('aria-pressed','false');
+    /* keep the caret in the box: the button must not take focus on a tap */
+    b.addEventListener('mousedown',e=>e.preventDefault());
+    b.addEventListener('click',()=>{
+      const show=inp.type==='password';
+      inp.type=show?'text':'password';
+      b.innerHTML=show?EYE_SHUT:EYE_OPEN;
+      b.setAttribute('aria-pressed',String(show));
+      b.setAttribute('aria-label',show?'Hide what is typed':'Show what is typed');
+      inp.focus(); const n=inp.value.length; try{ inp.setSelectionRange(n,n); }catch(e){}
+    });
+    w.appendChild(b);
+  });
 }
 function closeModal(){ modalOpen=false; document.getElementById('modalRoot').innerHTML=''; render(); }
 /* ========================================================================
@@ -2571,10 +2811,11 @@ function syncSnapshot(){
   const o={};
   /* only ever publish a password that exists — an empty one must not be able to
      travel and unlock the event on everybody else's device */
-  if(S.adminHash||S.scorerHash) o[K_CFG()]={ adminHash:S.adminHash||'', scorerHash:S.scorerHash||'' };
+  if(S.adminHash||S.scorerHash||S.orgHash)
+    o[K_CFG()]={ adminHash:S.adminHash||'', scorerHash:S.scorerHash||'', orgHash:S.orgHash||'' };
   /* saved formats follow the organiser between their own devices */
   if((S.templates||[]).length) o[K_TPL()]={ list:S.templates };
-  o[K_FMT()]={ meta:S.meta, rules:S.rules, draw:S.draw, groupKeys:GROUPS.slice() };
+  o[K_FMT()]={ meta:S.meta, rules:S.rules, access:ACCESS(), draw:S.draw, groupKeys:GROUPS.slice() };
   o[K_BRD()]={ host:HOST(), organisers:ORGANISERS(), sponsors:SPONSORS() };
   GROUPS.forEach(g=>{ o[K_G(g)]=groupPayload(g); });
   TIE_CODES().forEach(c=>{ o[K_T(c)]=tiePayload(c); });
@@ -2614,6 +2855,7 @@ function applyCfg(d){
      the event by clearing a password that is already in force */
   if(d.adminHash && d.adminHash!==S.adminHash){ S.adminHash=d.adminHash; hit=true; }
   if(d.scorerHash!==undefined && d.scorerHash!==S.scorerHash){ S.scorerHash=d.scorerHash||''; hit=true; }
+  if(d.orgHash!==undefined && d.orgHash!==S.orgHash){ S.orgHash=d.orgHash||''; hit=true; }
   if(hit){ try{ localStorage.setItem(STORE_KEY,JSON.stringify(Object.assign({},S,{ref:null}))); }catch(e){} }
   return hit;
 }
@@ -2626,6 +2868,8 @@ function applyFmt(d){
   if(JSON.stringify(d.draw)!==JSON.stringify(S.draw)){ S.draw=d.draw; hit=true; }
   if(d.rules){ const r=normRules(d.rules);
     if(JSON.stringify(r)!==JSON.stringify(S.rules)){ S.rules=r; applyRules(); hit=true; } }
+  if(d.access){ const a=normAccess(d.access);
+    if(JSON.stringify(a)!==JSON.stringify(ACCESS())){ S.access=a; hit=true; } }
   if(Array.isArray(d.groupKeys)){
     const want=d.groupKeys.slice().sort(), have=Object.keys(S.groups).sort();
     if(want.join()!==have.join()){
@@ -2828,7 +3072,8 @@ async function resetEvent(){
   if(!confirm('Reset everything to the original team list?'+(sync.on?' This clears the other devices too.':''))) return;
   /* saved formats belong to the organiser, not to this tournament, so a reset
      of the event must never take them with it */
-  const keep={role:S.role,adminHash:S.adminHash,scorerHash:S.scorerHash,theme:S.theme,mode:S.mode,open:S.open,
+  const keep={role:S.role,adminHash:S.adminHash,scorerHash:S.scorerHash,orgHash:S.orgHash,access:S.access,
+    theme:S.theme,mode:S.mode,open:S.open,
     meta:S.meta,draw:S.draw,preset:S.preset,templates:S.templates};
   const g=clone(S.groups);
   S=Object.assign(blank(S.preset),keep);
@@ -2990,7 +3235,7 @@ function resultsText(scope){
 
 /* ---------- the share sheet ---------- */
 function shareModal(scope){
-  if(!isAdmin()){ toast('Organiser only'); return ''; }
+  if(!canShare()){ toast('Not allowed on this device'); return ''; }
   scope=scope||'all';
   const label={all:'Everything',groups:'All groups',finals:'Finals only'}[scope]||('Group '+scope);
   const txt=resultsText(scope);
@@ -3049,7 +3294,7 @@ function copyShare(){
 
 /* ---------- CSV, for a spreadsheet ---------- */
 function exportCSV(){
-  if(!isAdmin()) return toast('Organiser only');
+  if(!canExport()) return toast('Not allowed on this device');
   const q=s=>'"'+String(s==null?'':s).replace(/"/g,'""')+'"';
   const rows=[['Stage','Group/Code','Match','Court','Team A','Score A','Score B','Team B','Winner']];
   GROUPS.forEach(g=>{ const G=S.groups[g];
@@ -3078,10 +3323,13 @@ function exportCSV(){
 
 /* a compact bar of export buttons, dropped into each section */
 function exportBar(scope){
-  if(!isAdmin()) return '';         // scorers and viewers get no export controls
+  if(!canExport()&&!canShare()) return '';   // referees and viewers get no export controls
   const n=GROUPS.length;
+  const share=canShare()?`<button class="btn sm acc" onclick="openModal(shareModal('${scope}'))">↗ Share / WhatsApp</button>`:'';
+  const reset=isAdmin()?`<button class="btn sm dgr" onclick="resetScores('${scope}')">Reset Group ${scope} scores</button>`:'';
+  if(!canExport()) return `<div class="expbar">${share}</div>`;
   return `<div class="expbar">
-    <button class="btn sm acc" onclick="openModal(shareModal('${scope}'))">↗ Share / PDF</button>
+    ${share}
     <span class="expSet"><span class="expLbl">Group ${scope}</span>
       <button class="btn sm" onclick="doPrint('data','${scope}')">With scores</button>
       <button class="btn sm" onclick="doPrint('blank','${scope}')">Blank</button></span>
@@ -3091,8 +3339,11 @@ function exportBar(scope){
     <span class="expSet"><span class="expLbl">Court sheets</span>
       <button class="btn sm" onclick="doPrint('data','courts')">All ${allCourts().length}</button>
       <button class="btn sm" onclick="doPrint('blank','courts')">Blank</button></span>
+    <span class="expSet"><span class="expLbl">Order of play</span>
+      <button class="btn sm" onclick="doPrint('blank','play')">Blank</button>
+      <button class="btn sm" onclick="doPrint('data','play')">With scores</button></span>
     <button class="btn sm" onclick="doPrint('data','routes')">Where each pair plays</button>
-    <button class="btn sm dgr" onclick="resetScores('${scope}')">Reset Group ${scope} scores</button>
+    ${reset}
   </div>`;
 }
 
@@ -3127,7 +3378,7 @@ function scoresIn(scope){
   return S.groups[scope]?S.groups[scope].matches.filter(played).length:0;
 }
 async function resetScores(scope){
-  if(!isAdmin()) return toast('Organiser only');
+  if(!isAdmin()) return toast('Admin only');
   const n=scoresIn(scope);
   const what = scope==='all'?'every score in the tournament'
     : scope==='groups'?'every group score'
@@ -3233,7 +3484,7 @@ function vSetup(){
   const locked=koLocked();
   return `<div class="note" style="margin-bottom:12px">Everything on this page syncs to the other
     devices. ${locked?'<b style="color:var(--gold)">Knockout scores exist</b>, so changing the draw now would strand them — clear the finals scores first if you really need to.':''}</div>`
-    +setupEvent()+setupOrgs()+setupRules()+setupPreview()+setupGroups()+setupLeagues(locked)+setupDraw(locked)+setupPresets()+setupTemplates();
+    +setupEvent()+setupAccess()+setupOrgs()+setupRules()+setupPreview()+setupGroups()+setupLeagues(locked)+setupDraw(locked)+setupPresets()+setupTemplates();
 }
 
 
@@ -3260,7 +3511,7 @@ function shapeSummary(sh){
   return sh.groups.length+' groups · '+(rounds||'no rounds')+(lg.length?' · '+lg.join(', '):'');
 }
 function saveTemplate(){
-  if(!isAdmin()) return toast('Organiser only');
+  if(!isAdmin()) return toast('Admin only');
   openModal(`<h3>Save this format</h3>
     <p class="hint">Stores the group layout, the court names and the whole knockout draw under a name
     you choose. Pairs, scores and the event name are not included, so it can be reused for any event.</p>
@@ -3287,7 +3538,7 @@ function commitTemplate(){
   if(sync.on) drainQueue(6);
 }
 function applyTemplate(id){
-  if(!isAdmin()) return toast('Organiser only');
+  if(!isAdmin()) return toast('Admin only');
   const t=(S.templates||[]).find(x=>x.id===id); if(!t) return;
   const keep=t.shape.groups.map(g=>g.key);
   const losing=GROUPS.filter(g=>keep.indexOf(g)<0 && S.groups[g].teams.length);
@@ -3398,7 +3649,7 @@ function copyHeadTags(){
 }
 const q=v=>String(v==null?'':v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 async function downloadBranded(){
-  if(!isAdmin()) return toast('Organiser only');
+  if(!isAdmin()) return toast('Admin only');
   const t=previewLine(), d='Live scores, standings and the knockout draw.';
   try{
     const res=await fetch(location.origin+location.pathname,{cache:'reload'});
@@ -3444,6 +3695,13 @@ function setupEvent(){
     <label class="fl">Contact number for this event</label>
     <input class="txt" style="width:100%" value="${attr(m.contact)}"
       onchange="setMeta('contact',this.value)">
+    <div class="frow">
+      <div><label class="fl">First match at <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
+        <input class="txt" type="time" value="${attr(m.start||'')}" onchange="setTiming('start',this.value)"></div>
+      <div><label class="fl">Minutes per match</label>
+        <input class="txt" type="number" inputmode="numeric" min="5" max="90" value="${attr(m.slotMins||20)}"
+          onchange="setTiming('slotMins',this.value)"></div>
+    </div>
     <p class="hint">These appear in the header, on every printed page and at the end of the WhatsApp
     summary. The number here is the <b>organiser's</b>, for questions on court — the host's own number
     is set just below and does not change from one event to the next. Who is organising, and who is
@@ -3451,6 +3709,59 @@ function setupEvent(){
   </div>`;
 }
 function setMeta(k,v){ S.meta[k]=v.trim()||S.meta[k]; save(); render(); toast('Saved'); }
+
+/* ---------- access: who sees and does what ----------
+   One switch per tab per level, and three for what an organiser may do beyond
+   scoring. Switching a tab off takes it away on every device at that level
+   the next time it syncs; the admin always sees everything. */
+function swHTML(on,click,label){
+  return `<button class="sw ${on?'on':''}" role="switch" aria-checked="${on}" aria-label="${attr(label)}"
+    onclick="${click}"><i></i></button>`;
+}
+function setupAccess(){
+  const A=ACCESS(), roles=[['view','Viewer'],['scorer','Referee'],['organiser','Organiser']];
+  const abil=[['groups','Edit groups & teams','rename, add, move and remove pairs; set courts'],
+              ['print','Print & PDF','fixture sheets, court sheets, standings, finals, CSV'],
+              ['share','Share images & WhatsApp','standings and finals as pictures, WhatsApp summaries']];
+  return `<div class="card ed" style="margin-bottom:12px">
+    <div class="hd" style="padding:0 0 10px"><b>Access</b>
+      <span style="color:var(--dim);font-size:11px">admin always sees everything</span></div>
+    <p class="note">Which tabs each level can see. Turn a switch off and that tab disappears from those
+    devices as soon as they sync.</p>
+    <div class="accGrid">
+      <div class="accH"></div>${roles.map(([,l])=>`<div class="accH">${l}</div>`).join('')}
+      ${TAB_LIST.map(([k,l])=>`<div class="accT">${l}</div>`+roles.map(([r,rl])=>
+        `<div class="accC">${swHTML(A.tabs[r][k],`setTabAccess('${r}','${k}')`,rl+' sees '+l)}</div>`).join('')).join('')}
+    </div>
+    <div class="bSep"></div>
+    <div class="hd" style="padding:0 0 8px"><b>What an organiser can do</b>
+      <span style="color:var(--dim);font-size:11px">on top of entering scores</span></div>
+    ${abil.map(([k,l,s])=>`<div class="accRow"><div><b>${l}</b><div class="note">${s}</div></div>
+      ${swHTML(A.org[k],`setOrgAccess('${k}')`,l)}</div>`).join('')}
+  </div>`;
+}
+function setTabAccess(r,k){
+  if(!isAdmin()) return;
+  const A=ACCESS(); A.tabs[r][k]=!A.tabs[r][k];
+  save(); render(); toast((ROLE_LABEL[r])+(A.tabs[r][k]?' can now see ':' can no longer see ')+
+    TAB_LIST.find(t=>t[0]===k)[1]);
+  if(sync.on) drainQueue(6);
+}
+function setOrgAccess(k){
+  if(!isAdmin()) return;
+  const A=ACCESS(); A.org[k]=!A.org[k];
+  save(); render(); toast('Organisers: '+(A.org[k]?'allowed':'not allowed'));
+  if(sync.on) drainQueue(6);
+}
+/* the start time can be cleared, which setMeta deliberately will not allow */
+function setTiming(k,v){
+  if(!isAdmin()) return;
+  if(k==='start') S.meta.start=String(v||'').trim();
+  else S.meta.slotMins=Math.min(90,Math.max(5,parseInt(v,10)||20));
+  save(); render();
+  toast(timed()?'Times on · first match '+slotTime(0)+', every '+(S.meta.slotMins||20)+' min':'Times switched off');
+  if(sync.on) drainQueue(6);
+}
 
 /* ---------- organisers, sponsors, host ---------- */
 function setupOrgs(){
@@ -3538,7 +3849,7 @@ function brandChanged(msg){
   if(sync.on) drainQueue(6);
 }
 function addBrand(kind){
-  if(!isAdmin()) return toast('Organiser only');
+  if(!isAdmin()) return toast('Admin only');
   const max=BRAND[kind].max(), list=brandList(kind).slice();
   if(list.length>=max) return toast(max+' is the most that fits');
   list.push({id:kind[0]+Date.now().toString(36), name:'', logo:'', invert:false});
@@ -3958,6 +4269,55 @@ function groupFit(g,cardsPerCol){
   const fs=Math.min(11.5, Math.max(8, rh*1.25));
   return `--rh:${rh.toFixed(2)}mm;--fs:${fs.toFixed(1)}px;--hs:${(fs*0.7).toFixed(1)}px`;
 }
+/* ---------- fixtures by round, the way a scoreboard reads ----------
+   Each round is its own small table under its own heading — the court, the
+   two teams with a box each for the score, and a column for whoever referees.
+   Read across a row and it is one match; read down and it is the round. */
+function roundBlock(title, rows, withData, fit, showGroup){
+  if(!rows.length) return '';
+  const tm=timed(), first=slotTime(rows[0].m.slot||0);
+  const anyMulti=rows.some(r=>courtsOf(r.g).length>1) || showGroup;
+  return `<div class="rblk"><h4>${esc(title)}${first?' · '+first:''}</h4>
+    <table class="rt" ${fit?`style="${fit}"`:''}>
+      <tr>${tm&&!showGroup?'<th class="tm">Time</th>':''}<th class="ct">Court</th>${showGroup?'<th class="gp">Grp</th>':''}
+        <th class="n">M</th><th>Team</th><th class="sc">Score</th><th class="gap"></th>
+        <th class="sc">Score</th><th>Team</th><th class="rf">Referee</th></tr>
+      ${rows.map(({g,m})=>{ const p=withData&&played(m), wa=p&&m.sa>m.sb, wb=p&&m.sb>m.sa;
+        return `<tr>${tm&&!showGroup?`<td class="tm">${slotTime(m.slot||0)}</td>`:''}
+          <td class="ct">${esc(courtBare(courtName(g,m.c||0)))}</td>${showGroup?`<td class="gp">${g}</td>`:''}
+          <td class="n">${m.n}</td>
+          <td class="${wa?'w':''}">${esc(m.a)}</td><td class="sc">${p?m.sa:''}</td><td class="gap"></td>
+          <td class="sc">${p?m.sb:''}</td><td class="${wb?'w':''}">${esc(m.b)}</td><td class="rf"></td></tr>`; }).join('')}
+    </table></div>`;
+}
+/* how deep a row can be and still keep the group's rounds, its standings and
+   its score grid on one page */
+function roundFit(g, rounds, matches){
+  const teams=S.groups[g].teams.length;
+  const page=240 - (shownSponsors().length?12:0);
+  /* a round's heading, its column heads and the gap under it come to about 13mm */
+  const fixed=(teams+1)*5.3+6 + (teams+1)*4.8+6 + rounds*13;
+  const rh=Math.min(9, Math.max(4.9, (page-fixed)/Math.max(1,matches)));
+  const fs=Math.min(12.5, Math.max(9, rh*1.75));
+  return `--rh:${rh.toFixed(2)}mm;--fs:${fs.toFixed(1)}px`;
+}
+/* The whole day across every court, one block per slot: the first match on
+   every court, then the second, and so on — the sheet to pin up by the desk so
+   anyone can see what is on where, and when. */
+function playSheet(withData){
+  const courts=allCourts();
+  const most=courts.reduce((n,c)=>Math.max(n,courtMatches(c.g,c.ci).reduce((k,m)=>Math.max(k,(m.slot||0)+1),0)),0);
+  let h='';
+  for(let k=0;k<most;k++){
+    const rows=courts.map(c=>{ const m=courtMatches(c.g,c.ci).find(x=>(x.slot||0)===k); return m?{g:c.g,m}:null; })
+      .filter(Boolean);
+    h+=roundBlock('Slot '+(k+1), rows, withData, '--rh:6.6mm;--fs:11px', true);
+  }
+  if(!h) return '';
+  return sheet('Order of play', courts.length+' courts · '+esc(rulesShort()), h,
+    timed()?'Times are a guide — each court starts its next match as soon as it is free'
+           :'Each court starts its next match as soon as it is free · set a start time in Setup to print times', '');
+}
 function sheetFit(n,perCol){
   if(!n) return null;
   /* what is left of an A4 page once the mark at the top and the sponsor and
@@ -4067,10 +4427,15 @@ function marginGrid(g,withData){
   </table></div>`;
 }
 /* one group's table — also used, larger, on the summary page */
+/* Every standings table is cut to the same column widths, so six of them on a
+   page line up with one another instead of each finding its own width from
+   whatever names happen to be in it. */
+const ST_COLS=`<colgroup><col class="cR"><col><col class="cN"><col class="cN"><col class="cN">
+  <col class="cS"><col class="cS"><col class="cD"><col class="cH"></colgroup>`;
 function groupTable(g,withData,cls){
   const st=standings(g), marks=withData?h2hMarks(g):{};
   return `<div class="gridT"><div class="cap">Standings</div>
-    <table class="grid ${cls||''}">
+    <table class="grid st ${cls||''}">${ST_COLS}
     <tr><th>#</th><th style="text-align:left">Pair</th><th>P</th><th>W</th><th>L</th>
       <th>+</th><th>–</th><th>Diff</th><th>H2H</th></tr>
     ${st.map(r=>`<tr><td class="c">${withData?r.rank:''}</td><td class="nm">${esc(r.team)}</td>
@@ -4081,16 +4446,41 @@ function groupTable(g,withData,cls){
       <td class="c ${marks[r.team]==='W'?'h2hw':marks[r.team]==='L'?'h2hl':''}">${marks[r.team]||''}</td></tr>`).join('')}
     </table></div>`;
 }
+/* A group's sheet. On its own court a group's matches are simply one list
+   — "Group A League Matches". Spread across courts it plays in rounds, every
+   pair once per round, so the list is cut into those rounds. With scores the
+   standings and the score grid follow, set large; a blank sheet carries only
+   the score grid, to be filled in by hand. */
 function groupSheet(g,withData){
   const G=S.groups[g]; if(!G.teams.length)return '';
-  const [L,R]=halve(G.matches);
-  const fit=groupFit(g, Math.max(L.length,R.length));
+  const multi=courtsOf(g).length>1;
+  const rds=multi?groupRounds(g):[];
+  const sizes=groupSheetFit(g, withData, multi?rds.length:1, G.matches.length);
+  const fixtures = multi
+    ? rds.map(rd=>roundBlock('Group '+g+' · Round '+rd.no, rd.list.map(m=>({g,m})), withData, sizes.fx, false)).join('')
+    : roundBlock('Group '+g+' League Matches',
+        G.matches.slice().sort((a,b)=>a.n-b.n).map(m=>({g,m})), withData, sizes.fx, false);
+  const strip=h=>h.replace(/<div class="cap">[^<]*<\/div>/,'');
   return sheet('Group '+g, esc(courtLabel(g))+' · '+esc(rulesShort()),
-    `<div class="cols"><div>${L.map(m=>matchCard(g,m,withData,fit)).join('')}</div>
-    <div>${R.map(m=>matchCard(g,m,withData,fit)).join('')}</div></div>
-    ${groupTable(g,withData,'big')}
-    ${marginGrid(g,withData)}`,
-    "H2H separates pairs level on wins and difference · the grid reads the row team's score – the column team's score");
+    `${fixtures}
+    <div class="gsT" style="${sizes.tb}">
+      ${withData?`<h4 class="psec">Group ${g} Standings</h4>${strip(groupTable(g,true,''))}`:''}
+      <h4 class="psec">Score Margin</h4>${strip(marginGrid(g,withData))}
+    </div>`,
+    (withData?'H2H separates pairs level on wins and difference · ':'')+
+    "the score grid reads the row team's score – the column team's score");
+}
+/* how deep each row can be and still keep the whole group on one page */
+function groupSheetFit(g, withData, blocks, matches){
+  const teams=S.groups[g].teams.length;
+  const page=238 - (shownSponsors().length?12:0);
+  const tables=withData?2:1;
+  const overhead=blocks*13 + tables*11;
+  const rh=Math.min(9.5, Math.max(5, (page-overhead)/(matches + tables*1.12*(teams+1))));
+  const trh=rh*1.12;
+  const fs=Math.min(13, Math.max(9.5, rh*1.6)), tfs=Math.min(13.5, Math.max(10, trh*1.5));
+  return { fx:`--rh:${rh.toFixed(2)}mm;--fs:${fs.toFixed(1)}px`,
+           tb:`--trh:${trh.toFixed(2)}mm;--tfs:${tfs.toFixed(1)}px` };
 }
 function koRow(nm,seed,sc,wl,withData){
   return `<tr class="${wl==='W'?'win':''}"><td class="seed">${esc(seed)}</td>
@@ -4107,7 +4497,7 @@ function koTieBox(code,x,y,withData,title){
 }
 function leagueBox(which,i,withData){
   const m=(which==='diamond'?S.diamond:S.platinum)[i]||{}; const p=withData&&m.sa!=null&&m.sb!=null;
-  return `<table class="ko"><tr><th colspan="2">${which==='diamond'?'Diamond':'Platinum'} · Round ${i+1}</th>
+  return `<table class="ko"><tr><th colspan="2">${esc(which==='diamond'?nmD():nmP())} · Match ${i+1}</th>
     <th class="c">Score</th><th class="c">W/L</th></tr>
     ${koRow(m.a,'',p?m.sa:'&nbsp;',p?(m.sa>m.sb?'W':'L'):'&nbsp;',withData)}
     ${koRow(m.b,'',p?m.sb:'&nbsp;',p?(m.sb>m.sa?'W':'L'):'&nbsp;',withData)}</table>`;
@@ -4144,9 +4534,12 @@ function pageFoot(note){
 function leaguePrintTable(store,src,withData){
   const st=withData?leagueTable(store,src):[];
   const names=src.map(refName);
-  const rows = st.length?st:names.filter(Boolean).map((n,i)=>({rank:'',team:n,p:'',w:'',l:'',pf:'',pa:'',d:''}));
+  /* a blank sheet is blank — the names go in by hand, like the scores */
+  const rows = st.length?st:names.map(n=>({rank:'',team:withData?(n||''):'',p:'',w:'',l:'',pf:'',pa:'',d:''}));
   if(!rows.length) return '';
-  return `<table class="grid"><tr><th>#</th><th style="text-align:left">Pair</th>
+  return `<table class="grid st lg"><colgroup><col class="cR"><col><col class="cN"><col class="cN"><col class="cN">
+      <col class="cS"><col class="cS"><col class="cD"></colgroup>
+      <tr><th>#</th><th style="text-align:left">Pair</th>
       <th>P</th><th>W</th><th>L</th><th>+</th><th>–</th><th>Diff</th></tr>
     ${rows.map(r=>`<tr><td class="c">${r.rank}</td><td class="nm">${esc(r.team)}</td>
       <td class="c">${r.p}</td><td class="c">${r.w}</td><td class="c">${r.l}</td>
@@ -4162,71 +4555,89 @@ function podiumPrint(title,names){
     <tr>${cell('1st · Champions',names[0],'g')}${cell('2nd · Runners-up',names[1],'s')}${cell('3rd',names[2],'b')}</tr>
   </table>`;
 }
+/* The finals on paper. The knockout rounds share one page with boxes deep
+   enough to write a score in; then each league gets a page of its own — its
+   matches, its table and its top three — so the three can be handed to three
+   different tables on the day. */
+function finalsFit(){
+  const boxRows=ROUNDS().reduce((n,r)=>n+Math.ceil(r.ties.length/2),0);
+  const page=228-(shownSponsors().length?12:0)-ROUNDS().length*11;
+  const krh=Math.min(13, Math.max(6.5, (page/Math.max(1,boxRows)-10)/2));
+  const kfs=Math.min(16, Math.max(11, krh*1.25));
+  return `--krh:${krh.toFixed(2)}mm;--kfs:${kfs.toFixed(1)}px`;
+}
+const LEAGUE_FIT='--krh:11mm;--kfs:15px;--trh:9mm;--tfs:13.5px';
 function finalsSheet(withData){
-  let h='';
-  ROUNDS().forEach(r=>{
-    h+=`<div class="rlbl">${r.label}</div><div class="rows">`+
-      r.ties.map(([c,x,y])=>koTieBox(c,x,y,withData)).join('')+`</div>`;
+  let out='';
+  if(ROUNDS().length){
+    let h='';
+    ROUNDS().forEach(r=>{
+      h+=`<div class="rlbl">${r.label}</div><div class="rows">`+
+        r.ties.map(([c,x,y])=>koTieBox(c,x,y,withData)).join('')+`</div>`;
+    });
+    out+=sheet('Knockout draw', ROUNDS().map(r=>r.label).join(' · ')+' · '+esc(rulesShort()),
+      `<div class="kobig" style="${finalsFit()}">${h}</div>`, '');
+  }
+  [['diamond',nmD(),DIAMOND_SRC(),'Group winners and runners-up'],
+   ['platinum',nmP(),PLATINUM_SRC(),'Beaten semi-finalists']].forEach(([w,nm,src,who])=>{
+    const n=leaguePairs(src.length).length; if(!n) return;
+    const final=src.length<=2;
+    let h=`<div class="rlbl">${final?esc(nm)+' final':esc(nm)+' league · round robin'}</div><div class="rows">`+
+      [...Array(n).keys()].map(i=>leagueBox(w,i,withData)).join('')+`</div>`;
+    if(!final) h+=`<h4 class="psec">${esc(nm)} league table</h4>${leaguePrintTable(w==='diamond'?S.diamond:S.platinum,src,withData)}`;
+    const st=withData?leagueTable(w==='diamond'?S.diamond:S.platinum,src):[];
+    h+=podiumPrint(esc(nm)+' placings',[st[0]&&st[0].team,st[1]&&st[1].team,st[2]&&st[2].team]);
+    out+=sheet(esc(nm)+(final?' final':' league'), who, `<div class="kobig gsT" style="${LEAGUE_FIT}">${h}</div>`,
+      final?'':'Wins, then point difference, then points scored.');
   });
-  const dsrc=DIAMOND_SRC(), dn=leaguePairs(dsrc.length).length;
-  if(dn){
-    h+=`<div class="rlbl">${dsrc.length<=2?'Final':esc(nmD())+' league'}</div><div class="rows">`+
-      [...Array(dn).keys()].map(i=>leagueBox('diamond',i,withData)).join('')+`</div>`;
-    h+=`<div class="two"><div>${leaguePrintTable(S.diamond,dsrc,withData)}</div><div></div></div>`;
-    const st=withData?leagueTable(S.diamond,dsrc):[];
-    h+=podiumPrint(esc(nmD())+' placings',[st[0]&&st[0].team,st[1]&&st[1].team,st[2]&&st[2].team]);
-  }
-  const first=sheet('Knockout draw', GROUPS.length+' groups · '+esc(rulesShort()), h, '');
-
-  /* Platinum and Gold, each with its table and its top three */
-  const psrc=PLATINUM_SRC(), pn=leaguePairs(psrc.length).length;
-  h='';
-  if(pn){
-    h+=`<div class="rlbl">${esc(nmP())} league</div><div class="rows">`+
-      [...Array(pn).keys()].map(i=>leagueBox('platinum',i,withData)).join('')+`</div>`;
-    h+=`<div class="two"><div>${leaguePrintTable(S.platinum,psrc,withData)}</div><div></div></div>`;
-    const st=withData?leagueTable(S.platinum,psrc):[];
-    h+=podiumPrint(esc(nmP())+' placings',[st[0]&&st[0].team,st[1]&&st[1].team,st[2]&&st[2].team]);
-  }
   const GT=GOLD_TIES();
   if(GT.length){
-    h+=`<div class="rlbl">${esc(nmG())} league</div><div class="rows">`+
+    let h=`<div class="rlbl">${esc(nmG())} league</div><div class="rows">`+
       GT.map(([c,x,y])=>koTieBox(c,x,y,withData)).join('')+`</div>`;
     const gs=withData?goldStanding():{rank:[],pairs:[],tied:[],champion:''};
     if(gs.pairs.length){
       h+=`<div class="rlbl">${esc(nmG())} decider · level on margin</div><div class="rows">`+
-        gs.pairs.map(([c],i)=>koTieBox(c,'','',withData,'Gold decider '+(gs.pairs.length>1?(i+1):''))).join('')+`</div>`;
+        gs.pairs.map(([c],i)=>koTieBox(c,'','',withData,esc(nmG())+' decider '+(gs.pairs.length>1?(i+1):''))).join('')+`</div>`;
     }
-    if(gs.rank.length){
-      h+=`<div class="two"><div><table class="grid">
-        <tr><th>#</th><th style="text-align:left">Pair</th><th>Tie</th><th>Won by</th></tr>
-        ${gs.rank.map((r,i)=>`<tr><td class="c">${i+1}</td><td class="nm">${esc(r.win)}</td>
-          <td class="c">${r.code}</td><td class="c">+${r.marg}</td></tr>`).join('')}
-      </table></div><div></div></div>`;
-      h+=podiumPrint(esc(nmG())+' placings',gs.rank.map(r=>r.win));
-    }
+    h+=`<h4 class="psec">${esc(nmG())} order · by winning margin</h4>
+      <table class="grid st lg"><colgroup><col class="cR"><col><col class="cD"><col class="cD"></colgroup>
+      <tr><th>#</th><th style="text-align:left">Pair</th><th>Tie</th><th>Won by</th></tr>
+      ${(gs.rank.length?gs.rank:GT.map(()=>null)).map((r,i)=>`<tr><td class="c">${r?i+1:''}</td>
+        <td class="nm">${r?esc(r.win):'&nbsp;'}</td><td class="c">${r?r.code:''}</td>
+        <td class="c">${r?'+'+r.marg:''}</td></tr>`).join('')}
+      </table>`;
+    h+=podiumPrint(esc(nmG())+' placings',gs.champion?gs.rank.map(r=>r.win):[]);
+    out+=sheet(esc(nmG())+' league','Group third-placed pairs',
+      `<div class="kobig gsT" style="${LEAGUE_FIT}">${h}</div>`,
+      esc(nmG())+' is decided by the biggest winning margin; level margins are played off.');
   }
-  return first+sheet(esc(nmP())+' &amp; '+esc(nmG()),'Beaten semi-finalists · group thirds', h,
-    esc(nmG())+' is decided by the biggest winning margin; level margins are played off.');
+  return out;
 }
 function standingsSheet(withData){
   let h='';
   const half=Math.ceil(GROUPS.length/2);
-  h+=`<div class="cols"><div>`;
-  GROUPS.forEach((g,i)=>{
-    if(i===half) h+=`</div><div>`;
-    h+=`<h3 class="gh">Group ${g} <span>· ${esc(courtLabel(g))}</span></h3>`
-      +groupTable(g,withData,'big').replace('<div class="cap">Standings</div>','');
-  });
-  h+=`</div></div>`;
-  if(withData){
-    const dsrc=DIAMOND_SRC(), psrc=PLATINUM_SRC();
-    const dl=leagueTable(S.diamond,dsrc), pl=leagueTable(S.platinum,psrc);
-    const gs=goldStanding();
+  const colA=GROUPS.slice(0,half), colB=GROUPS.slice(half);
+  const rowsOf=c=>c.reduce((n,g)=>n+S.groups[g].teams.length+1,0);
+  const dsrc=DIAMOND_SRC(), psrc=PLATINUM_SRC();
+  const dl=withData?leagueTable(S.diamond,dsrc):[], pl=withData?leagueTable(S.platinum,psrc):[];
+  const gs=withData?goldStanding():{rank:[]};
+  const champs=withData&&(dl.length||pl.length||gs.rank.length);
+  /* the tables share the page with the champions block, so the rows are made
+     as deep as the space allows — big enough to read across a room, never so
+     big the page spills */
+  const page=236-(shownSponsors().length?12:0)-(champs?46:0);
+  const per=Math.max(colA.length,colB.length);
+  const rh=Math.min(8.5, Math.max(5.4, (page-per*15)/Math.max(rowsOf(colA),rowsOf(colB),1)));
+  const fs=Math.min(13, Math.max(10, rh*1.55));
+  const block=g=>`<div class="sgrp"><h4 class="psec">Group ${g} <span>· ${esc(courtLabel(g))}</span></h4>
+    ${groupTable(g,withData,'').replace(/<div class="cap">[^<]*<\/div>/,'')}</div>`;
+  h+=`<div class="gsT" style="--trh:${rh.toFixed(2)}mm;--tfs:${fs.toFixed(1)}px">
+    <div class="cols sc2"><div>${colA.map(block).join('')}</div><div>${colB.map(block).join('')}</div></div></div>`;
+  if(champs){
     h+=`<div class="champWrap">`;
-    if(dl.length) h+=champBlock('Diamond',[dl[0]&&dl[0].team,dl[1]&&dl[1].team,dl[2]&&dl[2].team]);
-    if(pl.length) h+=champBlock('Platinum',[pl[0]&&pl[0].team,pl[1]&&pl[1].team,pl[2]&&pl[2].team]);
-    if(gs.rank.length) h+=champBlock('Gold',gs.rank.map(r=>r.win));
+    if(dl.length) h+=champBlock(esc(nmD()),[dl[0]&&dl[0].team,dl[1]&&dl[1].team,dl[2]&&dl[2].team]);
+    if(pl.length) h+=champBlock(esc(nmP()),[pl[0]&&pl[0].team,pl[1]&&pl[1].team,pl[2]&&pl[2].team]);
+    if(gs.rank.length) h+=champBlock(esc(nmG()),gs.rank.map(r=>r.win));
     h+=`</div>`;
   }
   return sheet('Final standings','All '+GROUPS.length+' group'+(GROUPS.length===1?'':'s'), h,
@@ -4261,6 +4672,7 @@ function printHTML(withData, only){
   if(only==='teams')     return teamsSheet();
   if(only==='courts')    return allCourts().map(c=>courtSheet(c.g,c.ci,withData)).join('');
   if(only==='routes')    return GROUPS.map(g=>routesSheet(g,withData)).join('');
+  if(only==='play')      return playSheet(withData);
   if(/^court:/.test(only||'')){ const p=only.split(':'); return courtSheet(p[1],+p[2],withData); }
   if(only)               return groupSheet(only, withData);
   /* the whole book: fixtures, the draws, then the standings summary */
@@ -4269,9 +4681,9 @@ function printHTML(withData, only){
        + (withData?standingsSheet(true):'');
 }
 function doPrint(mode, only){
-  /* printing is a scoring-device job — a viewer has no export controls at all,
-     so this is only reachable if something went wrong, or was poked at */
-  if(!isAdmin()) return toast('Organiser only');
+  /* a viewer or referee has no print controls at all, so this is only
+     reachable if something went wrong, or was poked at */
+  if(!canExport()) return toast('Not allowed on this device');
   document.getElementById('printArea').innerHTML = printHTML(mode==='data', only);
   window.print();
 }
@@ -4484,10 +4896,244 @@ async function standingsCanvas(only){
 }
 const sgnTxt = d => (d>0?'+':'')+d;
 
+/* ========================================================================
+   FINALS AS A PICTURE
+   The same idea as the standings image, for the knockout: every round as a
+   grid of ties, then each league with its table and its top three. A finals
+   page varies a great deal in height — a straight final is short, a three-way
+   league with a Gold decider is long — so the whole thing is laid out twice:
+   once against a stand-in that measures text but draws nothing, to find out
+   how tall the canvas must be, and then for real.
+   ===================================================================== */
+function dryCtx(){
+  const real=document.createElement('canvas').getContext('2d');
+  return new Proxy(real,{
+    get(t,p){ if(p==='measureText') return t.measureText.bind(t);
+      const v=t[p]; return typeof v==='function' ? ()=>{} : v; },
+    set(t,p,v){ t[p]=v; return true; } });
+}
+function fiHead(ctx,y,txt,sub){
+  const L=IMG_PAD, R=IMG_W-IMG_PAD;
+  ctx.font=ifont(24,800); ctx.fillStyle=IMG_INK; ctx.fillText(txt,L,y+24);
+  if(sub){ ctx.font=ifont(15,400); ctx.fillStyle=IMG_MUTED; imgRight(ctx,sub,R,y+24); }
+  imgRule(ctx,L,y+36,R,'#1d2229'); imgRule(ctx,L,y+37,R,'#1d2229');
+  return y+52;
+}
+/* one tie: a heading strip, then a row per team with its score; the winner is
+   set in bold on a pale tint */
+const FI_ROW=46, FI_TOP=28;
+function fiTie(ctx,x,y,w,head,a,b,sa,sb){
+  const p=sa!=null&&sb!=null&&a&&b, wa=p&&sa>sb, wb=p&&sb>sa;
+  ctx.fillStyle=IMG_HEAD; ctx.fillRect(x,y,w,FI_TOP);
+  ctx.font=ifont(12.5,700); ctx.fillStyle=IMG_MUTED;
+  ctx.fillText(fitText(ctx,String(head).toUpperCase(),w-24),x+12,y+19);
+  [[a,sa,wa],[b,sb,wb]].forEach(([nm,sc,win],i)=>{
+    const ry=y+FI_TOP+i*FI_ROW;
+    ctx.fillStyle=win?'#eaf4e1':IMG_PAPER; ctx.fillRect(x,ry,w,FI_ROW);
+    if(win){ ctx.fillStyle='#4d7c0f'; ctx.fillRect(x,ry,4,FI_ROW); }
+    ctx.font=ifont(20,win?800:500); ctx.fillStyle=nm?IMG_INK:'#a0a7b1';
+    ctx.fillText(fitText(ctx,nm||'to be decided',w-96),x+14,ry+30);
+    ctx.font=ifont(22,800); ctx.fillStyle=IMG_INK;
+    if(p) imgMid(ctx,String(sc),x+w-38,ry+31);
+    imgRule(ctx,x+w-76,ry,x+w-76,IMG_LINE);
+  });
+  ctx.strokeStyle='#b8c0ca'; ctx.lineWidth=1; ctx.strokeRect(x+.5,y+.5,w-1,FI_TOP+2*FI_ROW-1);
+  imgRule(ctx,x,y+FI_TOP+FI_ROW,x+w,IMG_LINE);
+  ctx.beginPath(); ctx.moveTo(x+w-76.5,y+FI_TOP); ctx.lineTo(x+w-76.5,y+FI_TOP+2*FI_ROW);
+  ctx.strokeStyle=IMG_LINE; ctx.stroke();
+  return y+FI_TOP+2*FI_ROW;
+}
+/* ties laid two to a row */
+function fiGrid(ctx,y,ties){
+  const L=IMG_PAD, R=IMG_W-IMG_PAD, gap=24, w=(R-L-gap)/2;
+  for(let i=0;i<ties.length;i+=2){
+    let bottom=y;
+    ties.slice(i,i+2).forEach((t,j)=>{ bottom=Math.max(bottom, fiTie(ctx,L+j*(w+gap),y,w,t.head,t.a,t.b,t.sa,t.sb)); });
+    y=bottom+18;
+  }
+  return y;
+}
+/* a league's table */
+function fiTable(ctx,y,rows){
+  const L=IMG_PAD, R=IMG_W-IMG_PAD, rowH=46;
+  const cols=[['P',60],['W',60],['L',60],['FOR',76],['AGST',76],['DIFF',84]];
+  const fixed=cols.reduce((s,c)=>s+c[1],0), teamW=R-L-56-fixed;
+  ctx.fillStyle=IMG_HEAD; ctx.fillRect(L,y,R-L,38);
+  ctx.font=ifont(13,700); ctx.fillStyle=IMG_MUTED;
+  ctx.fillText('#',L+16,y+25); ctx.fillText('PAIR',L+56,y+25);
+  let cx=L+56+teamW; cols.forEach(([l,w])=>{ imgMid(ctx,l,cx+w/2,y+25); cx+=w; });
+  y+=38;
+  rows.forEach((r,i)=>{
+    const pod=r.p&&r.rank<=3?IMG_POD[r.rank]:'';
+    ctx.fillStyle=pod||(i%2?IMG_ALT:IMG_PAPER); ctx.fillRect(L,y,R-L,rowH);
+    if(pod){ ctx.fillStyle=IMG_BAR[r.rank]; ctx.fillRect(L,y,5,rowH); }
+    const mid=y+rowH/2+7;
+    ctx.font=ifont(19,800); ctx.fillStyle=IMG_INK; ctx.fillText(r.p?String(r.rank):'–',L+16,mid);
+    ctx.font=ifont(20,r.rank<=3&&r.p?800:600); ctx.fillText(fitText(ctx,r.team,teamW-12),L+56,mid);
+    let c=L+56+teamW;
+    [r.p,r.w,r.l,r.pf,r.pa,sgnTxt(r.d)].forEach((v,k)=>{ ctx.font=ifont(19,k===1||k===5?800:600);
+      imgMid(ctx,String(v),c+cols[k][1]/2,mid); c+=cols[k][1]; });
+    imgRule(ctx,L,y+rowH,R); y+=rowH;
+  });
+  imgRule(ctx,L,y,R,'#aeb5bf');
+  return y+20;
+}
+/* the top three, given room — gold, silver, bronze */
+function fiPodium(ctx,y,title,names){
+  names=(names||[]).filter(Boolean).slice(0,3);
+  if(!names.length) return y;
+  const L=IMG_PAD, R=IMG_W-IMG_PAD, gap=16, w=(R-L-gap*2)/3, h=96;
+  const lbl=['CHAMPIONS','RUNNERS-UP','THIRD'];
+  ctx.font=ifont(13,700); ctx.fillStyle=IMG_MUTED; ctx.fillText(title.toUpperCase(),L,y+14);
+  y+=24;
+  names.forEach((nm,i)=>{
+    const x=L+i*(w+gap);
+    ctx.fillStyle=IMG_POD[i+1]; ctx.fillRect(x,y,w,h);
+    ctx.fillStyle=IMG_BAR[i+1]; ctx.fillRect(x,y,w,5);
+    ctx.font=ifont(12.5,800); ctx.fillStyle='#5b5240'; ctx.fillText(lbl[i],x+16,y+32);
+    ctx.font=ifont(i===0?24:21,800); ctx.fillStyle=IMG_INK;
+    ctx.fillText(fitText(ctx,nm,w-32),x+16,y+70);
+  });
+  return y+h+28;
+}
+function fiLeagueTies(which,label){
+  const store=which==='diamond'?S.diamond:S.platinum, n=leagueRounds(which);
+  return [...Array(n).keys()].map(i=>{ const m=store[i]||{};
+    return {head:label+(n>1?' · match '+(i+1):''), a:m.a, b:m.b, sa:m.sa, sb:m.sb}; });
+}
+function fiLeagueDone(which){
+  const store=which==='diamond'?S.diamond:S.platinum, n=leagueRounds(which);
+  return n>0 && [...Array(n).keys()].every(i=>{ const m=store[i]; return m&&m.a&&m.b&&m.sa!=null&&m.sb!=null; });
+}
+/* everything below the masthead, drawn onto whichever context it is given */
+function finalsBody(ctx,y){
+  ROUNDS().forEach(r=>{
+    y=fiHead(ctx,y,r.label, tieDone(r.ties.map(t=>t[0]))+' of '+r.ties.length+' played');
+    y=fiGrid(ctx,y,r.ties.map(([c,x,yy])=>{ const t=S.ko[c]||{};
+      return {head:c+' · '+refLabel(x)+' v '+refLabel(yy), a:t.a, b:t.b, sa:t.sa, sb:t.sb}; }));
+    y+=10;
+  });
+  [['diamond',nmD(),DIAMOND_SRC()],['platinum',nmP(),PLATINUM_SRC()]].forEach(([w,nm,src])=>{
+    if(!leagueRounds(w)) return;
+    const final=src.length<=2;
+    y=fiHead(ctx,y,final?nm+' final':nm+' league', final?'':'round robin');
+    y=fiGrid(ctx,y,fiLeagueTies(w, final?'Final':nm));
+    const st=leagueTable(w==='diamond'?S.diamond:S.platinum,src);
+    if(!final && st.length) y=fiTable(ctx,y,st);
+    if(fiLeagueDone(w)) y=fiPodium(ctx,y,nm+' placings',st.map(r=>r.team));
+    y+=10;
+  });
+  const GT=GOLD_TIES();
+  if(GT.length){
+    const gs=goldStanding();
+    y=fiHead(ctx,y,nmG()+' league','biggest winning margin takes it');
+    y=fiGrid(ctx,y,GT.map(([c,x,yy])=>{ const t=S.ko[c]||{};
+      return {head:c+' · '+refLabel(x)+' v '+refLabel(yy), a:t.a, b:t.b, sa:t.sa, sb:t.sb}; }));
+    if(gs.pairs.length){
+      y=fiHead(ctx,y,nmG()+' decider','level on margin');
+      y=fiGrid(ctx,y,gs.pairs.map(([c])=>{ const t=S.ko[c]||{};
+        return {head:'Decider · '+c, a:t.a, b:t.b, sa:t.sa, sb:t.sb}; }));
+    }
+    if(gs.rank.length){
+      const L=IMG_PAD, R=IMG_W-IMG_PAD;
+      gs.rank.forEach((r,i)=>{
+        ctx.fillStyle=i%2?IMG_ALT:IMG_PAPER; ctx.fillRect(L,y,R-L,40);
+        ctx.font=ifont(18,800); ctx.fillStyle=IMG_INK; ctx.fillText(String(i+1),L+16,y+27);
+        ctx.font=ifont(19,600); ctx.fillText(fitText(ctx,r.win,R-L-260),L+56,y+27);
+        ctx.font=ifont(15,400); ctx.fillStyle=IMG_MUTED; imgRight(ctx,'tie '+r.code,R-120,y+27);
+        ctx.font=ifont(19,800); ctx.fillStyle=IMG_INK; imgRight(ctx,'won by '+r.marg,R-14,y+27);
+        imgRule(ctx,L,y+40,R); y+=40;
+      });
+      y+=20;
+    }
+    if(gs.champion) y=fiPodium(ctx,y,nmG()+' placings',gs.rank.map(r=>r.win));
+  }
+  return y;
+}
+async function finalsCanvas(){
+  const marks=await Promise.all(leadMarks().map(o=>imgLoad(orgLogo(o))));
+  const hostIm=await imgLoad(orgLogo(HOST()));
+  const sponIm=await Promise.all(shownSponsors().map(o=>imgLoad(orgLogo(o))));
+  const L=IMG_PAD, R=IMG_W-IMG_PAD;
+  const masthead=(ctx)=>{
+    let x=L, top=IMG_PAD;
+    leadMarks().forEach((o,i)=>{ const im=marks[i];
+      if(im){ const hgt=48, wid=Math.min(170, im.width*(hgt/im.height)); ctx.drawImage(im,x,top,wid,hgt); x+=wid+18; }
+      else if(o.name){ ctx.font=ifont(26,700); ctx.fillStyle=IMG_INK; ctx.fillText(o.name,x,top+32);
+        x+=ctx.measureText(o.name).width+20; } });
+    ctx.font=ifont(13,700); ctx.fillStyle=IMG_MUTED; imgRight(ctx,'FINALS',R,top+20);
+    ctx.font=ifont(14,400);
+    imgRight(ctx,new Date().toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}),R,top+42);
+    let y=top+64;
+    ctx.font=ifont(40,800); ctx.fillStyle=IMG_INK; ctx.fillText(fitText(ctx,S.meta.title,R-L),L,y+34); y+=48;
+    const sub=[S.meta.sub, organiserLine()?'Organised by '+organiserLine():''].filter(Boolean).join(' · ');
+    if(sub){ ctx.font=ifont(20,400); ctx.fillStyle=IMG_MUTED; ctx.fillText(fitText(ctx,sub,R-L),L,y+20); }
+    return y+58;
+  };
+  const foot=(ctx,y)=>{
+    ctx.font=ifont(15,400); ctx.fillStyle=IMG_MUTED;
+    ctx.fillText('Games '+rulesShort(),L,y+12); y+=30;
+    if(shownSponsors().length){
+      let sx=L; ctx.font=ifont(13,700); ctx.fillStyle=IMG_MUTED;
+      const lbl=shownSponsors().length===1?'SPONSOR':'SPONSORS';
+      ctx.fillText(lbl,sx,y+22); sx+=ctx.measureText(lbl).width+18;
+      shownSponsors().forEach((o,i)=>{ const im=sponIm[i];
+        if(im){ const hgt=28, wid=Math.min(110,im.width*(hgt/im.height)); ctx.drawImage(im,sx,y+2,wid,hgt); sx+=wid+16; }
+        else if(o.name){ ctx.font=ifont(16,400); ctx.fillStyle=IMG_INK; ctx.fillText(o.name,sx,y+22);
+          sx+=ctx.measureText(o.name).width+18; } });
+      y+=44;
+    }
+    imgRule(ctx,L,y,R); y+=14;
+    const hp=hostPhone(), hn=hostName();
+    ctx.font=ifont(18,700); const nameW=ctx.measureText(hn).width;
+    const phone=hp?('  ·  '+hp):''; ctx.font=ifont(17,400); const phoneW=ctx.measureText(phone).width;
+    const logoW=hostIm?Math.min(90,hostIm.width*(32/hostIm.height))+14:0;
+    let bx=(IMG_W-(logoW+nameW+phoneW))/2;
+    if(hostIm){ ctx.drawImage(hostIm,bx,y+2,logoW-14,32); bx+=logoW; }
+    ctx.font=ifont(18,700); ctx.fillStyle=IMG_INK; ctx.fillText(hn,bx,y+24); bx+=nameW;
+    if(phone){ ctx.font=ifont(17,400); ctx.fillStyle=IMG_MUTED; ctx.fillText(phone,bx,y+24); }
+    return y+48+IMG_PAD;
+  };
+  /* pass one: measure */
+  const d=dryCtx();
+  const H=Math.round(foot(d, finalsBody(d, masthead(d))));
+  /* pass two: draw */
+  const sc=imgScale(H), cv=document.createElement('canvas');
+  cv.width=Math.round(IMG_W*sc); cv.height=Math.round(H*sc);
+  const ctx=cv.getContext('2d'); ctx.scale(sc,sc); ctx.textBaseline='alphabetic';
+  ctx.fillStyle=IMG_PAPER; ctx.fillRect(0,0,IMG_W,H);
+  foot(ctx, finalsBody(ctx, masthead(ctx)));
+  return cv;
+}
+/* hand a finished canvas to the phone's share sheet, or download it */
+async function shareCanvas(cv,name,title){
+  const blob=await new Promise(res=>cv.toBlob(res,'image/png'));
+  if(!blob) return toast('Could not make the image');
+  const file=new File([blob],name,{type:'image/png'});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{ await navigator.share({files:[file],title}); return; }
+    catch(e){ if(e&&e.name==='AbortError') return; }
+  }
+  const url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),4000);
+  toast('Saved '+name);
+}
+async function exportFinalsImage(){
+  if(!canShare()) return toast('Not allowed on this device');
+  toast('Drawing the finals…');
+  try{
+    if(document.fonts&&document.fonts.ready) await document.fonts.ready;
+    const cv=await finalsCanvas();
+    const name=(S.meta.title||'Finals').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'-')+'-finals.png';
+    await shareCanvas(cv,name,S.meta.title+' · finals');
+  }catch(e){ toast('Image failed: '+(e.message||e)); }
+}
+
 /* On a phone the picture should go straight into the group chat it is meant
    for, so the share sheet is offered first and the download is the fallback. */
 async function exportStandingsImage(only){
-  if(!isAdmin()) return toast('Organiser only');
+  if(!canShare()) return toast('Not allowed on this device');
   const some=((only&&S.groups[only])?[only]:GROUPS).filter(g=>S.groups[g].teams.length);
   if(!some.length) return toast('No teams yet — add them in the Groups tab');
   toast('Drawing the standings…');
