@@ -501,6 +501,18 @@ td.name .txt.link:hover{color:var(--accent)}
   #printArea .kobig table.ko th{font-size:9px;padding:1.4mm 2.5mm}
   #printArea .kobig table.ko th.c{width:16mm}
   #printArea .kobig .rows{gap:5mm;margin-bottom:5mm}
+  #printArea .seedTag{color:#888;font-size:.85em;font-weight:700}
+  /* knockout rounds: together on an upright page, one per page sideways */
+  #printArea .oL{display:none}
+  @media (orientation:portrait){
+    #printArea table.psheet.koR:not(.koLast){page-break-after:auto}
+    #printArea table.psheet.koR:not(.koLast)>tfoot{display:none}
+    #printArea table.psheet.koR:not(.koFirst)>thead{display:none}
+  }
+  @media (orientation:landscape){
+    #printArea .oP{display:none}
+    #printArea .oL{display:inline}
+  }
   #printArea .kobig .rows>table{flex:0 0 calc(50% - 2.5mm);min-width:calc(50% - 2.5mm);max-width:calc(50% - 2.5mm)}
   #printArea .kobig .rlbl{font-size:11px;padding:1.6mm 0;margin:3mm 0 3mm}
   #printArea .kobig table.podium3{margin-top:6mm}
@@ -1406,6 +1418,13 @@ function refLabel(ref){
   if(ref.startsWith('W:')) return 'Win '+ref.slice(2);
   if(ref.startsWith('L:')) return 'SF '+ref.slice(2)+' L';
   return ref;
+}
+/* On paper the box heading already says who meets whom, so "Win G" is just
+   "G" — the sheet reads G vs J = M, the way it is written on the draw board. */
+function printRef(ref){
+  ref=String(ref||'');
+  if(ref.startsWith('W:')) return ref.slice(2);
+  return refLabel(ref);
 }
 function setTie(code,a,b){
   const t=S.ko[code]||(S.ko[code]={a:'',b:'',sa:null,sb:null,log:null});
@@ -4489,18 +4508,24 @@ function koRow(nm,seed,sc,wl,withData){
 }
 function koTieBox(code,x,y,withData,title){
   const t=S.ko[code]||{}; const p=withData&&t.sa!=null&&t.sb!=null;
-  const head = title || (esc(refLabel(x))+' vs '+esc(refLabel(y))+' = '+code);
+  const head = title || (esc(printRef(x))+' vs '+esc(printRef(y))+' = '+code);
   return `<table class="ko"><tr><th colspan="2">${head}</th>
     <th class="c">Score</th><th class="c">W/L</th></tr>
-    ${koRow(t.a,refLabel(x),p?t.sa:'&nbsp;',p?(t.sa>t.sb?'W':'L'):'&nbsp;',withData)}
-    ${koRow(t.b,refLabel(y),p?t.sb:'&nbsp;',p?(t.sb>t.sa?'W':'L'):'&nbsp;',withData)}</table>`;
+    ${koRow(t.a,printRef(x),p?t.sa:'&nbsp;',p?(t.sa>t.sb?'W':'L'):'&nbsp;',withData)}
+    ${koRow(t.b,printRef(y),p?t.sb:'&nbsp;',p?(t.sb>t.sa?'W':'L'):'&nbsp;',withData)}</table>`;
 }
+/* A league match is between two of the league's sources — the Diamond league
+   is the winners of M, N and O — so each box is headed with them and they sit
+   in the seed column, exactly like a knockout box. A blank sheet used to show
+   two empty rows with nothing to say who was meant to be in them. */
 function leagueBox(which,i,withData){
   const m=(which==='diamond'?S.diamond:S.platinum)[i]||{}; const p=withData&&m.sa!=null&&m.sb!=null;
-  return `<table class="ko"><tr><th colspan="2">${esc(which==='diamond'?nmD():nmP())} · Match ${i+1}</th>
+  const src=which==='diamond'?DIAMOND_SRC():PLATINUM_SRC(), pr=leaguePairs(src.length)[i]||[];
+  const x=printRef(src[pr[0]]), y=printRef(src[pr[1]]);
+  return `<table class="ko"><tr><th colspan="2">${esc(which==='diamond'?nmD():nmP())} · ${esc(x)} vs ${esc(y)}</th>
     <th class="c">Score</th><th class="c">W/L</th></tr>
-    ${koRow(m.a,'',p?m.sa:'&nbsp;',p?(m.sa>m.sb?'W':'L'):'&nbsp;',withData)}
-    ${koRow(m.b,'',p?m.sb:'&nbsp;',p?(m.sb>m.sa?'W':'L'):'&nbsp;',withData)}</table>`;
+    ${koRow(m.a,x,p?m.sa:'&nbsp;',p?(m.sa>m.sb?'W':'L'):'&nbsp;',withData)}
+    ${koRow(m.b,y,p?m.sb:'&nbsp;',p?(m.sb>m.sa?'W':'L'):'&nbsp;',withData)}</table>`;
 }
 /* every printed page carries the mark and the number, so a sheet that gets
    separated from the pile still says who to call */
@@ -4535,13 +4560,15 @@ function leaguePrintTable(store,src,withData){
   const st=withData?leagueTable(store,src):[];
   const names=src.map(refName);
   /* a blank sheet is blank — the names go in by hand, like the scores */
-  const rows = st.length?st:names.map(n=>({rank:'',team:withData?(n||''):'',p:'',w:'',l:'',pf:'',pa:'',d:''}));
+  const rows = st.length?st:names.map((n,i)=>({rank:'',team:withData?(n||''):'',seed:printRef(src[i]),
+    p:'',w:'',l:'',pf:'',pa:'',d:''}));
   if(!rows.length) return '';
   return `<table class="grid st lg"><colgroup><col class="cR"><col><col class="cN"><col class="cN"><col class="cN">
       <col class="cS"><col class="cS"><col class="cD"></colgroup>
       <tr><th>#</th><th style="text-align:left">Pair</th>
       <th>P</th><th>W</th><th>L</th><th>+</th><th>–</th><th>Diff</th></tr>
-    ${rows.map(r=>`<tr><td class="c">${r.rank}</td><td class="nm">${esc(r.team)}</td>
+    ${rows.map(r=>`<tr><td class="c">${r.rank}</td><td class="nm">${r.team?esc(r.team)
+        :`<span class="seedTag">${esc(r.seed||'')}</span>`}</td>
       <td class="c">${r.p}</td><td class="c">${r.w}</td><td class="c">${r.l}</td>
       <td class="c">${r.pf}</td><td class="c">${r.pa}</td>
       <td class="c">${r.d===''?'':(r.d>0?'+':'')+r.d}</td></tr>`).join('')}
@@ -4569,14 +4596,20 @@ function finalsFit(){
 const LEAGUE_FIT='--krh:11mm;--kfs:15px;--trh:9mm;--tfs:13.5px';
 function finalsSheet(withData){
   let out='';
+  /* Each knockout round is its own sheet. Printed upright they run together
+     onto one page under a single heading; printed sideways there is not the
+     height for that, so each round takes a page of its own with its own
+     heading. The browser picks whichever applies from the paper itself. */
   if(ROUNDS().length){
-    let h='';
-    ROUNDS().forEach(r=>{
-      h+=`<div class="rlbl">${r.label}</div><div class="rows">`+
+    const fit=finalsFit(), R=ROUNDS(), last=R.length-1;
+    R.forEach((r,i)=>{
+      const h=`<div class="rlbl">${r.label}</div><div class="rows">`+
         r.ties.map(([c,x,y])=>koTieBox(c,x,y,withData)).join('')+`</div>`;
+      out+=sheet(`<span class="oP">Knockout draw</span><span class="oL">${esc(r.label)}</span>`,
+        `<span class="oP">${R.map(x=>esc(x.label)).join(' · ')} · </span>`+esc(rulesShort()),
+        `<div class="kobig" style="${fit}">${h}</div>`, '',
+        'koR'+(i===0?' koFirst':'')+(i===last?' koLast':''));
     });
-    out+=sheet('Knockout draw', ROUNDS().map(r=>r.label).join(' · ')+' · '+esc(rulesShort()),
-      `<div class="kobig" style="${finalsFit()}">${h}</div>`, '');
   }
   [['diamond',nmD(),DIAMOND_SRC(),'Group winners and runners-up'],
    ['platinum',nmP(),PLATINUM_SRC(),'Beaten semi-finalists']].forEach(([w,nm,src,who])=>{
