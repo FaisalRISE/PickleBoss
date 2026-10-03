@@ -394,6 +394,15 @@ input.txt:focus,select.txt:focus{outline:0;border-color:var(--accent)}
 .rndHd span.ok{color:var(--accent)}
 /* a result that is not a finished game under the rules now in force */
 .oddsc{display:block;color:var(--gold);font-size:12px;line-height:1;margin-top:2px;cursor:help}
+/* an unfinished score: the boxes outlined, a line of warning on the card */
+input.sc.odd{border-color:var(--gold)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--gold) 35%,transparent)}
+.card.tie.odd{border-color:color-mix(in srgb,var(--gold) 70%,transparent)}
+.oddWarn{margin-top:8px;padding:7px 9px;border-radius:8px;font-size:12px;font-weight:600;line-height:1.4;
+  background:color-mix(in srgb,var(--gold) 14%,transparent);color:var(--goldInk)}
+.oddBan{margin-bottom:12px}
+.oddBan ul{margin:6px 0 0;padding-left:18px}
+.oddBan li{margin:2px 0}
+.oddNum{color:var(--goldInk);font-size:1.05em}
 td.name .txt{cursor:default}
 td.name .txt.link{cursor:pointer}
 td.name .txt.link:hover{color:var(--accent)}
@@ -877,15 +886,35 @@ function oddScore(m){
   if(!m||m.sa==null||m.sb==null) return false;
   return !gameOver(m.sa,m.sb);
 }
-function oddCount(){
-  let n=0;
-  GROUPS.forEach(g=>(S.groups[g].matches||[]).forEach(m=>{ if(oddScore(m)) n++; }));
-  const ties=Object.keys(S.ko||{}).map(k=>S.ko[k])
-    .concat(Object.keys(S.diamond||{}).map(k=>S.diamond[k]))
-    .concat(Object.keys(S.platinum||{}).map(k=>S.platinum[k]));
-  ties.forEach(t=>{ if(t&&oddScore(t)) n++; });
-  return n;
+/* Every result on the board that is not a finished game under the rules —
+   a group match, a knockout tie or a League match. 1–11 in a game to 15 is
+   almost always a slip of the finger (15–11 with the 5 missed), so these are
+   called out wherever scores are entered, not only in Setup. */
+function oddList(){
+  const out=[];
+  GROUPS.forEach(g=>(S.groups[g].matches||[]).forEach(m=>{ if(oddScore(m)) out.push({ref:'g:'+g+':'+m.n,m}); }));
+  TIE_CODES().forEach(c=>{ const t=S.ko[c]; if(t&&t.a&&t.b&&oddScore(t)) out.push({ref:'t:'+c,m:t}); });
+  ['diamond','platinum'].forEach(w=>{ const st=w==='diamond'?S.diamond:S.platinum;
+    for(let i=0;i<leagueRounds(w);i++){ const m=st[i]; if(m&&m.a&&m.b&&oddScore(m)) out.push({ref:'l:'+w+':'+i,m}); } });
+  return out;
 }
+const oddCount = () => oddList().length;
+/* the banner over Fixtures, Courts and Finals while any such result stands */
+function oddBanner(){
+  if(!canScore()) return '';
+  const L=oddList(); if(!L.length) return '';
+  return `<div class="alert warn oddBan"><span>⚠</span><span><b>${L.length===1?'This score is':'These scores are'}
+    not a finished game</b> under the rules (${esc(rulesShort())}). Check ${L.length===1?'it':'them'} — they still count as entered.
+    <ul>${L.map(({ref,m})=>`<li><b>${esc(matchTitle(ref))}</b> · ${esc(m.a)} <b class="oddNum">${m.sa}–${m.sb}</b> ${esc(m.b)}</li>`).join('')}</ul>
+    </span></div>`;
+}
+/* the moment a box is left with an unfinished score in it, say so */
+function scoreCheck(el){
+  const bits=el.dataset.k.split(':'), ref=bits.slice(0,-1).join(':');
+  const m=getMatch(ref); if(!m||m.sa==null||m.sb==null) return;
+  if(oddScore(m)) toast('⚠ '+m.sa+'–'+m.sb+' is not a finished game to '+TARGET+' — check the score');
+}
+const oddNote = m => `<div class="oddWarn">⚠ ${m.sa}–${m.sb} is not a finished game (${esc(rulesShort())}) — check the score</div>`;
 
 /* ===================== who is behind the event =====================
    Three different roles were all being served by one name and one number:
@@ -2090,6 +2119,13 @@ function scoreInput(el){
   if(v!=null&&v>top){ v=top; el.value=String(top); }   // nothing can pass the cap
   if(m[fld]===v) return;
   m[fld]=v; m.log=null;                 // a typed score replaces any rally record
+  /* A finished round folds itself away — but not while someone is typing in
+     it. Entering the last score of a round used to complete it mid-keystroke:
+     the section folded, the box vanished, and the second digit went nowhere,
+     so 15 went in as 1. Once a score is typed inside a section it stays open
+     until it is folded by hand. */
+  const sec=el.closest&&el.closest('[data-sec]');
+  if(sec){ S.open=S.open||{}; if(S.open[sec.dataset.sec]===undefined) S.open[sec.dataset.sec]=true; }
   save();
   render();                             // everything downstream catches up at once
 }
@@ -2226,7 +2262,7 @@ function section(id, title, done, total, bodyFn){
       <span class="secT">${title}</span>
       <span class="secMeta ${complete?'done':''}">${total?`${done}/${total}${complete?' ✓':''}`:''}</span>
     </button>
-    ${open?`<div class="secBody">${bodyFn()}</div>`:''}
+    ${open?`<div class="secBody" data-sec="${id}">${bodyFn()}</div>`:''}
   </div>`;
 }
 const tieDone = codes => codes.filter(c=>{const t=S.ko[c];return t&&t.sa!=null&&t.sb!=null;}).length;
@@ -2290,7 +2326,7 @@ function vCourts(){
         + mine.map(m=>matchRow('g:'+g+':'+m.n,m,true)).join(''); }).join('');
   } else body=ms.map(m=>matchRow('g:'+g+':'+m.n,m,true)).join('');
 
-  return chips+(canScore()?modeBar():'')+bar+head+`<div class="card">${body}</div>`;
+  return chips+(canScore()?modeBar():'')+oddBanner()+bar+head+`<div class="card">${body}</div>`;
 }
 
 /* ---------- Fixtures: scoring only, names are not editable here ---------- */
@@ -2315,7 +2351,7 @@ function vFixtures(){
      leads and the fixture list follows. A scorer is here to type, so the boxes
      come first and the table sits alongside. */
   if(!canScore()) return chips + `<div class="grid g2">${table}${left}</div>`;
-  return chips + modeBar() + exportBar(g) + `<div class="grid g2">${left}${table}</div>`;
+  return chips + modeBar() + oddBanner() + exportBar(g) + `<div class="grid g2">${left}${table}</div>`;
 }
 
 function modeBar(){
@@ -2345,11 +2381,11 @@ function matchRow(ref,m,onCourt){
       title="Not a finished game under the rules now in force (${attr(rulesShort())}). It still counts.">⚠</span>`:''}${
       multi?`<span class="ctTag" title="${attr(courtName(g0,m.c||0))}">${esc(shortCourt(courtName(g0,m.c||0)))}</span>`:''}</div>`:''}
     <div class="side ${wa?'w':played(m)?'l':''}"><span class="nm">${live}${esc(m.a)||'TBD'}</span></div>
-    <input class="sc ${m.sa!=null?'filled':''}" inputmode="numeric" data-k="${ref}:sa"
-      ${entry?'':'disabled'} value="${m.sa==null?'':m.sa}" oninput="scoreInput(this)" onfocus="this.select()">
+    <input class="sc ${m.sa!=null?'filled':''} ${odd?'odd':''}" inputmode="numeric" data-k="${ref}:sa"
+      ${entry?'':'disabled'} value="${m.sa==null?'':m.sa}" oninput="scoreInput(this)" onchange="scoreCheck(this)" onfocus="this.select()">
     <div class="sep">–</div>
-    <input class="sc ${m.sb!=null?'filled':''}" inputmode="numeric" data-k="${ref}:sb"
-      ${entry?'':'disabled'} value="${m.sb==null?'':m.sb}" oninput="scoreInput(this)" onfocus="this.select()">
+    <input class="sc ${m.sb!=null?'filled':''} ${odd?'odd':''}" inputmode="numeric" data-k="${ref}:sb"
+      ${entry?'':'disabled'} value="${m.sb==null?'':m.sb}" oninput="scoreInput(this)" onchange="scoreCheck(this)" onfocus="this.select()">
     <div class="side b ${wb?'w':played(m)?'l':''}"><span class="nm">${esc(m.b)||'TBD'}</span></div>
     ${mayScore&&S.mode==='ref'&&m.a&&m.b?`<button class="refbtn" onclick="openRef('${ref}')">SCORE</button>`:''}
   </div>`;
@@ -2503,36 +2539,38 @@ function vFinals(){
     <button class="btn sm" onclick="doPrint('blank','finals')">Blank draw sheets</button>`:'')+
     (isAdmin()?`<button class="btn sm dgr" onclick="resetScores('finals')">Reset finals scores</button>`:'');
   const bar=inner?`<div class="expbar">${inner}</div>`:'';
-  return chips + modeBar() + bar + body;
+  return chips + modeBar() + oddBanner() + bar + body;
 }
 function tieCard(code,x,y,label){
   const t=S.ko[code]||{a:'',b:'',sa:null,sb:null};
-  const has=!!(t.a&&t.b), p=t.sa!=null&&t.sb!=null;
+  const has=!!(t.a&&t.b), p=t.sa!=null&&t.sb!=null, odd=has&&oddScore(t);
   const entry=canScore()&&S.mode==='entry';
   const sl=(nm,ref,fld,win)=>`<div class="slot ${win?'w':''} ${nm?'':'tbd'}">
       <div class="seed">${esc(refLabel(ref))}</div><div class="nm">${nm?esc(nm):'TBD'}</div>
-      <input class="sc ${t[fld]!=null?'filled':''}" inputmode="numeric" data-k="t:${code}:${fld}"
-        ${has&&entry?'':'disabled'} value="${t[fld]==null?'':t[fld]}" oninput="scoreInput(this)" onfocus="this.select()"></div>`;
-  return `<div class="card tie" data-ref="t:${code}">
+      <input class="sc ${t[fld]!=null?'filled':''} ${odd?'odd':''}" inputmode="numeric" data-k="t:${code}:${fld}"
+        ${has&&entry?'':'disabled'} value="${t[fld]==null?'':t[fld]}" oninput="scoreInput(this)" onchange="scoreCheck(this)" onfocus="this.select()"></div>`;
+  return `<div class="card tie ${odd?'odd':''}" data-ref="t:${code}">
     <div class="tieH"><span>${label}</span><span class="code">${esc(code)}</span></div>
     ${sl(t.a,x,'sa',p&&t.sa>t.sb)}
     ${sl(t.b,y,'sb',p&&t.sb>t.sa)}
+    ${odd?oddNote(t):''}
     ${canScore()&&S.mode==='ref'&&has?`<button class="btn sm acc" style="width:100%;margin-top:9px"
       onclick="openRef('t:${code}')">Referee this match</button>`:''}</div>`;
 }
 function leagueMatchCard(which,i,label){
   const store=which==='diamond'?S.diamond:S.platinum;
   const m=store[i]||{a:'',b:'',sa:null,sb:null};
-  const has=!!(m.a&&m.b), p=m.sa!=null&&m.sb!=null;
+  const has=!!(m.a&&m.b), p=m.sa!=null&&m.sb!=null, odd=has&&oddScore(m);
   const entry=canScore()&&S.mode==='entry';
   const sl=(nm,fld,win)=>`<div class="slot ${win?'w':''} ${nm?'':'tbd'}">
       <div class="seed"></div><div class="nm">${nm?esc(nm):'TBD'}</div>
-      <input class="sc ${m[fld]!=null?'filled':''}" inputmode="numeric" data-k="l:${which}:${i}:${fld}"
-        ${has&&entry?'':'disabled'} value="${m[fld]==null?'':m[fld]}" oninput="scoreInput(this)" onfocus="this.select()"></div>`;
-  return `<div class="card tie" data-ref="l:${which}:${i}">
+      <input class="sc ${m[fld]!=null?'filled':''} ${odd?'odd':''}" inputmode="numeric" data-k="l:${which}:${i}:${fld}"
+        ${has&&entry?'':'disabled'} value="${m[fld]==null?'':m[fld]}" oninput="scoreInput(this)" onchange="scoreCheck(this)" onfocus="this.select()"></div>`;
+  return `<div class="card tie ${odd?'odd':''}" data-ref="l:${which}:${i}">
     <div class="tieH"><span>${label}</span><span class="code">R${i+1}</span></div>
     ${sl(m.a,'sa',p&&m.sa>m.sb)}
     ${sl(m.b,'sb',p&&m.sb>m.sa)}
+    ${odd?oddNote(m):''}
     ${canScore()&&S.mode==='ref'&&has?`<button class="btn sm acc" style="width:100%;margin-top:9px"
       onclick="openRef('l:${which}:${i}')">Referee this match</button>`:''}</div>`;
 }
