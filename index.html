@@ -647,7 +647,7 @@ td.name .txt.link:hover{color:var(--accent)}
   #printArea table.champ3 tr.g td{background:#fdf6e3}
   #printArea table.champ3 tr.g td.pn{font-size:14.5px;font-weight:800}
   /* several organisers can lead a sheet, so the marks are boxed alike */
-  #printArea .brandbar img{height:30px;width:auto;max-width:112px;object-fit:contain;filter:none}
+  #printArea .brandbar img{height:42px;width:auto;max-width:150px;object-fit:contain;filter:none}
   /* whatever explains the table sits under the table, not in the foot */
   #printArea .legend{margin-top:7px;font-size:8.5px;color:#777}
   #printArea .pstrip{margin-top:10px;padding-top:6px;border-top:1px solid #ddd;
@@ -678,9 +678,9 @@ html[data-theme="dark"] .logo{filter:none}
 html[data-theme="dark"] .logo.inv{filter:invert(1) brightness(1.9)}
 .logo.sm{height:26px;opacity:.9}
 .leadMarks{display:flex;align-items:center;gap:10px;flex:none}
-.leadMarks .logo{height:38px;width:auto;max-width:132px;object-fit:contain}
+.leadMarks .logo{height:52px;width:auto;max-width:170px;object-fit:contain}
 .byOrg{font-size:11px;color:var(--dim);margin-top:2px;font-weight:600;overflow-wrap:anywhere}
-@media(max-width:520px){.leadMarks .logo{height:30px;max-width:96px}}
+@media(max-width:520px){.leadMarks .logo{height:42px;max-width:130px}}
 .sponsFoot{margin-top:26px;padding:14px 4px 13px;border-top:1px solid var(--border)}
 .sponsFoot .eyebrow{display:block;margin-bottom:8px}
 .sponsRow{display:flex;gap:10px 22px;flex-wrap:wrap;align-items:center}
@@ -4745,6 +4745,11 @@ function doPrint(mode, only){
    small text. The result is made to be dropped straight into a WhatsApp group.
    ===================================================================== */
 const IMG_W=1200, IMG_PAD=48, IMG_SCALE=3;
+/* the organiser's mark at the head of every picture. The date the image was
+   made used to sit opposite it, but that is the day it was shared rather than
+   the day of the event, so it only confused people — the event's own date is
+   already in the subtitle. */
+const LOGO_IMG_H=68;
 const IMG_INK='#15181d', IMG_MUTED='#6b7280', IMG_LINE='#d9dde3',
       IMG_HEAD='#eef1f5', IMG_PAPER='#ffffff', IMG_ALT='#f7f9fb';
 /* the top three carry a tint and a bar down the left edge. The tint alone was
@@ -4786,7 +4791,7 @@ function imgPlan(groups){
   cols.team=w-(cols.rank+cols.p+cols.w+cols.l+cols.pf+cols.pa+cols.d+cols.h2h+cols.q);
   const rowH=54, headH=44, bannerH=62, gapH=34;
   let h=0;
-  h+=112;                                        // the marks across the top
+  h+=LOGO_IMG_H+64;                              // the marks across the top
   h+=96;                                         // event name and subtitle
   data.forEach(d=>{ h+=bannerH+headH+d.rows.length*rowH+gapH; });
   h+=26;                                         // how the order was decided
@@ -4825,16 +4830,14 @@ async function standingsCanvas(only){
   let x=L, top=y;
   leadMarks().forEach((o,i)=>{
     const im=marks[i];
-    if(im){ const hgt=48, wid=Math.min(170, im.width*(hgt/im.height));
+    if(im){ const hgt=LOGO_IMG_H, wid=Math.min(240, im.width*(hgt/im.height));
       ctx.drawImage(im,x,top,wid,hgt); x+=wid+18; }
     else if(o.name){ ctx.font=ifont(26,700); ctx.fillStyle=IMG_INK;
       ctx.fillText(o.name,x,top+32); x+=ctx.measureText(o.name).width+20; }
   });
   ctx.font=ifont(13,700); ctx.fillStyle=IMG_MUTED;
-  imgRight(ctx,'STANDINGS',R,top+20);
-  ctx.font=ifont(14,400);
-  imgRight(ctx,new Date().toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}),R,top+42);
-  y=top+64;
+  imgRight(ctx,'STANDINGS',R,top+LOGO_IMG_H/2+5);
+  y=top+LOGO_IMG_H+16;
 
   ctx.font=ifont(40,800); ctx.fillStyle=IMG_INK;
   ctx.fillText(fitText(ctx,S.meta.title,R-L),L,y+34); y+=48;
@@ -5160,13 +5163,11 @@ async function finalsCanvas(key){
   const masthead=(ctx)=>{
     let x=L, top=IMG_PAD;
     leadMarks().forEach((o,i)=>{ const im=marks[i];
-      if(im){ const hgt=48, wid=Math.min(170, im.width*(hgt/im.height)); ctx.drawImage(im,x,top,wid,hgt); x+=wid+18; }
+      if(im){ const hgt=LOGO_IMG_H, wid=Math.min(240, im.width*(hgt/im.height)); ctx.drawImage(im,x,top,wid,hgt); x+=wid+18; }
       else if(o.name){ ctx.font=ifont(26,700); ctx.fillStyle=IMG_INK; ctx.fillText(o.name,x,top+32);
         x+=ctx.measureText(o.name).width+20; } });
-    ctx.font=ifont(14,800); ctx.fillStyle=IMG_INK; imgRight(ctx,label,R,top+20);
-    ctx.font=ifont(14,400); ctx.fillStyle=IMG_MUTED;
-    imgRight(ctx,new Date().toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}),R,top+42);
-    let y=top+64;
+    ctx.font=ifont(14,800); ctx.fillStyle=IMG_INK; imgRight(ctx,label,R,top+LOGO_IMG_H/2+5);
+    let y=top+LOGO_IMG_H+16;
     ctx.font=ifont(42,800); ctx.fillStyle=IMG_INK; ctx.fillText(fitText(ctx,S.meta.title,R-L),L,y+36); y+=50;
     const sub=[S.meta.sub, organiserLine()?'Organised by '+organiserLine():''].filter(Boolean).join(' · ');
     if(sub){ ctx.font=ifont(20,400); ctx.fillStyle=IMG_MUTED; ctx.fillText(fitText(ctx,sub,R-L),L,y+20); }
