@@ -272,6 +272,14 @@ input.txt:focus,select.txt:focus{outline:0;border-color:var(--accent)}
 .accRow{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:10px 0;
   border-bottom:1px solid var(--border)}
 .accRow:last-child{border-bottom:0}
+/* the share-as-image menu */
+.imgGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.imgOpt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:11px 12px;
+  border:1px solid var(--border);border-radius:11px;background:var(--surface);color:var(--text);cursor:pointer;font:inherit}
+.imgOpt:hover{border-color:var(--accent)}
+.imgOpt b{font:700 13.5px 'Outfit'}
+.imgOpt span{font-size:11.5px;color:var(--dim);line-height:1.35}
+@media(max-width:420px){.imgGrid{grid-template-columns:1fr}}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px}
 .frow .fl{margin-top:8px}
 .frow .txt{width:100%}
@@ -514,7 +522,7 @@ td.name .txt.link:hover{color:var(--accent)}
     #printArea .oL{display:inline}
   }
   #printArea .kobig .rows>table{flex:0 0 calc(50% - 2.5mm);min-width:calc(50% - 2.5mm);max-width:calc(50% - 2.5mm)}
-  #printArea .kobig .rlbl{font-size:11px;padding:1.6mm 0;margin:3mm 0 3mm}
+  #printArea .kobig .rlbl{font-size:14px;font-weight:900;letter-spacing:.12em;padding:2mm 0;margin:3mm 0 3.5mm;border-width:2px}
   #printArea .kobig table.podium3{margin-top:6mm}
   #printArea .kobig td.pod .pn{font-size:15px}
   /* fixtures by round */
@@ -1822,7 +1830,7 @@ function matchTitle(ref){
     if(GOLD_TIES().some(t=>t[0]===c)) return 'Gold tie '+c;
     return 'Tie '+c;
   }
-  return (p[1]==='diamond'?'Diamond':'Platinum')+' league · Round '+(+p[2]+1);
+  return (p[1]==='diamond'?nmD():nmP())+' League · Match '+(+p[2]+1);
 }
 function matchCourt(ref){
   const p=ref.split(':');
@@ -2350,7 +2358,7 @@ function matchRow(ref,m,onCourt){
 /* ---------- Groups: rosters, courts, moves. No scoring. ---------- */
 function vGroups(){
   const canEdit=canEditGroups();
-  const bar=(canShare()?`<button class="btn sm acc" onclick="exportStandingsImage('')">🖼 Standings image</button>
+  const bar=(canShare()?`<button class="btn sm acc" onclick="openModal(imageMenu('groups'))">🖼 Share as image…</button>
       <button class="btn sm acc" onclick="openModal(shareModal('groups'))">↗ Share / WhatsApp</button>`:'')+
     (canExport()?`<button class="btn sm" onclick="doPrint('data','teams')">Team list PDF</button>
       <button class="btn sm" onclick="doPrint('data','standings')">Standings PDF</button>`:'');
@@ -2473,7 +2481,7 @@ function vTable(){
   const chips=GROUPS.length>1?`<div class="chips">`+[['','All groups']].concat(GROUPS.map(g=>[g,'Group '+g]))
     .map(([k,l])=>`<div class="chip ${f===k?'on':''}" onclick="S.tblGrp='${k}';save();render()">${l}</div>`)
     .join('')+`</div>`:'';
-  const bar=(canShare()?`<button class="btn sm acc" onclick="exportStandingsImage('${f}')">🖼 Save / share as image${f?' · Group '+f:''}</button>
+  const bar=(canShare()?`<button class="btn sm acc" onclick="openModal(imageMenu('groups'))">🖼 Share as image…</button>
       <button class="btn sm acc" onclick="openModal(shareModal('groups'))">↗ Share / WhatsApp</button>`:'')+
     (canExport()?`<button class="btn sm" onclick="doPrint('data','standings')">Standings PDF</button>
       <button class="btn sm" onclick="exportCSV()">Spreadsheet (CSV)</button>`:'')+
@@ -2489,7 +2497,7 @@ function vFinals(){
     [['diamond','◆ '+nmD()],['platinum','● '+nmP()],['gold','★ '+nmG()]].map(([k,l])=>
       `<div class="chip ${S.fin===k?'on':''}" onclick="S.fin='${k}';render()">${l}</div>`).join('')+`</div>`;
   const body=S.fin==='diamond'?vDiamond():S.fin==='platinum'?vPlatinum():vGold();
-  const inner=(canShare()?`<button class="btn sm acc" onclick="exportFinalsImage()">🖼 Save / share as image</button>
+  const inner=(canShare()?`<button class="btn sm acc" onclick="openModal(imageMenu('finals'))">🖼 Share as image…</button>
     <button class="btn sm acc" onclick="openModal(shareModal('finals'))">↗ Share / WhatsApp</button>`:'')+
     (canExport()?`<button class="btn sm" onclick="doPrint('data','finals')">Save as PDF</button>
     <button class="btn sm" onclick="doPrint('blank','finals')">Blank draw sheets</button>`:'')+
@@ -2536,10 +2544,10 @@ function leagueStandingCard(which,srcRefs,title){
   const store=which==='diamond'?S.diamond:S.platinum;
   const st=leagueTable(store,srcRefs);
   if(!srcRefs.map(refName).some(Boolean))
-    return `<div class="card"><div class="hd"><b>${title} table</b></div>
+    return `<div class="card"><div class="hd"><b>${esc(title)} League Table</b></div>
       <div style="padding:0 12px 16px" class="note">Fills once the semi-finals are decided.</div></div>`;
   const all=[0,1,2].every(i=>{const m=store[i];return m&&m.sa!=null&&m.sb!=null;});
-  return `<div class="card"><div class="hd"><b>${title} table</b><span>${all?'Final':'Live'}</span></div>
+  return `<div class="card"><div class="hd"><b>${esc(title)} League Table</b><span>${all?'Final':'Live'}</span></div>
     <div class="tblWrap"><table>
     <thead><tr><th>Pair</th><th class="num">P</th><th class="num">W</th><th class="num">L</th>
       <th class="num">+</th><th class="num">–</th><th class="num">Diff</th></tr></thead><tbody>
@@ -2560,7 +2568,7 @@ function championBanner(which,srcRefs){
   const box=(lbl,nm,col)=>nm?`<div class="card tie" style="text-align:center;padding:14px;border-color:${col}">
     <div class="tieH" style="justify-content:center"><span>${lbl}</span></div>
     <div style="font:800 16px 'Bricolage Grotesque';color:${col}">${esc(nm)}</div></div>`:'';
-  return `<div class="rnd"><div class="rndT">${which==='diamond'?'Diamond':'Platinum'} placings</div>
+  return `<div class="rnd"><div class="rndT">${esc(which==='diamond'?nmD():nmP())} League Placings</div>
     <div class="podium">${box('Champions',st[0]&&st[0].team,'var(--gold)')}
     ${box('Runners-up',st[1]&&st[1].team,'var(--muted)')}
     ${box('Third',st[2]&&st[2].team,'#d97706')}</div></div>`;
@@ -2568,7 +2576,7 @@ function championBanner(which,srcRefs){
 function vDiamond(){
   const src=DIAMOND_SRC(), n=leagueRounds('diamond');
   const lgDone=[...Array(n).keys()].filter(i=>{const m=S.diamond[i];return m&&m.sa!=null&&m.sb!=null;}).length;
-  const lgLabel = src.length<=2 ? 'Final' : nmD()+' league · final round robin';
+  const lgLabel = src.length<=2 ? 'Final' : nmD()+' League · final round robin';
   let h=`<div class="note" style="margin-bottom:14px"><b style="color:var(--accent)">${esc(nmD())} bracket.</b>
     ${GROUPS.length} groups, top two through${ROUNDS().length?', '+ROUNDS().map(r=>r.label.toLowerCase()).join(' then ')  :''}.
     ${src.length<=2?'The two winners meet in the final.'
@@ -2580,19 +2588,19 @@ function vDiamond(){
   });
   h+=section('d_lg', lgLabel, lgDone, n, ()=>
     `<div class="grid g2">`+[...Array(n).keys()].map(i=>leagueMatchCard('diamond',i,lgLabel)).join('')+`</div>`+
-    (src.length>2?`<div style="margin-top:12px">${leagueStandingCard('diamond',src,'Diamond')}</div>`:''));
+    (src.length>2?`<div style="margin-top:12px">${leagueStandingCard('diamond',src,nmD())}</div>`:''));
   return h+championBanner('diamond',src);
 }
 function vPlatinum(){
   const src=PLATINUM_SRC(), n=leagueRounds('platinum');
   const lgDone=[...Array(n).keys()].filter(i=>{const m=S.platinum[i];return m&&m.sa!=null&&m.sb!=null;}).length;
-  const lgLabel = src.length<=2 ? nmP()+' final' : nmP()+' league · round robin';
+  const lgLabel = src.length<=2 ? nmP()+' Final' : nmP()+' League · round robin';
   return `<div class="note" style="margin-bottom:14px"><b>${esc(nmP())}.</b>
     The ${src.length} teams beaten in the ${(ROUNDS()[ROUNDS().length-1]||{label:'last round'}).label.toLowerCase()}
     ${src.length<=2?'meet for the '+esc(nmP())+' title.':'play a round-robin for the '+esc(nmP())+' title.'}</div>`+
     section('p_lg', lgLabel, lgDone, n, ()=>
       `<div class="grid g2">`+[...Array(n).keys()].map(i=>leagueMatchCard('platinum',i,lgLabel)).join('')+`</div>`+
-      (src.length>2?`<div style="margin-top:12px">${leagueStandingCard('platinum',src,'Platinum')}</div>`:''))+
+      (src.length>2?`<div style="margin-top:12px">${leagueStandingCard('platinum',src,nmP())}</div>`:''))+
     championBanner('platinum',src);
 }
 function vGold(){
@@ -2600,7 +2608,7 @@ function vGold(){
     return `<div class="note">The third-place league is switched off for this format. Turn it on in Setup.</div>`;
   const codes=G.map(x=>x[0]), gs=goldStanding();
 
-  const ties=section('g_ties',nmG()+' league · '+G.length+' ties',tieDone(codes),codes.length,()=>
+  const ties=section('g_ties',nmG()+' League · '+G.length+' ties',tieDone(codes),codes.length,()=>
     `<div class="grid g2">`+G.map(([c,x,y])=>tieCard(c,x,y,nmG()+' tie')).join('')+`</div>`);
 
   let decider='';
@@ -2626,11 +2634,11 @@ function vGold(){
           <span class="txt">${esc(r.win)}</span></td>
           <td class="num">${r.code}</td><td class="num pos">+${r.marg}</td></tr>`).join('')+
       `</tbody></table></div></div>`);
-    if(gs.champion) rank+=podiumBlock(nmG()+' placings',gs.rank.map(r=>r.win));
+    if(gs.champion) rank+=podiumBlock(nmG()+' League Placings',gs.rank.map(r=>r.win));
     else if(gs.tied.length&&!gs.decided)
       rank+=`<div class="alert warn"><span>⏳</span><span>The ${esc(nmG())} title is waiting on the decider above.</span></div>`;
   }
-  return `<div class="note" style="margin-bottom:14px"><b style="color:var(--gold)">${esc(nmG())} league.</b>
+  return `<div class="note" style="margin-bottom:14px"><b style="color:var(--gold)">${esc(nmG())} League.</b>
     The group third-placed pairs play off. The winner is the victor with the biggest winning margin —
     and if two win by the same amount, they play each other to settle it.</div>`
     +ties+decider+rank;
@@ -4615,32 +4623,32 @@ function finalsSheet(withData){
    ['platinum',nmP(),PLATINUM_SRC(),'Beaten semi-finalists']].forEach(([w,nm,src,who])=>{
     const n=leaguePairs(src.length).length; if(!n) return;
     const final=src.length<=2;
-    let h=`<div class="rlbl">${final?esc(nm)+' final':esc(nm)+' league · round robin'}</div><div class="rows">`+
+    let h=`<div class="rlbl">${final?esc(nm)+' Final':esc(nm)+' League · round robin'}</div><div class="rows">`+
       [...Array(n).keys()].map(i=>leagueBox(w,i,withData)).join('')+`</div>`;
-    if(!final) h+=`<h4 class="psec">${esc(nm)} league table</h4>${leaguePrintTable(w==='diamond'?S.diamond:S.platinum,src,withData)}`;
+    if(!final) h+=`<h4 class="psec">${esc(nm)} League Table</h4>${leaguePrintTable(w==='diamond'?S.diamond:S.platinum,src,withData)}`;
     const st=withData?leagueTable(w==='diamond'?S.diamond:S.platinum,src):[];
-    h+=podiumPrint(esc(nm)+' placings',[st[0]&&st[0].team,st[1]&&st[1].team,st[2]&&st[2].team]);
-    out+=sheet(esc(nm)+(final?' final':' league'), who, `<div class="kobig gsT" style="${LEAGUE_FIT}">${h}</div>`,
+    h+=podiumPrint(esc(nm)+' League Placings',[st[0]&&st[0].team,st[1]&&st[1].team,st[2]&&st[2].team]);
+    out+=sheet(esc(nm)+(final?' Final':' League'), who, `<div class="kobig gsT" style="${LEAGUE_FIT}">${h}</div>`,
       final?'':'Wins, then point difference, then points scored.');
   });
   const GT=GOLD_TIES();
   if(GT.length){
-    let h=`<div class="rlbl">${esc(nmG())} league</div><div class="rows">`+
+    let h=`<div class="rlbl">${esc(nmG())} League</div><div class="rows">`+
       GT.map(([c,x,y])=>koTieBox(c,x,y,withData)).join('')+`</div>`;
     const gs=withData?goldStanding():{rank:[],pairs:[],tied:[],champion:''};
     if(gs.pairs.length){
       h+=`<div class="rlbl">${esc(nmG())} decider · level on margin</div><div class="rows">`+
         gs.pairs.map(([c],i)=>koTieBox(c,'','',withData,esc(nmG())+' decider '+(gs.pairs.length>1?(i+1):''))).join('')+`</div>`;
     }
-    h+=`<h4 class="psec">${esc(nmG())} order · by winning margin</h4>
+    h+=`<h4 class="psec">${esc(nmG())} League Order · by winning margin</h4>
       <table class="grid st lg"><colgroup><col class="cR"><col><col class="cD"><col class="cD"></colgroup>
       <tr><th>#</th><th style="text-align:left">Pair</th><th>Tie</th><th>Won by</th></tr>
       ${(gs.rank.length?gs.rank:GT.map(()=>null)).map((r,i)=>`<tr><td class="c">${r?i+1:''}</td>
         <td class="nm">${r?esc(r.win):'&nbsp;'}</td><td class="c">${r?r.code:''}</td>
         <td class="c">${r?'+'+r.marg:''}</td></tr>`).join('')}
       </table>`;
-    h+=podiumPrint(esc(nmG())+' placings',gs.champion?gs.rank.map(r=>r.win):[]);
-    out+=sheet(esc(nmG())+' league','Group third-placed pairs',
+    h+=podiumPrint(esc(nmG())+' League Placings',gs.champion?gs.rank.map(r=>r.win):[]);
+    out+=sheet(esc(nmG())+' League','Group third-placed pairs',
       `<div class="kobig gsT" style="${LEAGUE_FIT}">${h}</div>`,
       esc(nmG())+' is decided by the biggest winning margin; level margins are played off.');
   }
@@ -4860,15 +4868,11 @@ async function standingsCanvas(only){
     y+=plan.headH;
 
     d.rows.forEach((r,i)=>{
-      const pod=(r.p&&r.rank<=3)?IMG_POD[r.rank]:'';
-      ctx.fillStyle=pod||(i%2?IMG_ALT:IMG_PAPER);
+      ctx.fillStyle=i%2?'#f8fafc':IMG_PAPER;
       ctx.fillRect(L,y,R-L,plan.rowH);
-      if(pod){ ctx.fillStyle=IMG_BAR[r.rank]; ctx.fillRect(L,y,5,plan.rowH); }
       const mid=y+plan.rowH/2+8;
-      let c=L+18;
-      ctx.fillStyle=IMG_INK;
-      ctx.font=ifont(r.rank<=3?22:20, r.rank<=3?800:600);
-      ctx.fillText(r.p?String(r.rank):'–',c,mid);
+      medalDot(ctx,L+30,y+plan.rowH/2,r.p?r.rank:0,15);
+      ctx.fillStyle=IMG_INK; let c=L+18;
       c=L+cols.rank;
       ctx.font=ifont(22, r.rank<=3?800:600);
       ctx.fillText(fitText(ctx,r.team,cols.team-14),c+4,mid);
@@ -4886,9 +4890,9 @@ async function standingsCanvas(only){
           const tw=ctx.measureText(q.label.toUpperCase()).width+18;
           /* third place already sits on a bronze tint, so a pale gold chip
              disappeared into it — the badge is given its own weight */
-          ctx.fillStyle = q.cls==='tGold' ? '#f0d9a8' : '#e3edf7';
+          ctx.fillStyle = q.cls==='tGold' ? LG_COL.gold : LG_COL.diamond;
           ctx.fillRect(c+8,y+plan.rowH/2-13,Math.min(tw,cols.q-14),26);
-          ctx.fillStyle = q.cls==='tGold' ? '#6f4a12' : '#1d4e78';
+          ctx.fillStyle = '#fff';
           ctx.fillText(fitText(ctx,q.label.toUpperCase(),cols.q-32),c+17,mid-1); } }
       imgRule(ctx,L,y+plan.rowH,R);
       y+=plan.rowH;
@@ -4931,13 +4935,23 @@ const sgnTxt = d => (d>0?'+':'')+d;
 
 /* ========================================================================
    FINALS AS A PICTURE
-   The same idea as the standings image, for the knockout: every round as a
-   grid of ties, then each league with its table and its top three. A finals
-   page varies a great deal in height — a straight final is short, a three-way
-   league with a Gold decider is long — so the whole thing is laid out twice:
+   One colour per thing, and only one: green marks the winner of a match,
+   gold, silver and bronze mark the top three, and each league carries its own
+   colour on its heading — blue for Diamond, slate for Platinum, amber for
+   Gold. The earlier version tinted whole table rows gold and grey and bronze
+   as well as tinting winners green, so the page had five pastels competing and
+   none of them meant anything at a glance.
+
+   The picture can be the whole finals, one round, one league, the three
+   leagues together, or just the final placings. The page is laid out twice:
    once against a stand-in that measures text but draws nothing, to find out
    how tall the canvas must be, and then for real.
    ===================================================================== */
+const LG_COL = { ko:'#111827', diamond:'#1d4ed8', platinum:'#475569', gold:'#b45309', placings:'#111827' };
+const WIN_COL='#15803d', WIN_TINT='#f0fdf4', LOSE_INK='#6b7280', BOX_LINE='#cbd5e1', HEAD_FILL='#f1f5f9';
+const MEDAL     = ['', '#c9971c', '#94a3b8', '#b4652a'];
+const MEDAL_INK = ['', '#7a5a06', '#475569', '#7c3f12'];
+const MEDAL_SOFT= ['', '#fff7db', '#f1f5f9', '#fbeee3'];
 function dryCtx(){
   const real=document.createElement('canvas').getContext('2d');
   return new Proxy(real,{
@@ -4945,145 +4959,200 @@ function dryCtx(){
       const v=t[p]; return typeof v==='function' ? ()=>{} : v; },
     set(t,p,v){ t[p]=v; return true; } });
 }
-function fiHead(ctx,y,txt,sub){
-  const L=IMG_PAD, R=IMG_W-IMG_PAD;
-  ctx.font=ifont(24,800); ctx.fillStyle=IMG_INK; ctx.fillText(txt,L,y+24);
-  if(sub){ ctx.font=ifont(15,400); ctx.fillStyle=IMG_MUTED; imgRight(ctx,sub,R,y+24); }
-  imgRule(ctx,L,y+36,R,'#1d2229'); imgRule(ctx,L,y+37,R,'#1d2229');
-  return y+52;
+/* a numbered medal — the one place gold, silver and bronze appear */
+function medalDot(ctx,cx,cy,rank,r){
+  r=r||15;
+  if(rank>=1&&rank<=3){
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fillStyle=MEDAL[rank]; ctx.fill();
+    ctx.font=ifont(r*1.15,800); ctx.fillStyle='#fff'; imgMid(ctx,String(rank),cx,cy+r*0.4);
+  } else {
+    ctx.font=ifont(r*1.2,700); ctx.fillStyle=IMG_MUTED; imgMid(ctx,rank?String(rank):'–',cx,cy+r*0.42);
+  }
 }
-/* one tie: a heading strip, then a row per team with its score; the winner is
-   set in bold on a pale tint */
-const FI_ROW=46, FI_TOP=28;
-function fiTie(ctx,x,y,w,head,a,b,sa,sb){
-  const p=sa!=null&&sb!=null&&a&&b, wa=p&&sa>sb, wb=p&&sb>sa;
-  ctx.fillStyle=IMG_HEAD; ctx.fillRect(x,y,w,FI_TOP);
-  ctx.font=ifont(12.5,700); ctx.fillStyle=IMG_MUTED;
-  ctx.fillText(fitText(ctx,String(head).toUpperCase(),w-24),x+12,y+19);
-  [[a,sa,wa],[b,sb,wb]].forEach(([nm,sc,win],i)=>{
+/* a section heading, in the section's own colour, big enough to find at a glance */
+function fiHead(ctx,y,txt,sub,col){
+  const L=IMG_PAD, R=IMG_W-IMG_PAD; col=col||LG_COL.ko;
+  ctx.fillStyle=col; ctx.fillRect(L,y+2,9,40);
+  ctx.font=ifont(34,800); ctx.fillStyle=col; ctx.fillText(fitText(ctx,txt,R-L-260),L+24,y+36);
+  if(sub){ ctx.font=ifont(17,600); ctx.fillStyle=IMG_MUTED; imgRight(ctx,sub,R,y+34); }
+  ctx.fillStyle=col; ctx.fillRect(L,y+52,R-L,3);
+  return y+74;
+}
+/* one match: a heading strip with the tie's code, then a row per team */
+const FI_ROW=54, FI_TOP=36;
+function fiTie(ctx,x,y,w,t){
+  const p=t.sa!=null&&t.sb!=null&&t.a&&t.b, wa=p&&t.sa>t.sb, wb=p&&t.sb>t.sa;
+  ctx.fillStyle=HEAD_FILL; ctx.fillRect(x,y,w,FI_TOP);
+  let hx=x+12;
+  if(t.code){ ctx.font=ifont(14,800); const cw=Math.max(28,ctx.measureText(t.code).width+16);
+    ctx.fillStyle=LG_COL.ko; ctx.fillRect(hx,y+7,cw,22);
+    ctx.fillStyle='#fff'; imgMid(ctx,t.code,hx+cw/2,y+23); hx+=cw+10; }
+  ctx.font=ifont(15,700); ctx.fillStyle='#334155';
+  ctx.fillText(fitText(ctx,t.head||'',x+w-hx-12),hx,y+24);
+  [[t.a,t.sa,wa,p&&!wa],[t.b,t.sb,wb,p&&!wb]].forEach(([nm,sc,win,lost],i)=>{
     const ry=y+FI_TOP+i*FI_ROW;
-    ctx.fillStyle=win?'#eaf4e1':IMG_PAPER; ctx.fillRect(x,ry,w,FI_ROW);
-    if(win){ ctx.fillStyle='#4d7c0f'; ctx.fillRect(x,ry,4,FI_ROW); }
-    ctx.font=ifont(20,win?800:500); ctx.fillStyle=nm?IMG_INK:'#a0a7b1';
-    ctx.fillText(fitText(ctx,nm||'to be decided',w-96),x+14,ry+30);
-    ctx.font=ifont(22,800); ctx.fillStyle=IMG_INK;
-    if(p) imgMid(ctx,String(sc),x+w-38,ry+31);
-    imgRule(ctx,x+w-76,ry,x+w-76,IMG_LINE);
+    ctx.fillStyle=win?WIN_TINT:IMG_PAPER; ctx.fillRect(x,ry,w,FI_ROW);
+    if(win){ ctx.fillStyle=WIN_COL; ctx.fillRect(x,ry,6,FI_ROW); }
+    ctx.font=ifont(21,win?800:500); ctx.fillStyle=nm?(lost?LOSE_INK:IMG_INK):'#a0a7b1';
+    ctx.fillText(fitText(ctx,nm||'to be decided',w-110),x+18,ry+34);
+    if(p){ ctx.font=ifont(24,800); ctx.fillStyle=win?WIN_COL:LOSE_INK; imgMid(ctx,String(sc),x+w-40,ry+36); }
   });
-  ctx.strokeStyle='#b8c0ca'; ctx.lineWidth=1; ctx.strokeRect(x+.5,y+.5,w-1,FI_TOP+2*FI_ROW-1);
-  imgRule(ctx,x,y+FI_TOP+FI_ROW,x+w,IMG_LINE);
-  ctx.beginPath(); ctx.moveTo(x+w-76.5,y+FI_TOP); ctx.lineTo(x+w-76.5,y+FI_TOP+2*FI_ROW);
-  ctx.strokeStyle=IMG_LINE; ctx.stroke();
+  ctx.strokeStyle=BOX_LINE; ctx.lineWidth=1.5; ctx.strokeRect(x+.75,y+.75,w-1.5,FI_TOP+2*FI_ROW-1.5);
+  imgRule(ctx,x,y+FI_TOP,x+w,BOX_LINE); imgRule(ctx,x,y+FI_TOP+FI_ROW,x+w,'#e2e8f0');
+  ctx.beginPath(); ctx.moveTo(x+w-80.5,y+FI_TOP); ctx.lineTo(x+w-80.5,y+FI_TOP+2*FI_ROW);
+  ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=1; ctx.stroke();
   return y+FI_TOP+2*FI_ROW;
 }
-/* ties laid two to a row */
 function fiGrid(ctx,y,ties){
   const L=IMG_PAD, R=IMG_W-IMG_PAD, gap=24, w=(R-L-gap)/2;
   for(let i=0;i<ties.length;i+=2){
     let bottom=y;
-    ties.slice(i,i+2).forEach((t,j)=>{ bottom=Math.max(bottom, fiTie(ctx,L+j*(w+gap),y,w,t.head,t.a,t.b,t.sa,t.sb)); });
-    y=bottom+18;
+    ties.slice(i,i+2).forEach((t,j)=>{ bottom=Math.max(bottom, fiTie(ctx,L+j*(w+gap),y,w,t)); });
+    y=bottom+20;
   }
   return y;
 }
-/* a league's table */
+/* a league's table — plain rows, a medal on the top three */
 function fiTable(ctx,y,rows){
-  const L=IMG_PAD, R=IMG_W-IMG_PAD, rowH=46;
-  const cols=[['P',60],['W',60],['L',60],['FOR',76],['AGST',76],['DIFF',84]];
-  const fixed=cols.reduce((s,c)=>s+c[1],0), teamW=R-L-56-fixed;
-  ctx.fillStyle=IMG_HEAD; ctx.fillRect(L,y,R-L,38);
-  ctx.font=ifont(13,700); ctx.fillStyle=IMG_MUTED;
-  ctx.fillText('#',L+16,y+25); ctx.fillText('PAIR',L+56,y+25);
-  let cx=L+56+teamW; cols.forEach(([l,w])=>{ imgMid(ctx,l,cx+w/2,y+25); cx+=w; });
-  y+=38;
+  const L=IMG_PAD, R=IMG_W-IMG_PAD, rowH=50;
+  const cols=[['P',62],['W',62],['L',62],['FOR',80],['AGST',80],['DIFF',88]];
+  const fixed=cols.reduce((s,c)=>s+c[1],0), teamW=R-L-64-fixed;
+  ctx.fillStyle=HEAD_FILL; ctx.fillRect(L,y,R-L,40);
+  ctx.font=ifont(13.5,800); ctx.fillStyle='#475569';
+  imgMid(ctx,'#',L+32,y+26); ctx.fillText('PAIR',L+64,y+26);
+  let cx=L+64+teamW; cols.forEach(([l,w])=>{ imgMid(ctx,l,cx+w/2,y+26); cx+=w; });
+  y+=40;
   rows.forEach((r,i)=>{
-    const pod=r.p&&r.rank<=3?IMG_POD[r.rank]:'';
-    ctx.fillStyle=pod||(i%2?IMG_ALT:IMG_PAPER); ctx.fillRect(L,y,R-L,rowH);
-    if(pod){ ctx.fillStyle=IMG_BAR[r.rank]; ctx.fillRect(L,y,5,rowH); }
-    const mid=y+rowH/2+7;
-    ctx.font=ifont(19,800); ctx.fillStyle=IMG_INK; ctx.fillText(r.p?String(r.rank):'–',L+16,mid);
-    ctx.font=ifont(20,r.rank<=3&&r.p?800:600); ctx.fillText(fitText(ctx,r.team,teamW-12),L+56,mid);
-    let c=L+56+teamW;
-    [r.p,r.w,r.l,r.pf,r.pa,sgnTxt(r.d)].forEach((v,k)=>{ ctx.font=ifont(19,k===1||k===5?800:600);
-      imgMid(ctx,String(v),c+cols[k][1]/2,mid); c+=cols[k][1]; });
-    imgRule(ctx,L,y+rowH,R); y+=rowH;
+    ctx.fillStyle=i%2?'#f8fafc':IMG_PAPER; ctx.fillRect(L,y,R-L,rowH);
+    const mid=y+rowH/2;
+    medalDot(ctx,L+32,mid,r.p?r.rank:0,15);
+    ctx.font=ifont(21,r.p&&r.rank===1?800:600); ctx.fillStyle=IMG_INK;
+    ctx.fillText(fitText(ctx,r.team,teamW-12),L+64,mid+7);
+    let c=L+64+teamW;
+    [r.p,r.w,r.l,r.pf,r.pa,sgnTxt(r.d)].forEach((v,k)=>{ ctx.font=ifont(20,k===1||k===5?800:500);
+      ctx.fillStyle=IMG_INK; imgMid(ctx,String(v),c+cols[k][1]/2,mid+7); c+=cols[k][1]; });
+    imgRule(ctx,L,y+rowH,R,'#e2e8f0'); y+=rowH;
   });
-  imgRule(ctx,L,y,R,'#aeb5bf');
-  return y+20;
+  imgRule(ctx,L,y,R,'#94a3b8');
+  return y+26;
 }
-/* the top three, given room — gold, silver, bronze */
-function fiPodium(ctx,y,title,names){
-  names=(names||[]).filter(Boolean).slice(0,3);
-  if(!names.length) return y;
-  const L=IMG_PAD, R=IMG_W-IMG_PAD, gap=16, w=(R-L-gap*2)/3, h=96;
+/* the top three, given room: a card each, gold, silver, bronze */
+function fiPodium(ctx,y,title,names,col){
+  names=(names||[]).slice(0,3);
+  const L=IMG_PAD, R=IMG_W-IMG_PAD, gap=16, w=(R-L-gap*2)/3, h=118;
   const lbl=['CHAMPIONS','RUNNERS-UP','THIRD'];
-  ctx.font=ifont(13,700); ctx.fillStyle=IMG_MUTED; ctx.fillText(title.toUpperCase(),L,y+14);
-  y+=24;
-  names.forEach((nm,i)=>{
-    const x=L+i*(w+gap);
-    ctx.fillStyle=IMG_POD[i+1]; ctx.fillRect(x,y,w,h);
-    ctx.fillStyle=IMG_BAR[i+1]; ctx.fillRect(x,y,w,5);
-    ctx.font=ifont(12.5,800); ctx.fillStyle='#5b5240'; ctx.fillText(lbl[i],x+16,y+32);
-    ctx.font=ifont(i===0?24:21,800); ctx.fillStyle=IMG_INK;
-    ctx.fillText(fitText(ctx,nm,w-32),x+16,y+70);
+  if(title){ ctx.font=ifont(14,800); ctx.fillStyle=col||IMG_MUTED; ctx.fillText(title.toUpperCase(),L,y+15); y+=28; }
+  [0,1,2].forEach(i=>{
+    const x=L+i*(w+gap), nm=names[i];
+    ctx.fillStyle=nm?MEDAL_SOFT[i+1]:'#f8fafc'; ctx.fillRect(x,y,w,h);
+    ctx.strokeStyle=nm?MEDAL[i+1]:BOX_LINE; ctx.lineWidth=2; ctx.strokeRect(x+1,y+1,w-2,h-2);
+    ctx.fillStyle=MEDAL[i+1]; ctx.fillRect(x,y,w,7);
+    medalDot(ctx,x+36,y+50,i+1,19);
+    ctx.font=ifont(13.5,800); ctx.fillStyle=MEDAL_INK[i+1]; ctx.fillText(lbl[i],x+66,y+48);
+    ctx.font=ifont(i===0?25:22,800); ctx.fillStyle=nm?IMG_INK:'#a0a7b1';
+    ctx.fillText(fitText(ctx,nm||'to be decided',w-32),x+18,y+92);
   });
-  return y+h+28;
+  return y+h+34;
 }
 function fiLeagueTies(which,label){
-  const store=which==='diamond'?S.diamond:S.platinum, n=leagueRounds(which);
-  return [...Array(n).keys()].map(i=>{ const m=store[i]||{};
-    return {head:label+(n>1?' · match '+(i+1):''), a:m.a, b:m.b, sa:m.sa, sb:m.sb}; });
+  const store=which==='diamond'?S.diamond:S.platinum, src=which==='diamond'?DIAMOND_SRC():PLATINUM_SRC();
+  return leaguePairs(src.length).map((pr,i)=>{ const m=store[i]||{};
+    /* "SF M L" reads like a code; on a picture it is simply the loser of M */
+    const lab=r=>String(r||'').startsWith('L:')?'Loser '+r.slice(2):printRef(r);
+    return {code:'', head:label+' · '+lab(src[pr[0]])+' vs '+lab(src[pr[1]]), a:m.a, b:m.b, sa:m.sa, sb:m.sb}; });
 }
 function fiLeagueDone(which){
   const store=which==='diamond'?S.diamond:S.platinum, n=leagueRounds(which);
   return n>0 && [...Array(n).keys()].every(i=>{ const m=store[i]; return m&&m.a&&m.b&&m.sa!=null&&m.sb!=null; });
 }
-/* everything below the masthead, drawn onto whichever context it is given */
-function finalsBody(ctx,y){
-  ROUNDS().forEach(r=>{
-    y=fiHead(ctx,y,r.label, tieDone(r.ties.map(t=>t[0]))+' of '+r.ties.length+' played');
-    y=fiGrid(ctx,y,r.ties.map(([c,x,yy])=>{ const t=S.ko[c]||{};
-      return {head:c+' · '+refLabel(x)+' v '+refLabel(yy), a:t.a, b:t.b, sa:t.sa, sb:t.sb}; }));
-    y+=10;
-  });
-  [['diamond',nmD(),DIAMOND_SRC()],['platinum',nmP(),PLATINUM_SRC()]].forEach(([w,nm,src])=>{
-    if(!leagueRounds(w)) return;
-    const final=src.length<=2;
-    y=fiHead(ctx,y,final?nm+' final':nm+' league', final?'':'round robin');
-    y=fiGrid(ctx,y,fiLeagueTies(w, final?'Final':nm));
-    const st=leagueTable(w==='diamond'?S.diamond:S.platinum,src);
-    if(!final && st.length) y=fiTable(ctx,y,st);
-    if(fiLeagueDone(w)) y=fiPodium(ctx,y,nm+' placings',st.map(r=>r.team));
-    y+=10;
-  });
-  const GT=GOLD_TIES();
-  if(GT.length){
-    const gs=goldStanding();
-    y=fiHead(ctx,y,nmG()+' league','biggest winning margin takes it');
+const koTieList = r => r.ties.map(([c,x,yy])=>{ const t=S.ko[c]||{};
+  return {code:c, head:printRef(x)+' vs '+printRef(yy), a:t.a, b:t.b, sa:t.sa, sb:t.sb}; });
+/* who finished where in each league — empty until that league is complete */
+function leaguePlacings(w){
+  if(w==='gold'){ const gs=goldStanding(); return gs.champion?gs.rank.map(r=>r.win):[]; }
+  if(!fiLeagueDone(w)) return [];
+  return leagueTable(w==='diamond'?S.diamond:S.platinum, w==='diamond'?DIAMOND_SRC():PLATINUM_SRC()).map(r=>r.team);
+}
+const leagueName = w => w==='diamond'?nmD():w==='platinum'?nmP():nmG();
+function leagueOn(w){
+  if(w==='gold') return GOLD_TIES().length>0;
+  return leagueRounds(w)>0;
+}
+/* what each choice in the share menu draws */
+function finalsParts(key){
+  const all=ROUNDS().map(r=>r.id);
+  if(key==='ko')       return {rounds:all};
+  if(/^r:/.test(key))  return {rounds:[key.slice(2)]};
+  if(key==='leagues')  return {leagues:['diamond','platinum','gold']};
+  if(key==='placings') return {placings:true};
+  if(['diamond','platinum','gold'].indexOf(key)>=0) return {leagues:[key]};
+  return {rounds:all, leagues:['diamond','platinum','gold']};
+}
+function finalsLabel(key){
+  if(key==='ko') return 'Knockout rounds';
+  if(/^r:/.test(key)){ const r=ROUNDS().find(x=>x.id===key.slice(2)); return r?r.label:'Knockout'; }
+  if(key==='leagues') return 'The three Leagues';
+  if(key==='placings') return 'Final standings';
+  if(['diamond','platinum','gold'].indexOf(key)>=0) return leagueName(key)+' League';
+  return 'Finals';
+}
+function drawLeague(ctx,y,w){
+  const nm=leagueName(w), col=LG_COL[w];
+  if(w==='gold'){
+    const GT=GOLD_TIES(), gs=goldStanding();
+    y=fiHead(ctx,y,nm+' League','biggest winning margin takes it',col);
     y=fiGrid(ctx,y,GT.map(([c,x,yy])=>{ const t=S.ko[c]||{};
-      return {head:c+' · '+refLabel(x)+' v '+refLabel(yy), a:t.a, b:t.b, sa:t.sa, sb:t.sb}; }));
+      return {code:c, head:printRef(x)+' vs '+printRef(yy), a:t.a, b:t.b, sa:t.sa, sb:t.sb}; }));
     if(gs.pairs.length){
-      y=fiHead(ctx,y,nmG()+' decider','level on margin');
+      ctx.font=ifont(15,800); ctx.fillStyle=col; ctx.fillText('DECIDER · LEVEL ON MARGIN',IMG_PAD,y+6); y+=20;
       y=fiGrid(ctx,y,gs.pairs.map(([c])=>{ const t=S.ko[c]||{};
-        return {head:'Decider · '+c, a:t.a, b:t.b, sa:t.sa, sb:t.sb}; }));
+        return {code:c, head:'Decider', a:t.a, b:t.b, sa:t.sa, sb:t.sb}; }));
     }
     if(gs.rank.length){
       const L=IMG_PAD, R=IMG_W-IMG_PAD;
+      ctx.fillStyle=HEAD_FILL; ctx.fillRect(L,y,R-L,40);
+      ctx.font=ifont(13.5,800); ctx.fillStyle='#475569';
+      imgMid(ctx,'#',L+32,y+26); ctx.fillText('PAIR',L+64,y+26);
+      imgRight(ctx,'TIE',R-170,y+26); imgRight(ctx,'WON BY',R-18,y+26); y+=40;
       gs.rank.forEach((r,i)=>{
-        ctx.fillStyle=i%2?IMG_ALT:IMG_PAPER; ctx.fillRect(L,y,R-L,40);
-        ctx.font=ifont(18,800); ctx.fillStyle=IMG_INK; ctx.fillText(String(i+1),L+16,y+27);
-        ctx.font=ifont(19,600); ctx.fillText(fitText(ctx,r.win,R-L-260),L+56,y+27);
-        ctx.font=ifont(15,400); ctx.fillStyle=IMG_MUTED; imgRight(ctx,'tie '+r.code,R-120,y+27);
-        ctx.font=ifont(19,800); ctx.fillStyle=IMG_INK; imgRight(ctx,'won by '+r.marg,R-14,y+27);
-        imgRule(ctx,L,y+40,R); y+=40;
-      });
-      y+=20;
+        ctx.fillStyle=i%2?'#f8fafc':IMG_PAPER; ctx.fillRect(L,y,R-L,50);
+        medalDot(ctx,L+32,y+25,gs.champion?i+1:0,15);
+        ctx.font=ifont(21,i===0&&gs.champion?800:600); ctx.fillStyle=IMG_INK;
+        ctx.fillText(fitText(ctx,r.win,R-L-300),L+64,y+32);
+        ctx.font=ifont(18,600); ctx.fillStyle=IMG_MUTED; imgRight(ctx,r.code,R-170,y+32);
+        ctx.font=ifont(21,800); ctx.fillStyle=WIN_COL; imgRight(ctx,'+'+r.marg,R-18,y+32);
+        imgRule(ctx,L,y+50,R,'#e2e8f0'); y+=50; });
+      imgRule(ctx,L,y,R,'#94a3b8'); y+=26;
     }
-    if(gs.champion) y=fiPodium(ctx,y,nmG()+' placings',gs.rank.map(r=>r.win));
+    if(gs.champion) y=fiPodium(ctx,y,nm+' League Placings',gs.rank.map(r=>r.win),col);
+    return y+12;
+  }
+  const src=w==='diamond'?DIAMOND_SRC():PLATINUM_SRC(), final=src.length<=2;
+  y=fiHead(ctx,y,nm+(final?' Final':' League'), final?'':'round robin',col);
+  y=fiGrid(ctx,y,fiLeagueTies(w, final?'Final':nm));
+  const st=leagueTable(w==='diamond'?S.diamond:S.platinum,src);
+  if(!final && st.length) y=fiTable(ctx,y,st);
+  if(fiLeagueDone(w)) y=fiPodium(ctx,y,nm+' League Placings',st.map(r=>r.team),col);
+  return y+12;
+}
+/* everything below the masthead, for whichever part was asked for */
+function finalsBody(ctx,y,parts){
+  (parts.rounds||[]).forEach(id=>{
+    const r=ROUNDS().find(x=>x.id===id); if(!r) return;
+    y=fiHead(ctx,y,r.label, tieDone(r.ties.map(t=>t[0]))+' of '+r.ties.length+' played', LG_COL.ko);
+    y=fiGrid(ctx,y,koTieList(r))+12;
+  });
+  (parts.leagues||[]).forEach(w=>{ if(leagueOn(w)) y=drawLeague(ctx,y,w); });
+  if(parts.placings){
+    ['diamond','platinum','gold'].forEach(w=>{ if(!leagueOn(w)) return;
+      y=fiHead(ctx,y,leagueName(w)+' League','',LG_COL[w]);
+      y=fiPodium(ctx,y,'',leaguePlacings(w),LG_COL[w]); });
   }
   return y;
 }
-async function finalsCanvas(){
+async function finalsCanvas(key){
+  key=key||'all';
+  const parts=finalsParts(key), label=finalsLabel(key).toUpperCase();
   const marks=await Promise.all(leadMarks().map(o=>imgLoad(orgLogo(o))));
   const hostIm=await imgLoad(orgLogo(HOST()));
   const sponIm=await Promise.all(shownSponsors().map(o=>imgLoad(orgLogo(o))));
@@ -5094,14 +5163,14 @@ async function finalsCanvas(){
       if(im){ const hgt=48, wid=Math.min(170, im.width*(hgt/im.height)); ctx.drawImage(im,x,top,wid,hgt); x+=wid+18; }
       else if(o.name){ ctx.font=ifont(26,700); ctx.fillStyle=IMG_INK; ctx.fillText(o.name,x,top+32);
         x+=ctx.measureText(o.name).width+20; } });
-    ctx.font=ifont(13,700); ctx.fillStyle=IMG_MUTED; imgRight(ctx,'FINALS',R,top+20);
-    ctx.font=ifont(14,400);
+    ctx.font=ifont(14,800); ctx.fillStyle=IMG_INK; imgRight(ctx,label,R,top+20);
+    ctx.font=ifont(14,400); ctx.fillStyle=IMG_MUTED;
     imgRight(ctx,new Date().toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}),R,top+42);
     let y=top+64;
-    ctx.font=ifont(40,800); ctx.fillStyle=IMG_INK; ctx.fillText(fitText(ctx,S.meta.title,R-L),L,y+34); y+=48;
+    ctx.font=ifont(42,800); ctx.fillStyle=IMG_INK; ctx.fillText(fitText(ctx,S.meta.title,R-L),L,y+36); y+=50;
     const sub=[S.meta.sub, organiserLine()?'Organised by '+organiserLine():''].filter(Boolean).join(' · ');
     if(sub){ ctx.font=ifont(20,400); ctx.fillStyle=IMG_MUTED; ctx.fillText(fitText(ctx,sub,R-L),L,y+20); }
-    return y+58;
+    return y+60;
   };
   const foot=(ctx,y)=>{
     ctx.font=ifont(15,400); ctx.fillStyle=IMG_MUTED;
@@ -5127,15 +5196,13 @@ async function finalsCanvas(){
     if(phone){ ctx.font=ifont(17,400); ctx.fillStyle=IMG_MUTED; ctx.fillText(phone,bx,y+24); }
     return y+48+IMG_PAD;
   };
-  /* pass one: measure */
   const d=dryCtx();
-  const H=Math.round(foot(d, finalsBody(d, masthead(d))));
-  /* pass two: draw */
+  const H=Math.round(foot(d, finalsBody(d, masthead(d), parts)));
   const sc=imgScale(H), cv=document.createElement('canvas');
   cv.width=Math.round(IMG_W*sc); cv.height=Math.round(H*sc);
   const ctx=cv.getContext('2d'); ctx.scale(sc,sc); ctx.textBaseline='alphabetic';
   ctx.fillStyle=IMG_PAPER; ctx.fillRect(0,0,IMG_W,H);
-  foot(ctx, finalsBody(ctx, masthead(ctx)));
+  foot(ctx, finalsBody(ctx, masthead(ctx), parts));
   return cv;
 }
 /* hand a finished canvas to the phone's share sheet, or download it */
@@ -5152,16 +5219,48 @@ async function shareCanvas(cv,name,title){
   setTimeout(()=>URL.revokeObjectURL(url),4000);
   toast('Saved '+name);
 }
-async function exportFinalsImage(){
+async function exportFinalsImage(key){
   if(!canShare()) return toast('Not allowed on this device');
-  toast('Drawing the finals…');
+  key=key||'all';
+  toast('Drawing '+finalsLabel(key).toLowerCase()+'…');
   try{
     if(document.fonts&&document.fonts.ready) await document.fonts.ready;
-    const cv=await finalsCanvas();
-    const name=(S.meta.title||'Finals').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'-')+'-finals.png';
-    await shareCanvas(cv,name,S.meta.title+' · finals');
+    const cv=await finalsCanvas(key);
+    const slug=s=>String(s||'').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'-');
+    const name=slug(S.meta.title||'Finals')+'-'+slug(finalsLabel(key))+'.png';
+    await shareCanvas(cv,name,S.meta.title+' · '+finalsLabel(key));
   }catch(e){ toast('Image failed: '+(e.message||e)); }
 }
+/* ---------- the share-as-image menu ----------
+   Everything that can be sent as a picture, in one place: the whole finals, a
+   single round, a single league, the three leagues together, just the final
+   placings, or the group standings — all of them or one group. */
+function imageMenu(first){
+  if(!canShare()){ toast('Not allowed on this device'); return ''; }
+  const btn=(key,label,sub)=>`<button class="imgOpt" onclick="closeModal();shareImage('${key}')">
+    <b>${esc(label)}</b>${sub?`<span>${esc(sub)}</span>`:''}</button>`;
+  const fin=`<div class="eyebrow" style="margin:14px 2px 8px">Finals</div><div class="imgGrid">
+    ${btn('all','Everything','every round and all three Leagues')}
+    ${btn('placings','Final standings','champions, runners-up and third in each League')}
+    ${btn('leagues','The three Leagues','matches, tables and placings')}
+    ${['diamond','platinum','gold'].filter(leagueOn).map(w=>btn(w,leagueName(w)+' League','')).join('')}
+    ${ROUNDS().length>1?btn('ko','All knockout rounds',ROUNDS().map(r=>r.label).join(' · ')):''}
+    ${ROUNDS().map(r=>btn('r:'+r.id,r.label,r.ties.length+' matches')).join('')}
+  </div>`;
+  const grp=`<div class="eyebrow" style="margin:14px 2px 8px">Group standings</div><div class="imgGrid">
+    ${btn('g:','All groups',GROUPS.length+' groups on one image')}
+    ${GROUPS.map(g=>btn('g:'+g,'Group '+g,'')).join('')}
+  </div>`;
+  return `<h3>Share as image</h3>
+    <p class="hint">Pick what to send. On a phone it opens the share sheet, so it goes straight into WhatsApp.</p>
+    ${first==='groups'?grp+fin:fin+grp}
+    <div class="row" style="margin-top:16px"><button class="btn" style="flex:1" onclick="closeModal()">Close</button></div>`;
+}
+function shareImage(key){
+  if(/^g:/.test(key)) return exportStandingsImage(key.slice(2));
+  return exportFinalsImage(key);
+}
+
 
 /* On a phone the picture should go straight into the group chat it is meant
    for, so the share sheet is offered first and the download is the fallback. */
