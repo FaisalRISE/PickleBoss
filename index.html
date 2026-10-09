@@ -216,6 +216,20 @@ th.num,td.num{width:30px;padding:8px 3px}
 .ed{padding:12px}
 .edRow{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .edRow .ix{width:20px;color:var(--dim);font:700 11px 'Outfit';flex:none}
+/* a pair entered twice (red) or a player in two pairs (amber) */
+.edRow.dup input.txt{border-color:var(--loss)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--loss) 30%,transparent);
+  background:color-mix(in srgb,var(--loss) 7%,var(--card))}
+.edRow.dup .ix{color:var(--loss)}
+.edRow.dupP input.txt{border-color:var(--gold)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--gold) 28%,transparent)}
+.edRow.dupP .ix{color:var(--gold)}
+.edRow.dup,.edRow.dupP{margin-bottom:3px}
+.dupTag{margin:0 0 9px 28px;font-size:11.5px;font-weight:600;line-height:1.35}
+.dupTag.dup{color:var(--lossInk)}
+.dupTag.dupP{color:var(--goldInk)}
+.dupBan{margin-bottom:12px}
+.dupBan ul{margin:6px 0 0;padding-left:18px}
+.dupBan li{margin:3px 0}
+.navDot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--loss);margin-left:5px;vertical-align:super}
 input.txt,select.txt{flex:1;min-width:0;height:38px;background:var(--surface);border:1px solid var(--border);
   color:var(--text);border-radius:8px;padding:0 10px;font:500 13.5px 'Outfit'}
 input.txt:focus,select.txt:focus{outline:0;border-color:var(--accent)}
@@ -1584,6 +1598,88 @@ function leagueTable(store,srcRefs){
   return list;
 }
 /* ===================== pair edit / move ===================== */
+/* ---------- the same pair entered twice ----------
+   Names are read the way a person reads them: capitals, extra spaces and the
+   order of the two players make no difference, so "Sriram | Kapil" is the same
+   pair as "kapil |  Sriram". Two kinds of clash are looked for:
+     · the same pair in two places — always a mistake, shown in red;
+     · one player's name in two different pairs — usually a mistake, but two
+       people can share a first name, so it is shown in amber and can be
+       marked "different people", after which it stays quiet. */
+const dupNorm = p => String(p||'').trim().toLowerCase().replace(/\s+/g,' ');
+const dupPlayers = t => String(t||'').split(/[|&\/+,]/).map(dupNorm).filter(Boolean);
+const dupKey  = t => { const p=dupPlayers(t); return p.length?p.slice().sort().join(' | '):dupNorm(t); };
+const placeOf  = x => 'Group '+x.g+' #'+(x.i+1);
+function allPairs(){
+  const out=[]; GROUPS.forEach(g=>S.groups[g].teams.forEach((t,i)=>out.push({g,i,t,k:dupKey(t)}))); return out;
+}
+/* the same pair more than once: [[{g,i,t},…], …] */
+function dupPairs(){
+  const by={}; allPairs().forEach(x=>(by[x.k]=by[x.k]||[]).push(x));
+  return Object.keys(by).map(k=>by[k]).filter(l=>l.length>1);
+}
+/* one player in two different pairs: [{p, name, list:[{g,i,t}]}] — minus the ones
+   already marked as different people */
+function sharedPlayers(){
+  const by={}, ok=S.dupOk||[];
+  allPairs().forEach(x=>{
+    const raw=String(x.t).split(/[|&\/+,]/).map(s=>s.trim()).filter(Boolean);
+    raw.forEach(nm=>{ const p=dupNorm(nm); (by[p]=by[p]||{p,name:nm,list:[]}).list.push(x); });
+  });
+  return Object.keys(by).map(p=>by[p]).filter(e=>{
+    if(ok.indexOf(e.p)>=0) return false;
+    const keys={}; e.list.forEach(x=>keys[x.k]=1);
+    return Object.keys(keys).length>1;          // the same pair twice is the red case, not this one
+  }).map(e=>{                                    // one row per pair, even if that pair is also doubled
+    const seen={}; e.list=e.list.filter(x=>seen[x.k]?false:(seen[x.k]=1)); return e; });
+}
+/* what each row on the Groups tab needs to say about itself */
+function dupMarks(){
+  const mk={};
+  dupPairs().forEach(l=>l.forEach(x=>{
+    mk[x.g+':'+x.i]={cls:'dup',tag:'Also entered as '+l.filter(y=>y!==x).map(placeOf).join(' and ')};
+  }));
+  sharedPlayers().forEach(e=>e.list.forEach(x=>{
+    const id=x.g+':'+x.i; if(mk[id]&&mk[id].cls==='dup') return;
+    const other=e.list.filter(y=>y.k!==x.k).map(y=>placeOf(y)+' ('+y.t+')').join(', ');
+    const line=e.name+' is also in '+other;
+    mk[id]=mk[id]?{cls:'dupP',tag:mk[id].tag+' · '+line}:{cls:'dupP',tag:line};
+  }));
+  return mk;
+}
+/* the red and amber notes at the top of the Groups tab */
+function dupBanner(){
+  const D=dupPairs(), P=sharedPlayers();
+  let h='';
+  if(D.length) h+=`<div class="alert bad dupBan"><span>⚠</span><span><b>${D.length===1?'This pair is':'These pairs are'}
+    entered more than once.</b> A pair can only play in one group — remove or rename the extra ${D.length===1?'entry':'entries'}.
+    <ul>${D.map(l=>`<li><b>${esc(l[0].t)}</b> — ${l.map(x=>esc(placeOf(x))).join(' and ')}</li>`).join('')}</ul></span></div>`;
+  if(P.length) h+=`<div class="alert warn dupBan"><span>⚠</span><span><b>Same player name in two pairs.</b>
+    If it is the same person, one of the pairs is wrong. If they are different people, mark it so —
+    or add a surname or initial to tell them apart.
+    <ul>${P.map(e=>`<li><b>${esc(e.name)}</b> — ${e.list.map(x=>esc(placeOf(x))+' ('+esc(x.t)+')').join(' and ')}
+      <button class="btn sm" style="margin-left:6px;padding:2px 8px" onclick="dupFine('${attr(e.p)}')">Different people</button></li>`).join('')}</ul>
+    </span></div>`;
+  return h;
+}
+function dupFine(p){
+  if(!canEditGroups()) return toast('Admin or organiser only');
+  S.dupOk=(S.dupOk||[]).concat([p]); save(); render(); toast('Marked as different people');
+}
+/* Before a name goes in: is it already somewhere else? Returns true to go on.
+   (g,i) is the row being edited, so a pair is never compared with itself. */
+function dupConfirm(name, g, i){
+  const k=dupKey(name), mine=dupPlayers(name), ok=S.dupOk||[];
+  const others=allPairs().filter(x=>!(x.g===g&&x.i===i));
+  const same=others.filter(x=>x.k===k);
+  if(same.length) return confirm('"'+name+'" is already entered in '+same.map(placeOf).join(' and ')+
+    '.\n\nA pair can only play in one group. Add it again anyway?');
+  const clash=[];
+  others.forEach(x=>dupPlayers(x.t).forEach(p=>{
+    if(mine.indexOf(p)>=0&&ok.indexOf(p)<0) clash.push(p.replace(/\b\w/g,c=>c.toUpperCase())+' is in '+placeOf(x)+' ('+x.t+')'); }));
+  if(clash.length) return confirm(clash.join('\n')+'\n\nIs this a different person with the same name? OK to carry on.');
+  return true;
+}
 function openPair(g, name){
   if(!canEditGroups()) return toast('Only the admin or an organiser can change teams');
   const others=GROUPS.filter(k=>k!==g);
@@ -1619,6 +1715,7 @@ function applyPair(g, oldName){
   if(nu!==oldName){
     const clash=(dest?S.groups[dest].teams:G.teams).some((t,j)=>t===nu&&(dest||j!==i));
     if(clash){ toast('That name is already in that group'); return; }
+    if(dupKey(nu)!==dupKey(oldName) && !dupConfirm(nu,g,i)) return;
     G.teams[i]=nu;
     G.matches.forEach(m=>{ if(m.a===oldName)m.a=nu; if(m.b===oldName)m.b=nu; });
   }
@@ -2183,8 +2280,10 @@ function render(){
   if(!S.groups[S.grp]) S.grp=GROUPS[0];
   const body=views[S.tab]();
   document.getElementById('wrap').innerHTML=headerHTML()+body+footerHTML();
+  const dupDot=canEditGroups()&&dupPairs().length;
   document.getElementById('nav').innerHTML=TABS().map(([k,l])=>
-    `<button class="${S.tab===k?'on':''}" onclick="go('${k}')">${l}</button>`).join('');
+    `<button class="${S.tab===k?'on':''}" onclick="go('${k}')">${l}${k==='groups'&&dupDot
+      ?'<span class="navDot" title="A pair is entered twice"></span>':''}</button>`).join('');
   syncChrome();
   putFocus(keep);
 }
@@ -2393,7 +2492,7 @@ function matchRow(ref,m,onCourt){
 
 /* ---------- Groups: rosters, courts, moves. No scoring. ---------- */
 function vGroups(){
-  const canEdit=canEditGroups();
+  const canEdit=canEditGroups(), mk=canEdit?dupMarks():{};
   const bar=(canShare()?`<button class="btn sm acc" onclick="openModal(imageMenu('groups'))">🖼 Share as image…</button>
       <button class="btn sm acc" onclick="openModal(shareModal('groups'))">↗ Share / WhatsApp</button>`:'')+
     (canExport()?`<button class="btn sm" onclick="doPrint('data','teams')">Team list PDF</button>
@@ -2402,7 +2501,7 @@ function vGroups(){
     (canEdit?`<div class="note" style="margin-bottom:12px">Rename a pair, move one between groups,
       add or remove pairs, and set the courts each group plays on — a group can run on up to ${MAX_COURTS},
       and its matches are shared out across them. Fixtures rebuild automatically — any pairing that still
-      exists keeps the score it already had.</div>`
+      exists keeps the score it already had.</div>`+dupBanner()
     :`<div class="alert warn" style="margin-bottom:12px"><span>👁</span><span><b>${
       canScore()?'Referee mode':'View mode'}.</b> Teams are set by the organiser${
       canScore()?', so they are read-only here':''}.</span></div>`)+
@@ -2413,11 +2512,12 @@ function vGroups(){
           <span style="color:var(--dim);font-size:11px">${G.teams.length} pairs · ${G.matches.length} matches</span></div>
         ${canEdit?courtEditor(g)+restNote(g)
           :`<div class="courtName" style="margin-bottom:10px">${esc(courtLabel(g))}</div>`}
-        ${G.teams.map((t,i)=>`<div class="edRow"><div class="ix">${i+1}</div>
+        ${G.teams.map((t,i)=>{ const d=mk[g+':'+i];
+          return `<div class="edRow ${d?d.cls:''}"><div class="ix">${i+1}</div>
           ${canEdit?`<input class="txt" value="${attr(t)}" onchange="renameTeam('${g}',${i},this.value)">
             <button class="btn sm" onclick="openPair('${g}','${attr(t)}')">Move…</button>`
             :`<div style="flex:1;font-size:13.5px;overflow-wrap:anywhere">${esc(t)}</div>`}
-          </div>`).join('')}
+          </div>${d?`<div class="dupTag ${d.cls}">${esc(d.tag)}</div>`:''}`; }).join('')}
         ${canEdit?(G.teams.length<MAX_TEAMS?`<div class="edRow"><div class="ix">${G.teams.length+1}</div>
           <input class="txt" id="new_${g}" placeholder="Player one | Player two"
             onkeydown="if(event.key==='Enter')addTeam('${g}')">
@@ -2480,6 +2580,7 @@ function renameTeam(g,i,v){
   const G=S.groups[g], old=G.teams[i], nu=v.trim();
   if(!nu||nu===old){render();return;}
   if(G.teams.some((t,j)=>j!==i&&t===nu)){toast('That pair is already in this group');render();return;}
+  if(dupKey(nu)!==dupKey(old) && !dupConfirm(nu,g,i)){render();return;}
   G.teams[i]=nu; G.matches.forEach(m=>{if(m.a===old)m.a=nu;if(m.b===old)m.b=nu;});
   save(); render(); toast('Renamed');
 }
@@ -2488,6 +2589,7 @@ function addTeam(g){
   const el=document.getElementById('new_'+g), v=(el?el.value:'').trim();
   if(!v){toast('Type a pair name first');return;}
   const G=S.groups[g]; if(G.teams.includes(v)){toast('That pair is already in this group');return;}
+  if(!dupConfirm(v,g,-1)) return;
   G.teams.push(v); G.matches=buildMatches(G.teams,G.matches);
   save(); render(); toast(v+' added · '+G.matches.length+' matches');
 }
