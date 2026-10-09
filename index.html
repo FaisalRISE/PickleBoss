@@ -227,6 +227,12 @@ th.num,td.num{width:30px;padding:8px 3px}
 .dupTag.dup{color:var(--lossInk)}
 .dupTag.dupP{color:var(--goldInk)}
 .dupBan{margin-bottom:12px}
+.buildTag{opacity:.7;font-size:11px}
+.updBar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between;
+  margin:0 0 12px;padding:10px 12px;border-radius:10px;font-size:13px;line-height:1.4;
+  background:color-mix(in srgb,var(--cyan) 13%,transparent);border:1px solid color-mix(in srgb,var(--cyan) 45%,transparent);
+  color:var(--cyanInk)}
+.updBar b{color:var(--text)}
 .dupBan ul{margin:6px 0 0;padding-left:18px}
 .dupBan li{margin:3px 0}
 .navDot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--loss);margin-left:5px;vertical-align:super}
@@ -825,7 +831,7 @@ const EVENT_TITLE = 'Pickleboss Friyayy';   // defaults; editable from Setup
 const EVENT_SUB   = '35 Split · 21 August 2026';
 const ORGANISER   = 'RISE Sports';
 const CONTACT     = '9987029222';
-const BUILD = 'build 2026-10-01';   // bump this whenever the file is re-uploaded
+const BUILD = 'build 2026-10-09b';  // bump this whenever the file is re-uploaded — open pages compare it with the site's copy
 const ADMIN_DEFAULT = 'Hello43556';         // the admin password, out of the box
 const MAX_TEAMS = 8;
 const MAX_COURTS = 6;     // courts a single group can be spread over
@@ -2279,7 +2285,7 @@ function render(){
   if(!views[S.tab]||(S.tab==='setup'&&!isAdmin())) S.tab=TABS()[0][0];
   if(!S.groups[S.grp]) S.grp=GROUPS[0];
   const body=views[S.tab]();
-  document.getElementById('wrap').innerHTML=headerHTML()+body+footerHTML();
+  document.getElementById('wrap').innerHTML=updBar()+headerHTML()+body+footerHTML();
   const dupDot=canEditGroups()&&dupPairs().length;
   document.getElementById('nav').innerHTML=TABS().map(([k,l])=>
     `<button class="${S.tab===k?'on':''}" onclick="go('${k}')">${l}${k==='groups'&&dupDot
@@ -2331,6 +2337,7 @@ function footerHTML(){
       ${ev?`<div class="fLine">Questions on court? Call or WhatsApp ${telLink(ev)}</div>`:''}
       <div class="fLine">${org?'Hosted on':'Tournament run by'} <b>${esc(hostName())}</b>${
         hp&&hp!==ev?` · to run your own tournament here, ${telLink(hp)}`:''}</div>
+      <div class="fLine buildTag">App ${esc(BUILD)}</div>
     </div>
   </footer>`;
 }
@@ -3616,6 +3623,41 @@ window.addEventListener('beforeunload',e=>{
   const queued=Object.keys(sync.dirty||{}).length;
   if(canScore()&&(S.ref||queued)){ e.preventDefault(); e.returnValue=''; return ''; }
 });
+/* ---------- is there a newer copy on the site? ----------
+   Phones hold on to a page: a tab left open from yesterday, or a browser that
+   serves its saved copy, keeps showing the old app after a new one has been
+   uploaded. So the page asks the site for the current file — when it opens,
+   and each time the phone comes back to it — and if the version there is not
+   this one, a bar at the top offers to reload. Scores are not in the file, so
+   reloading never loses any. */
+const UPD={next:'',busy:false};
+async function updCheck(){
+  if(UPD.busy||!/^https?:$/.test(location.protocol)||!navigator.onLine) return;
+  UPD.busy=true;
+  try{
+    const res=await fetch(location.origin+location.pathname+'?chk='+Date.now(),{cache:'no-store'});
+    if(res.ok){
+      const html=await res.text();
+      const b=(html.match(/const BUILD = '([^']+)'/)||[])[1];
+      /* only a file that is the app, and a different version of it */
+      if(html.indexOf('STORE_KEY')>0 && b && b!==BUILD && b!==UPD.next){
+        UPD.next=b; render();
+      }
+    }
+  }catch(e){}
+  UPD.busy=false;
+}
+function updBar(){
+  if(!UPD.next) return '';
+  return `<div class="updBar"><span><b>A newer version of this page is available</b>
+    (${esc(UPD.next)}). Your scores stay as they are.</span>
+    <button class="btn sm acc" onclick="updGo()">Reload now</button></div>`;
+}
+function updGo(){
+  try{ localStorage.setItem(STORE_KEY,JSON.stringify(Object.assign({},S,{ref:null}))); }catch(e){}
+  /* a fresh address, so the browser cannot answer from its saved copy */
+  location.replace(location.origin+location.pathname+'?v='+UPD.next.replace(/[^0-9a-z]+/gi,'')+location.hash);
+}
 /* a last write on the way out, in case anything was mid-flight */
 window.addEventListener('pagehide',()=>{
   try{ localStorage.setItem(STORE_KEY,JSON.stringify(Object.assign({},S,{ref:null}))); }catch(e){}
@@ -3623,7 +3665,10 @@ window.addEventListener('pagehide',()=>{
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'){
     try{ localStorage.setItem(STORE_KEY,JSON.stringify(Object.assign({},S,{ref:null}))); }catch(e){}
-  } else if(sync.on){ syncPull(false); }   // catch up on whatever happened while away
+  } else {
+    if(sync.on) syncPull(false);   // catch up on whatever happened while away
+    updCheck();                    // and on whatever was uploaded meanwhile
+  }
 });
 
 /* ========================================================================
@@ -5441,6 +5486,7 @@ render();
 if(sync.on){ syncStatus('sync'); pullTimer=setInterval(()=>syncPull(false),PULL_MS);
   syncPull(true).then(()=>syncScan()); }
 else syncStatus('off');
+setTimeout(updCheck,1500);
 </script>
 </body>
 </html>
