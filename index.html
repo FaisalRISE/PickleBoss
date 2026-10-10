@@ -762,6 +762,11 @@ a.tel:hover{border-bottom-style:solid}
 .drawRow .txt{height:34px;font-size:12.5px}
 .drawRow .code{width:62px;flex:none;text-align:center;font-weight:800}
 .drawRow .code2{width:20px;flex:none;color:var(--dim);font:700 11px 'Outfit';text-align:center}
+.card.ed .btn:disabled,.card.ed .txt:disabled{opacity:.45;cursor:not-allowed}
+.drawRow.held{margin-bottom:2px}
+.drawRow.held select.txt,.drawRow.held input.txt{opacity:.75}
+.heldNote{font-size:11.5px;color:var(--dim);margin:0 0 8px 68px;line-height:1.4}
+.heldNote .btn{vertical-align:middle}
 .drawRow select.txt{flex:1;min-width:0}
 .drawRow .vs{color:var(--dim);font:700 10px 'Outfit';flex:none}
 .rsRow{display:flex;align-items:center;gap:10px;justify-content:space-between;
@@ -831,7 +836,7 @@ const EVENT_TITLE = 'Pickleboss Friyayy';   // defaults; editable from Setup
 const EVENT_SUB   = '35 Split · 21 August 2026';
 const ORGANISER   = 'RISE Sports';
 const CONTACT     = '9987029222';
-const BUILD = 'build 2026-10-09b';  // bump this whenever the file is re-uploaded — open pages compare it with the site's copy
+const BUILD = 'build 2026-10-10';  // bump this whenever the file is re-uploaded — open pages compare it with the site's copy
 const ADMIN_DEFAULT = 'Hello43556';         // the admin password, out of the box
 const MAX_TEAMS = 8;
 const MAX_COURTS = 6;     // courts a single group can be spread over
@@ -3695,8 +3700,47 @@ const ordinal=n=>n+({1:'st',2:'nd',3:'rd'}[n]||'th');
 function vSetup(){
   const locked=koLocked();
   return `<div class="note" style="margin-bottom:12px">Everything on this page syncs to the other
-    devices. ${locked?'<b style="color:var(--gold)">Knockout scores exist</b>, so changing the draw now would strand them — clear the finals scores first if you really need to.':''}</div>`
-    +setupEvent()+setupAccess()+setupOrgs()+setupRules()+setupPreview()+setupGroups()+setupLeagues(locked)+setupDraw(locked)+setupPresets()+setupTemplates();
+    devices. ${locked?'<b style="color:var(--text)">The knockouts have started.</b> Ties still to be played can be rewired below at any time; a tie that already has a score is held as it is until that score is cleared.':''}</div>`
+    +setupEvent()+setupAccess()+setupOrgs()+setupRules()+setupPreview()+setupGroups()+setupLeagues(false)+setupDraw(false)+setupPresets()+setupTemplates();
+}
+/* ---------- changing the draw once play has started ----------
+   On the day an organiser may pair the semi-finals differently from the
+   printed plan — G v I instead of G v J. That has to be possible after the
+   quarter-finals are in. So the draw is held tie by tie, not all at once:
+   a tie that has its own score keeps its pairing; anything not yet played can
+   be rewired, and doing so touches no other score. */
+const tiePlayed = c => { const t=S.ko[c]; return !!(t&&(t.sa!=null||t.sb!=null)); };
+const leagueStore = w => w==='diamond'?S.diamond:w==='platinum'?S.platinum:{};
+const leaguePlayed = w => { const st=leagueStore(w)||{};
+  return Object.keys(st).some(k=>st[k]&&(st[k].sa!=null||st[k].sb!=null)); };
+const scoreText = t => (t.a||'?')+' '+(t.sa==null?'–':t.sa)+'–'+(t.sb==null?'–':t.sb)+' '+(t.b||'?');
+/* everything already played that takes its pair from tie c */
+function playedAfter(c){
+  const hit=r=>r==='W:'+c||r==='L:'+c, out=[];
+  ROUNDS().forEach(rd=>rd.ties.forEach(t=>{ if((hit(t[1])||hit(t[2]))&&tiePlayed(t[0])) out.push(t[0]); }));
+  GOLD_TIES().forEach(t=>{ if((hit(t[1])||hit(t[2]))&&tiePlayed(t[0])) out.push(t[0]); });
+  if(DIAMOND_SRC().some(hit)&&leaguePlayed('diamond')) out.push(nmD()+' League');
+  if(PLATINUM_SRC().some(hit)&&leaguePlayed('platinum')) out.push(nmP()+' League');
+  return out;
+}
+function heldMsg(c){ toast(c+' already has a score — clear it first to change this tie'); render(); }
+function unlockTie(c){
+  if(!isAdmin()) return toast('Admin only');
+  const t=S.ko[c]; if(!t) return;
+  const after=playedAfter(c);
+  if(!confirm('Clear the score of '+c+'?\n\n'+scoreText(t)+
+    (after.length?'\n\nThe winner of '+c+' has already played in '+after.join(', ')+
+      ' — those scores will empty too once '+c+' has no result.':'')+
+    '\n\nYou can then change who plays in '+c+'.')) return;
+  t.sa=null; t.sb=null; t.log=null;
+  drawEdited(); toast(c+' cleared — its pairing can be changed now');
+}
+function unlockLeague(w){
+  if(!isAdmin()) return toast('Admin only');
+  const nm=w==='diamond'?nmD():nmP();
+  if(!confirm('Clear every score in the '+nm+' League?\n\nYou can then change who plays in it.')) return;
+  const st=leagueStore(w); Object.keys(st).forEach(k=>{ const m=st[k]; if(m){ m.sa=null; m.sb=null; m.log=null; } });
+  drawEdited(); toast(nm+' League scores cleared');
 }
 
 
@@ -4283,7 +4327,8 @@ function toggleThirds(){
 function togglePlate(){
   if(!isAdmin()) return;
   if(PLATINUM_SRC().length){
-    if(!confirm('Turn the '+nmP()+' league off? Beaten semi-finalists will have no consolation league.')) return;
+    if(!confirm('Turn the '+nmP()+' league off? Beaten semi-finalists will have no consolation league.'+
+      (leaguePlayed('platinum')?'\n\nIts scores will be cleared.':''))) return;
     S.draw.platinum=[];
   } else {
     const last=ROUNDS()[ROUNDS().length-1];
@@ -4327,18 +4372,12 @@ function setupDraw(locked){
       <div class="row" style="align-items:center;margin-bottom:8px">
         <input class="txt" style="flex:1" value="${attr(rd.label)}"
           onchange="setRoundLabel(${ri},this.value)" ${locked?'disabled':''}>
-        <button class="btn sm" onclick="addTie(${ri})" ${locked?'disabled':''}>+ tie</button>
-        <button class="btn sm dgr" onclick="removeRound(${ri})" ${locked?'disabled':''}>Remove round</button>
+        <button class="btn sm" onclick="addTie(${ri})">+ tie</button>
+        <button class="btn sm dgr" onclick="removeRound(${ri})" ${rd.ties.some(t=>tiePlayed(t[0]))?'disabled title="Some of its ties have scores"':''}>Remove round</button>
       </div>
-      ${rd.ties.map(([c,x,y],ti)=>`<div class="drawRow">
-        <input class="txt code" value="${attr(c)}" onchange="setTieCode(${ri},${ti},this.value)" ${locked?'disabled':''}>
-        <select class="txt" onchange="setTieSrc(${ri},${ti},0,this.value)" ${locked?'disabled':''}>
-          ${sourceOptions(x,c)}</select>
-        <span class="vs">v</span>
-        <select class="txt" onchange="setTieSrc(${ri},${ti},1,this.value)" ${locked?'disabled':''}>
-          ${sourceOptions(y,c)}</select>
-        <button class="btn sm dgr" onclick="removeTie(${ri},${ti})" ${locked?'disabled':''}>✕</button>
-      </div>`).join('')}
+      ${rd.ties.map(([c,x,y],ti)=>drawTieRow(c,x,y,
+          `setTieCode(${ri},${ti},this.value)`,`setTieSrc(${ri},${ti},0,this.value)`,
+          `setTieSrc(${ri},${ti},1,this.value)`,`removeTie(${ri},${ti})`)).join('')}
     </div>`;
   });
   if(!ROUNDS().length) h+=`<p class="note">No knockout rounds — the finals leagues would have to draw
@@ -4349,13 +4388,9 @@ function setupDraw(locked){
     <div class="eyebrow" style="margin:14px 2px 7px">${esc(nmP())} — the consolation league</div>
     ${srcListHTML('platinum',PLATINUM_SRC(),locked)}
     <div class="eyebrow" style="margin:14px 2px 7px">${esc(nmG())} — the third-placed pairs</div>
-    ${GOLD_TIES().map(([c,x,y],ti)=>`<div class="drawRow">
-      <input class="txt code" value="${attr(c)}" onchange="setGoldCode(${ti},this.value)" ${locked?'disabled':''}>
-      <select class="txt" onchange="setGoldSrc(${ti},0,this.value)" ${locked?'disabled':''}>${sourceOptions(x,c)}</select>
-      <span class="vs">v</span>
-      <select class="txt" onchange="setGoldSrc(${ti},1,this.value)" ${locked?'disabled':''}>${sourceOptions(y,c)}</select>
-      <button class="btn sm dgr" onclick="removeGold(${ti})" ${locked?'disabled':''}>✕</button>
-    </div>`).join('')}
+    ${GOLD_TIES().map(([c,x,y],ti)=>drawTieRow(c,x,y,
+        `setGoldCode(${ti},this.value)`,`setGoldSrc(${ti},0,this.value)`,
+        `setGoldSrc(${ti},1,this.value)`,`removeGold(${ti})`)).join('')}
     <div class="row" style="margin-top:8px">
       <button class="btn sm" onclick="addGold()" ${locked?'disabled':''}>Add a ${esc(nmG())} tie</button>
     </div>
@@ -4364,8 +4399,23 @@ function setupDraw(locked){
   </div>`;
   return h;
 }
+/* one tie in the editor; a played tie is shown with its score and a way to clear it */
+function drawTieRow(c,x,y,onCode,onA,onB,onDel){
+  const held=tiePlayed(c), dis=held?'disabled':'', t=S.ko[c]||{};
+  return `<div class="drawRow${held?' held':''}">
+    <input class="txt code" value="${attr(c)}" onchange="${onCode}" ${dis}>
+    <select class="txt" onchange="${onA}" ${dis}>${sourceOptions(x,c)}</select>
+    <span class="vs">v</span>
+    <select class="txt" onchange="${onB}" ${dis}>${sourceOptions(y,c)}</select>
+    ${held?`<button class="btn sm" onclick="unlockTie('${attr(c)}')" title="Clear this score so the tie can be changed">Clear score</button>`
+      :`<button class="btn sm dgr" onclick="${onDel}">✕</button>`}
+  </div>${held?`<div class="heldNote">Played · ${esc(scoreText(t))}</div>`:''}`;
+}
 function srcListHTML(which,src,locked){
-  return src.map((r,i)=>`<div class="drawRow">
+  locked=leaguePlayed(which);
+  return (locked?`<div class="heldNote" style="margin:0 0 6px">Scores are in for this League, so who plays in it is held.
+      <button class="btn sm" style="margin-left:6px" onclick="unlockLeague('${which}')">Clear its scores</button></div>`:'')+
+    src.map((r,i)=>`<div class="drawRow">
       <span class="code2">${i+1}</span>
       <select class="txt" onchange="setLeagueSrc('${which}',${i},this.value)" ${locked?'disabled':''}>
         ${sourceOptions(r)}</select>
@@ -4376,9 +4426,12 @@ function srcListHTML(which,src,locked){
        <span class="note" style="align-self:center">${src.length<=1?'needs at least two'
          :src.length===2?'straight final':leaguePairs(src.length).length+' matches'}</span></div>`;
 }
-function drawEdited(){ S.ko={}; S.diamond={}; S.platinum={}; save(); render(); }
+/* A change to the draw re-resolves who plays where; scores stay with their
+   ties. Only unplayed ties can be changed, so no score is stranded. */
+function drawEdited(){ save(); render(); if(sync.on) drainQueue(6); }
 function setRoundLabel(ri,v){ S.draw.rounds[ri].label=v.trim()||S.draw.rounds[ri].label; drawEdited(); }
 function setTieCode(ri,ti,v){
+  if(tiePlayed(S.draw.rounds[ri].ties[ti][0])) return heldMsg(S.draw.rounds[ri].ties[ti][0]);
   v=(v||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
   if(!v) return render();
   if(TIE_CODES().filter(c=>c===v).length) return toast('That code is already used'),render();
@@ -4391,17 +4444,30 @@ function setTieCode(ri,ti,v){
   S.draw.diamond=S.draw.diamond.map(fix); S.draw.platinum=S.draw.platinum.map(fix);
   drawEdited();
 }
-function setTieSrc(ri,ti,slot,v){ S.draw.rounds[ri].ties[ti][slot+1]=v; drawEdited(); }
+function setTieSrc(ri,ti,slot,v){
+  const t=S.draw.rounds[ri].ties[ti]; if(tiePlayed(t[0])) return heldMsg(t[0]);
+  t[slot+1]=v; drawEdited();
+  toast(t[0]+' is now '+printRef(t[1])+' v '+printRef(t[2]));
+}
 function addTie(ri){
   const code=nextCode();
   S.draw.rounds[ri].ties.push([code,GROUPS[0]+'1',GROUPS[GROUPS.length-1]+'2']); drawEdited();
 }
-function removeTie(ri,ti){ S.draw.rounds[ri].ties.splice(ti,1); drawEdited(); }
+function removeTie(ri,ti){
+  const c=S.draw.rounds[ri].ties[ti][0]; if(tiePlayed(c)) return heldMsg(c);
+  const used=TIE_CODES().filter(k=>k!==c&&(ROUNDS().concat([{ties:GOLD_TIES()}])).some(rd=>rd.ties.some(t=>t[0]===k&&(t[1].slice(2)===c||t[2].slice(2)===c))));
+  const inLg=DIAMOND_SRC().concat(PLATINUM_SRC()).some(r=>r.slice(2)===c);
+  if((used.length||inLg)&&!confirm('Other ties take their pair from '+c+'. Remove it anyway? They will show as unset until rewired.')) return;
+  S.draw.rounds[ri].ties.splice(ti,1); delete S.ko[c]; drawEdited();
+}
 function addRound(){
   S.draw.rounds.push({id:'r'+Date.now().toString(36),label:'New round',ties:[]}); drawEdited();
 }
 function removeRound(ri){
-  if(!confirm('Remove "'+S.draw.rounds[ri].label+'" and its ties?')) return;
+  const rd=S.draw.rounds[ri];
+  if(rd.ties.some(t=>tiePlayed(t[0]))) return toast('Some ties in this round have scores — clear them first'),render();
+  if(!confirm('Remove "'+rd.label+'" and its ties?')) return;
+  rd.ties.forEach(t=>{ delete S.ko[t[0]]; });
   S.draw.rounds.splice(ri,1); drawEdited();
 }
 function nextCode(){
@@ -4409,24 +4475,30 @@ function nextCode(){
   for(const c of 'GHIJKLMNOPQRSTUVWXYZ') if(used.indexOf(c)<0) return c;
   let i=1; while(used.indexOf('T'+i)>=0) i++; return 'T'+i;
 }
-function setLeagueSrc(w,i,v){ S.draw[w][i]=v; drawEdited(); }
+function leagueHeld(w){ if(!leaguePlayed(w)) return false;
+  toast('The '+(w==='diamond'?nmD():nmP())+' League has scores — clear them first to change it'); render(); return true; }
+function setLeagueSrc(w,i,v){ if(leagueHeld(w)) return; S.draw[w][i]=v; drawEdited(); }
 function addLeagueSrc(w){
+  if(leagueHeld(w)) return;
   const last=ROUNDS()[ROUNDS().length-1];
   S.draw[w].push(last&&last.ties.length?(w==='diamond'?'W:':'L:')+last.ties[0][0]:GROUPS[0]+'1');
   drawEdited();
 }
-function removeLeagueSrc(w,i){ S.draw[w].splice(i,1); drawEdited(); }
+function removeLeagueSrc(w,i){ if(leagueHeld(w)) return; S.draw[w].splice(i,1); drawEdited(); }
 function setGoldCode(ti,v){
+  if(tiePlayed(S.draw.gold[ti][0])) return heldMsg(S.draw.gold[ti][0]);
   v=(v||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,''); if(!v) return render();
   if(TIE_CODES().filter(c=>c===v).length) return toast('That code is already used'),render();
   S.draw.gold[ti][0]=v; drawEdited();
 }
-function setGoldSrc(ti,slot,v){ S.draw.gold[ti][slot+1]=v; drawEdited(); }
+function setGoldSrc(ti,slot,v){ if(tiePlayed(S.draw.gold[ti][0])) return heldMsg(S.draw.gold[ti][0]);
+  S.draw.gold[ti][slot+1]=v; drawEdited(); }
 function addGold(){
   let i=1; while(TIE_CODES().indexOf('G'+i)>=0) i++;
   S.draw.gold.push(['G'+i,GROUPS[0]+'3',GROUPS[GROUPS.length-1]+'3']); drawEdited();
 }
-function removeGold(ti){ S.draw.gold.splice(ti,1); drawEdited(); }
+function removeGold(ti){ const c=S.draw.gold[ti][0]; if(tiePlayed(c)) return heldMsg(c);
+  S.draw.gold.splice(ti,1); delete S.ko[c]; drawEdited(); }
 
 /* ---------- start again from a known shape ---------- */
 function setupPresets(){
