@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
-<title>Pickleboss Friyayy · 35 Split · 21 August 2026</title>
+<title>Pickleboss Friyayy · 16 October 2026 · DUPR &lt; 4.3 Mixed Doubles</title>
 <!-- WhatsApp, Slack and the rest read these from the file itself; they never run
      the page's script, so editing the event in Setup cannot change them. Use
      "Download a copy for uploading" on the Setup tab to rewrite them. -->
-<meta name="description" content="Live scores — Pickleboss Friyayy · 35 Split · 21 August 2026 · RISE Sports">
+<meta name="description" content="Live scores — Pickleboss Friyayy · 16 October 2026 · DUPR &lt; 4.3 Mixed Doubles · RISE Sports">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="RISE Sports">
-<meta property="og:title" content="Pickleboss Friyayy · 35 Split · 21 August 2026">
+<meta property="og:title" content="Pickleboss Friyayy · 16 October 2026 · DUPR &lt; 4.3 Mixed Doubles">
 <meta property="og:description" content="Live scores, standings and the knockout draw.">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Pickleboss Friyayy · 35 Split · 21 August 2026">
+<meta name="twitter:title" content="Pickleboss Friyayy · 16 October 2026 · DUPR &lt; 4.3 Mixed Doubles">
 <meta name="twitter:description" content="Live scores, standings and the knockout draw.">
 <meta name="theme-color" content="#070b16">
 <!-- The tab icon travels inside the file. Without it the browser falls back to
@@ -161,6 +161,8 @@ th.num,td.num{width:30px;padding:8px 3px}
 .lgTag{font-size:8.5px;letter-spacing:.08em;padding:1px 4px;border-radius:4px;display:inline-block;margin-top:2px}
 .tMain{background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accentInk)}
 .tGold{background:color-mix(in srgb,var(--gold) 22%,transparent);color:var(--goldInk)}
+.tPend{background:color-mix(in srgb,var(--muted) 20%,transparent);color:var(--muted)}
+.xNote{font-size:10.5px;color:var(--dim);display:block;margin-top:1px}
 .pos{color:var(--gold)} .neg{color:var(--loss)}
 .medal{font:800 13px 'Bricolage Grotesque';flex:none}
 .mGold{color:var(--gold)} .mSil{color:var(--muted)} .mBronze{color:#d97706}
@@ -808,6 +810,7 @@ a.tel:hover{border-bottom-style:solid}
 .lgTag{font-size:9px;letter-spacing:.1em;padding:2px 5px;border-radius:4px;margin-left:7px;vertical-align:1px}
 .tMain{background:rgba(190,242,100,.14);color:var(--accent)}
 .tGold{background:rgba(251,191,36,.16);color:var(--gold)}
+.tPend{background:rgba(148,163,184,.18);color:#64748b}
 .q2 .rk{background:rgba(45,212,191,.16);color:var(--cyan)}
 .medal{font:800 13px 'Bricolage Grotesque'}
 .mGold{color:var(--gold)} .mSil{color:#cbd5e1} .mBronze{color:#d97706}
@@ -821,7 +824,7 @@ a.tel:hover{border-bottom-style:solid}
 <div id="printArea"></div>
 
 <script>
-const SEED = {"A": {"court": "Court Five", "teams": ["Rajesh | Zihaan", "Yuvi | Akshay", "Siddharth | Sabdhan", "Justin | Bhakti", "Avinash | Chinmai"]}, "B": {"court": "Court Four", "teams": ["Kunal M | Aakaash", "Amit G | Udipt", "Kaveer | Sanket", "Himanshu | Priyesh", "Devang | Azim"]}, "C": {"court": "Court Three", "teams": ["Safdar | Davis", "Harsh | Amit Nair", "Laksh | Shriram", "Kshitij | Vishal", "Mitesh | Amit S", "Amresh"]}, "D": {"court": "Court Two", "teams": ["Parvez | Kunal B", "Arif | Ansh", "Deep | Divya", "Shivam | Vineet", "Varun | Abhishek S", "Priyanka M | Kartik"]}, "E": {"court": "Court One", "teams": ["Zoyein | Rewanth", "Divyesh | Aum", "Nilesh | Sahil", "Vivek M | Mazhar", "Faizal | Kaustubh"]}, "F": {"court": "Court Six", "teams": ["Craig | Aarya", "Karan P | Prashant", "Amrit | Aashish", "Tushar | Rahul Sanap", "Rajiv | Trilok"]}};
+const SEED = {"A": {"court": "Court 1", "teams": ["Sanjana | Trilok", "Yash R | Drishti", "Karishma | Arsh", "Sunil | Vaidehi", "Karan | Anjali", "Amit N | Rashmi N"]}, "B": {"court": "Court 2", "teams": ["Bhakti | Yash J", "Karan | Debbie", "Yuvraj | Eugenie", "Vaidehi | Sonesh", "Amit M | Niza", "Rahul S | Lakshmi"]}, "C": {"court": "Court 3", "teams": ["Pooja | Kunal More", "Tanish | Mahek", "Aashna | Varun", "Vivek | Angela", "Tushar | Nmami"]}, "D": {"court": "Court 4", "teams": ["Preet | Pankti", "Paresh | Priyanka", "Vrutik | Tithi", "Rewanth | Kadambari", "Ranjit | Sunita"]}, "E": {"court": "Court 5", "teams": ["Aakash | Priyanka", "Simran | Aditya", "Sachin | Aashnu", "Nayan | Varun C", "Arif | Priya"]}};
 /* ========================================================================
    THE FORMAT IS DATA, NOT CODE
    Group letters, the knockout ties and the finals leagues all live in state
@@ -833,10 +836,10 @@ const SEED = {"A": {"court": "Court Five", "teams": ["Rajesh | Zihaan", "Yuvi | 
    ===================================================================== */
 /* ---------- fixed facts about the sport and this app ---------- */
 const EVENT_TITLE = 'Pickleboss Friyayy';   // defaults; editable from Setup
-const EVENT_SUB   = '35 Split · 21 August 2026';
+const EVENT_SUB   = '16 October 2026 · DUPR < 4.3 Mixed Doubles';
 const ORGANISER   = 'RISE Sports';
 const CONTACT     = '9987029222';
-const BUILD = 'build 2026-10-10';  // bump this whenever the file is re-uploaded — open pages compare it with the site's copy
+const BUILD = 'build 2026-10-16';  // bump this whenever the file is re-uploaded — open pages compare it with the site's copy
 const ADMIN_DEFAULT = 'Hello43556';         // the admin password, out of the box
 const MAX_TEAMS = 8;
 const MAX_COURTS = 6;     // courts a single group can be spread over
@@ -919,7 +922,7 @@ function oddList(){
   const out=[];
   GROUPS.forEach(g=>(S.groups[g].matches||[]).forEach(m=>{ if(oddScore(m)) out.push({ref:'g:'+g+':'+m.n,m}); }));
   TIE_CODES().forEach(c=>{ const t=S.ko[c]; if(t&&t.a&&t.b&&oddScore(t)) out.push({ref:'t:'+c,m:t}); });
-  ['diamond','platinum'].forEach(w=>{ const st=w==='diamond'?S.diamond:S.platinum;
+  LEAGUE_KEYS.forEach(w=>{ const st=lgStore(w);
     for(let i=0;i<leagueRounds(w);i++){ const m=st[i]; if(m&&m.a&&m.b&&oddScore(m)) out.push({ref:'l:'+w+':'+i,m}); } });
   return out;
 }
@@ -1242,6 +1245,7 @@ function syncGroupKeys(){
   GROUPS = Object.keys(S.groups||{}).sort();
 }
 
+const DEFAULT_PRESET='five';     // what a fresh phone opens with
 const PRESETS = {
   six: {
     name:'6 groups · pre-quarters into a three-way final',
@@ -1258,6 +1262,28 @@ const PRESETS = {
       diamond:['W:M','W:N','W:O'],
       platinum:['L:M','L:N','L:O'],
       gold:[['GA','A3','F3'],['GB','B3','E3'],['GC','C3','D3']]
+    }
+  },
+  /* Five groups give ten qualifiers, two short of six quarter-finals. The two
+     best pairs finishing third make up the numbers as F1 and F2 (T3:1, T3:2 —
+     see crossRank), and the three thirds left over play their own round robin
+     for Gold, just as the Diamond final is a round robin of three. */
+  five: {
+    name:'5 groups · best two 3rd-placed into the quarters, Gold round robin',
+    groups:['A','B','C','D','E'],
+    draw:{
+      rounds:[
+        {id:'qf',label:'Quarter-finals',ties:[
+          ['G','A1','T3:2'],['H','A2','T3:1'],['I','B1','E2'],
+          ['J','B2','E1'],['K','C1','D2'],['L','C2','D1']]},
+        {id:'sf',label:'Semi-finals',ties:[
+          ['M','W:G','W:J'],['N','W:H','W:L'],['O','W:I','W:K']]}
+      ],
+      names:{d:'Diamond',p:'Platinum',g:'Gold'},
+      diamond:['W:M','W:N','W:O'],
+      platinum:['L:M','L:N','L:O'],
+      gold:[],
+      goldlg:['T3:3','T3:4','T3:5']
     }
   },
   eight: {
@@ -1301,6 +1327,22 @@ const clone = o => JSON.parse(JSON.stringify(o));
 const DRAW      = () => S.draw;
 const ROUNDS    = () => S.draw.rounds||[];
 const GOLD_TIES = () => S.draw.gold||[];
+/* Gold can also be a round robin, like Diamond and Platinum — its sources sit
+   in draw.goldlg and its matches in S.goldlg. Everything that walks the
+   leagues goes through these three so 'gold' is just a third league. */
+const GOLDLG_SRC = () => S.draw.goldlg||[];
+const goldIsLeague = () => GOLDLG_SRC().length>0;
+const goldOn = () => GOLD_TIES().length>0 || goldIsLeague();
+const LEAGUE_KEYS = ['diamond','platinum','gold'];
+function lgStore(w){
+  if(w==='diamond') return S.diamond||(S.diamond={});
+  if(w==='platinum') return S.platinum||(S.platinum={});
+  if(w==='gold') return S.goldlg||(S.goldlg={});
+  return {};
+}
+function lgSrc(w){ return w==='diamond'?DIAMOND_SRC():w==='platinum'?PLATINUM_SRC():w==='gold'?GOLDLG_SRC():[]; }
+function lgName(w){ return w==='diamond'?nmD():w==='platinum'?nmP():nmG(); }
+const drawKeyOf = w => w==='gold'?'goldlg':w;
 /* The leagues are named by the organiser, so nothing user-facing hard-codes
    "Diamond" any more. Falling back keeps older saved events working. */
 const LG = () => (S.draw.names || (S.draw.names={d:'Diamond',p:'Platinum',g:'Gold'}));
@@ -1311,12 +1353,70 @@ const nmG = () => LG().g || 'Gold';
 /* Which league a finishing position actually leads to, read off the draw
    itself — so renaming a league, or switching the third-place ties off,
    changes the badge with no separate setting to keep in step. */
+const inMainRef = ref => (S.draw.rounds||[]).some(r=>r.ties.some(t=>t[1]===ref||t[2]===ref));
+const inGoldRef = ref => GOLD_TIES().some(t=>t[1]===ref||t[2]===ref) || GOLDLG_SRC().indexOf(ref)>=0;
 function qualFor(g,rank){
   const ref=g+rank;
-  const inRounds=(S.draw.rounds||[]).some(r=>r.ties.some(t=>t[1]===ref||t[2]===ref));
-  if(inRounds) return {label:nmD(),cls:'tMain'};
-  const inGold=GOLD_TIES().some(t=>t[1]===ref||t[2]===ref);
-  if(inGold) return {label:nmG(),cls:'tGold'};
+  if(inMainRef(ref)) return {label:nmD(),cls:'tMain'};
+  if(inGoldRef(ref)) return {label:nmG(),cls:'tGold'};
+  /* a place that only some groups convert — "the best two thirds" — is known
+     once every group has finished; until then it could go either way */
+  if(crossUsed(rank)){
+    const c=crossRank(rank), me=c.list.find(x=>x.g===g);
+    if(!me) return null;
+    if(c.ready){ const r='T'+rank+':'+me.pos;
+      if(inMainRef(r)) return {label:nmD(),cls:'tMain'};
+      if(inGoldRef(r)) return {label:nmG(),cls:'tGold'};
+      return null; }
+    const lead=[], used=allSourceRefs();
+    if(used.some(r=>{const m=rankRef(r);return m&&+m[1]===rank&&inMainRef(r);})) lead.push(nmD());
+    if(used.some(r=>{const m=rankRef(r);return m&&+m[1]===rank&&inGoldRef(r);})) lead.push(nmG());
+    return lead.length?{label:lead.join(' / ')+' ?',cls:'tPend'}:null;
+  }
+  return null;
+}
+/* every source the draw reads, wherever it reads it */
+function allSourceRefs(){
+  const out=[];
+  (S.draw.rounds||[]).forEach(r=>r.ties.forEach(t=>{out.push(t[1],t[2]);}));
+  GOLD_TIES().forEach(t=>{out.push(t[1],t[2]);});
+  return out.concat(DIAMOND_SRC(),PLATINUM_SRC(),GOLDLG_SRC()).filter(Boolean);
+}
+/* ---------- the best pairs at one finishing place, across the groups ----------
+   "T3:1" is the best of the pairs that finished third, "T3:2" the next. With
+   five groups that is how the quarter-finals find their last two pairs (F1, F2
+   on the draw sheet), and T3:3–T3:5 are the thirds who play for Gold.
+   Groups are not all the same size: a third-placed pair in a group of six has
+   played a match more than one in a group of five. So, as in the big football
+   tournaments, in a larger group the result against the pair(s) finishing
+   below the smallest group's size is left out, and every pair is compared on
+   the same number of matches — wins, then point difference, then points scored. */
+const rankRef = r => /^T([0-9]+):([0-9]+)$/.exec(String(r||''));
+const crossUsed = rank => allSourceRefs().some(r=>{ const m=rankRef(r); return m&&+m[1]===rank; });
+const crossLetter = () => String.fromCharCode((GROUPS.length?GROUPS[GROUPS.length-1].charCodeAt(0):64)+1);
+function crossRank(rank){
+  const sizes=GROUPS.map(g=>S.groups[g].teams.length).filter(n=>n>=rank);
+  const base=sizes.length?Math.min.apply(null,sizes):0, list=[];
+  GROUPS.forEach(g=>{
+    const G=S.groups[g], st=standings(g), me=st[rank-1]; if(!me) return;
+    const drop=st.slice(base).map(r=>r.team).filter(t=>t!==me.team);
+    const row={g,team:me.team,p:0,w:0,l:0,pf:0,pa:0,dropped:drop,done:groupDone(g)};
+    G.matches.forEach(m=>{ if(!played(m)) return; let them,f,a;
+      if(m.a===me.team){them=m.b;f=m.sa;a=m.sb;} else if(m.b===me.team){them=m.a;f=m.sb;a=m.sa;} else return;
+      if(drop.indexOf(them)>=0) return;
+      row.p++; row.pf+=f; row.pa+=a; if(f>a)row.w++; else if(a>f)row.l++; });
+    row.d=row.pf-row.pa; list.push(row);
+  });
+  list.sort((x,y)=>(y.w-x.w)||(y.d-x.d)||(y.pf-x.pf)||x.g.localeCompare(y.g));
+  list.forEach((r,i)=>{ r.pos=i+1;
+    const n=list[i+1]; if(n&&n.w===r.w&&n.d===r.d&&n.pf===r.pf){ r.level=true; n.level=true; } });
+  return {list, base, ready:GROUPS.length>0&&GROUPS.every(groupDone)};
+}
+/* which of the ranked places the draw takes, and into what */
+function crossFate(rank,pos){
+  const r='T'+rank+':'+pos;
+  if(inMainRef(r)) return {label:nmD(),cls:'tMain'};
+  if(inGoldRef(r)) return {label:nmG(),cls:'tGold'};
   return null;
 }
 const DIAMOND_SRC  = () => S.draw.diamond||[];
@@ -1354,7 +1454,13 @@ function normAccess(a){
 }
 const ACCESS = () => (S.access=S.access&&S.access.tabs?S.access:normAccess(S.access));
 
-const STORE_KEY = 'pboss35_v2';
+/* 16 Oct 2026: a new key, so every phone opens this event fresh with the
+   five-group draw and tonight's pairs rather than the last event's results.
+   What belongs to the organiser rather than to an event — logos, game rules,
+   who-sees-what, saved formats, the colour theme — is carried over once from
+   the previous key (see load). */
+const STORE_KEY = 'pboss35_v3';
+const PREV_STORE_KEY = 'pboss35_v2';
 let S = load();
 
 /* ===================== state ===================== */
@@ -1381,7 +1487,8 @@ function buildMatches(teams, old){
   return out;
 }
 function blank(preset){
-  const P=PRESETS[preset||'six'];
+  if(!PRESETS[preset]) preset=DEFAULT_PRESET;
+  const P=PRESETS[preset];
   const g={};
   P.groups.forEach((k,i)=>{
     const s=SEED[k]||{court:'Court '+(i+1),teams:[]};
@@ -1391,15 +1498,15 @@ function blank(preset){
            host:{id:'h0',name:ORGANISER,logo:'',invert:true,phone:CONTACT},
            organisers:[], sponsors:[],
            rules:clone(RULES_DEFAULT),
-           draw:clone(P.draw), preset:preset||'six',
-           groups:g, ko:{}, diamond:{}, platinum:{},
+           draw:clone(P.draw), preset:preset,
+           groups:g, ko:{}, diamond:{}, platinum:{}, goldlg:{},
            tab:'courts', grp:P.groups[0], fin:'diamond', edit:false, courtSel:'', tblGrp:'',
            role:'view', mode:'entry', theme:'light', themeV:2, templates:[],
            adminHash:'', scorerHash:'', orgHash:'', access:clone(ACCESS_DEFAULT), open:{}, ref:null };
 }
 function load(){
   try{const r=localStorage.getItem(STORE_KEY); if(r){const p=JSON.parse(r);
-    if(p&&p.groups){ p.ko=p.ko||{}; p.diamond=p.diamond||{}; p.platinum=p.platinum||{};
+    if(p&&p.groups){ p.ko=p.ko||{}; p.diamond=p.diamond||{}; p.platinum=p.platinum||{}; p.goldlg=p.goldlg||{};
       p.fin=p.fin||'diamond'; p.mode=p.mode||'entry'; p.theme=p.theme||'light';
       /* Dark used to be the default, so a device that has opened the app before
          has "dark" saved without anyone choosing it. Light is the default now:
@@ -1434,7 +1541,19 @@ function load(){
         delete p.pin; delete p.pinHash; delete p.scorer; p.role='view'; }
       p.role=p.role||'view';
       return p; }}}catch(e){}
-  return blank();
+  return carryOver(blank());
+}
+function carryOver(b){
+  try{ const o=JSON.parse(localStorage.getItem(PREV_STORE_KEY)||'null');
+    if(o&&typeof o==='object'){
+      if(o.host||o.organisers||o.sponsors){ b.host=o.host||b.host; b.organisers=o.organisers||[]; b.sponsors=o.sponsors||[]; normBrand(b); }
+      if(o.rules) b.rules=normRules(o.rules);
+      if(o.access) b.access=normAccess(o.access);
+      if(Array.isArray(o.templates)) b.templates=o.templates;
+      if(o.theme&&o.themeV===2) b.theme=o.theme;
+      if(o.meta&&o.meta.contact) b.meta.contact=o.meta.contact;
+    } }catch(e){}
+  return b;
 }
 function save(){ try{localStorage.setItem(STORE_KEY, JSON.stringify(
     Object.assign({},S,{ref:null}))); }catch(e){}
@@ -1472,11 +1591,16 @@ function refName(ref){
   /* a group placing like "A1" or "H3" — the letters come from the groups that
      actually exist, so adding groups G and H needs no change here */
   if(/^[A-Z][0-9]+$/.test(ref) && GROUPS.indexOf(ref[0])>=0) return seedName(ref);
+  const rr=rankRef(ref);
+  if(rr){ const c=crossRank(+rr[1]); if(!c.ready) return '';
+    const x=c.list[+rr[2]-1]; return x?x.team:''; }
   if(ref.startsWith('W:')) return tieWinner(ref.slice(2));
   if(ref.startsWith('L:')) return tieLoser(ref.slice(2));
   return '';
 }
 function refLabel(ref){
+  const rr=rankRef(ref);
+  if(rr) return +rr[1]===3 ? crossLetter()+rr[2] : ordinal(+rr[1])+' #'+rr[2];
   if(ref.startsWith('W:')) return 'Win '+ref.slice(2);
   if(ref.startsWith('L:')) return 'SF '+ref.slice(2)+' L';
   return ref;
@@ -1590,6 +1714,7 @@ function refresh(){
     GOLD_TIES().forEach(([c,x,y])=>setTie(c,refName(x),refName(y)));
     setLeague(S.diamond,DIAMOND_SRC());
     setLeague(S.platinum,PLATINUM_SRC());
+    setLeague(lgStore('gold'),GOLDLG_SRC());
     const dp=goldDeciderPairs();
     GOLD_DECIDERS.forEach((c,i)=>{ const p=dp[i];
       if(p) setTie(c,p[1],p[2]); else setTie(c,'',''); });
@@ -1953,7 +2078,7 @@ function getMatch(ref){
   const p=ref.split(':');
   if(p[0]==='g'){ const G=S.groups[p[1]]; return G?G.matches.find(m=>m.n===+p[2]):null; }
   if(p[0]==='t') return S.ko[p[1]]||null;
-  if(p[0]==='l') return (p[1]==='diamond'?S.diamond:S.platinum)[+p[2]]||null;
+  if(p[0]==='l') return LEAGUE_KEYS.indexOf(p[1])>=0?(lgStore(p[1])[+p[2]]||null):null;
   return null;
 }
 function matchTitle(ref){
@@ -1967,7 +2092,7 @@ function matchTitle(ref){
     if(GOLD_TIES().some(t=>t[0]===c)) return 'Gold tie '+c;
     return 'Tie '+c;
   }
-  return (p[1]==='diamond'?nmD():nmP())+' League · Match '+(+p[2]+1);
+  return lgName(p[1])+' League · Match '+(+p[2]+1);
 }
 function matchCourt(ref){
   const p=ref.split(':');
@@ -2282,6 +2407,7 @@ function validTab(){
 }
 
 function render(){
+  renderLater=false;
   const keep=grabFocus();
   applyTheme(); refresh(); validTab(); save();
   applyDocTitle();
@@ -2322,11 +2448,13 @@ function headerHTML(){
 function pillsHTML(){
   let done=0,tot=0;
   GROUPS.forEach(g=>S.groups[g].matches.forEach(m=>{tot++;if(played(m))done++;}));
-  const goldDone=['GA','GB','GC'].filter(c=>{const t=S.ko[c];return t&&t.sa!=null&&t.sb!=null;}).length;
+  const goldDone=goldIsLeague()?leagueDone(lgStore('gold'))
+    :GOLD_TIES().map(t=>t[0]).filter(c=>{const t=S.ko[c];return t&&t.sa!=null&&t.sb!=null;}).length;
+  const goldTot=goldIsLeague()?leagueRounds('gold'):(GOLD_TIES().length||3);
   return `<div class="pill">Groups <b>${done}/${tot}</b></div>
     <div class="pill">Diamond <b>${leagueDone(S.diamond)}/3</b></div>
     <div class="pill">Platinum <b>${leagueDone(S.platinum)}/3</b></div>
-    <div class="pill">${esc(nmG())} <b>${goldDone}/${GOLD_TIES().length||3}</b></div>`;
+    <div class="pill">${esc(nmG())} <b>${goldDone}/${goldTot}</b></div>`;
 }
 function footerHTML(){
   const sp=shownSponsors(), org=organiserLine(), ev=eventPhone(), hp=hostPhone();
@@ -2639,7 +2767,36 @@ function vTable(){
   return (bar?`<div class="expbar">${bar}</div>`:'')+chips+
     `<div class="note" style="margin-bottom:12px">Wins, then point difference, then head-to-head, then points scored.
     Qualification follows the draw: the badge on each pair says which league they have reached.</div>
-    <div class="grid ${f?'':'g2'}">`+(f?[f]:GROUPS).map(g=>tableCard(g,false)).join('')+`</div>`;
+    <div class="grid ${f?'':'g2'}">`+(f?[f]:GROUPS).map(g=>tableCard(g,false)).join('')+
+    (!f&&crossUsed(3)?crossCard(3):'')+`</div>`;
+}
+/* the third-placed pairs side by side — the virtual "Group F" on the draw sheet */
+function crossCard(rank){
+  const c=crossRank(rank), L=crossLetter();
+  if(!c.list.length) return '';
+  const anyDrop=c.list.some(r=>r.dropped.length);
+  const lvl=c.ready&&c.list.some((r,i)=>r.level&&c.list[i+1]&&c.list[i+1].level&&
+    JSON.stringify(crossFate(rank,r.pos))!==JSON.stringify(crossFate(rank,c.list[i+1].pos)));
+  return `<div class="card">
+    <div class="hd"><b>Group ${L} · best ${ordinal(rank)}-placed pairs</b><span>${c.ready?'Final':'Provisional'}</span></div>
+    <div class="tblWrap">
+    <table><thead><tr><th>Pair</th><th class="num">Grp</th><th class="num">P</th><th class="num">W</th><th class="num">L</th>
+      <th class="num">+</th><th class="num">–</th><th class="num">Diff</th></tr></thead><tbody>
+    ${c.list.map(r=>{
+      const q=crossFate(rank,r.pos);
+      const tag=q?`<span class="lgTag ${q.cls}">${esc(q.label.toUpperCase())}</span>`:'';
+      return `<tr class="${q?(q.cls==='tMain'?'q1':'q3'):''}"><td class="name"><span class="rk">${L}${r.pos}</span>
+        <span class="txt">${esc(r.team)}${r.level&&c.ready?' <b title="Level on everything">=</b>':''}${tag?'<br>'+tag:''}${r.dropped.length?
+          `<span class="xNote">not counted: v ${r.dropped.map(esc).join(', ')}</span>`:''}</span></td>
+        <td class="num">${r.g}${r.done?'':'*'}</td><td class="num">${r.p}</td><td class="num">${r.w}</td><td class="num">${r.l}</td>
+        <td class="num">${r.pf}</td><td class="num">${r.pa}</td>
+        <td class="num ${r.d>0?'pos':r.d<0?'neg':''}">${r.d>0?'+':''}${r.d}</td></tr>`;}).join('')}
+    </tbody></table></div>
+    <div class="note" style="padding:8px 12px 12px">Every ${ordinal(rank)}-placed pair is compared on ${c.base-1} matches${anyDrop?
+      ` — in the bigger groups the result against the pair finishing below ${ordinal(c.base)} is left out`:''}.
+      Then wins, point difference, points scored.${c.ready?'':' <b>* group still playing</b> — nothing is fixed until every group is complete.'}
+      ${lvl?'<br><b style="color:var(--loss)">Two pairs are level on everything across the cut-off</b> — the order shown is by group letter; settle it on court (toss or decider) before the next round.':''}</div>
+  </div>`;
 }
 /* ---------- Finals ---------- */
 function vFinals(){
@@ -2672,7 +2829,7 @@ function tieCard(code,x,y,label){
       onclick="openRef('t:${code}')">Referee this match</button>`:''}</div>`;
 }
 function leagueMatchCard(which,i,label){
-  const store=which==='diamond'?S.diamond:S.platinum;
+  const store=lgStore(which);
   const m=store[i]||{a:'',b:'',sa:null,sb:null};
   const has=!!(m.a&&m.b), p=m.sa!=null&&m.sb!=null, odd=has&&oddScore(m);
   const entry=canScore()&&S.mode==='entry';
@@ -2689,15 +2846,16 @@ function leagueMatchCard(which,i,label){
       onclick="openRef('l:${which}:${i}')">Referee this match</button>`:''}</div>`;
 }
 function leagueRounds(which){
-  const src=which==='diamond'?DIAMOND_SRC():PLATINUM_SRC();
+  const src=lgSrc(which);
   return leaguePairs(src.length).length;
 }
 function leagueStandingCard(which,srcRefs,title){
-  const store=which==='diamond'?S.diamond:S.platinum;
+  const store=lgStore(which);
   const st=leagueTable(store,srcRefs);
   if(!srcRefs.map(refName).some(Boolean))
     return `<div class="card"><div class="hd"><b>${esc(title)} League Table</b></div>
-      <div style="padding:0 12px 16px" class="note">Fills once the semi-finals are decided.</div></div>`;
+      <div style="padding:0 12px 16px" class="note">${srcRefs.some(r=>rankRef(r))
+        ?'Fills once every group is complete.':'Fills once the semi-finals are decided.'}</div></div>`;
   const all=[0,1,2].every(i=>{const m=store[i];return m&&m.sa!=null&&m.sb!=null;});
   return `<div class="card"><div class="hd"><b>${esc(title)} League Table</b><span>${all?'Final':'Live'}</span></div>
     <div class="tblWrap"><table>
@@ -2713,14 +2871,14 @@ function leagueStandingCard(which,srcRefs,title){
     </tbody></table></div></div>`;
 }
 function championBanner(which,srcRefs){
-  const store=which==='diamond'?S.diamond:S.platinum;
+  const store=lgStore(which);
   const n=leaguePairs((srcRefs||[]).length).length;
   if(!n||![...Array(n).keys()].every(i=>{const m=store[i];return m&&m.sa!=null&&m.sb!=null;})) return '';
   const st=leagueTable(store,srcRefs);
   const box=(lbl,nm,col)=>nm?`<div class="card tie" style="text-align:center;padding:14px;border-color:${col}">
     <div class="tieH" style="justify-content:center"><span>${lbl}</span></div>
     <div style="font:800 16px 'Bricolage Grotesque';color:${col}">${esc(nm)}</div></div>`:'';
-  return `<div class="rnd"><div class="rndT">${esc(which==='diamond'?nmD():nmP())} League Placings</div>
+  return `<div class="rnd"><div class="rndT">${esc(lgName(which))} League Placings</div>
     <div class="podium">${box('Champions',st[0]&&st[0].team,'var(--gold)')}
     ${box('Runners-up',st[1]&&st[1].team,'var(--muted)')}
     ${box('Third',st[2]&&st[2].team,'#d97706')}</div></div>`;
@@ -2730,7 +2888,8 @@ function vDiamond(){
   const lgDone=[...Array(n).keys()].filter(i=>{const m=S.diamond[i];return m&&m.sa!=null&&m.sb!=null;}).length;
   const lgLabel = src.length<=2 ? 'Final' : nmD()+' League · final round robin';
   let h=`<div class="note" style="margin-bottom:14px"><b style="color:var(--accent)">${esc(nmD())} bracket.</b>
-    ${GROUPS.length} groups, top two through${ROUNDS().length?', '+ROUNDS().map(r=>r.label.toLowerCase()).join(' then ')  :''}.
+    ${GROUPS.length} groups, top two through${crossUsed(3)&&ROUNDS().some(r=>r.ties.some(t=>rankRef(t[1])||rankRef(t[2])))
+      ?' with the best '+ROUNDS()[0].ties.reduce((n,t)=>n+(rankRef(t[1])?1:0)+(rankRef(t[2])?1:0),0)+' third-placed pairs (Group '+crossLetter()+' on the Standings tab)':''}${ROUNDS().length?', '+ROUNDS().map(r=>r.label.toLowerCase()).join(' then ')  :''}.
     ${src.length<=2?'The two winners meet in the final.'
       :'The '+src.length+' winners play a round-robin — champion by wins, then point difference.'}</div>`;
   ROUNDS().forEach(r=>{
@@ -2755,7 +2914,23 @@ function vPlatinum(){
       (src.length>2?`<div style="margin-top:12px">${leagueStandingCard('platinum',src,nmP())}</div>`:''))+
     championBanner('platinum',src);
 }
+function vGoldLeague(){
+  const src=GOLDLG_SRC(), n=leagueRounds('gold'), st=lgStore('gold');
+  const lgDone=[...Array(n).keys()].filter(i=>{const m=st[i];return m&&m.sa!=null&&m.sb!=null;}).length;
+  const lgLabel = src.length<=2 ? nmG()+' Final' : nmG()+' League · round robin';
+  const L=crossLetter();
+  return `<div class="note" style="margin-bottom:14px"><b style="color:var(--gold)">${esc(nmG())} League.</b>
+    The ${src.length} pairs ${src.every(r=>rankRef(r))?'finishing third who did not make the '+
+      ((ROUNDS()[0]||{label:'knockout'}).label.toLowerCase())+' ('+src.map(printRef).join(', ')+' on the Standings tab)'
+      :'placed here'}
+    ${src.length<=2?'meet for the '+esc(nmG())+' title.':'play a round-robin — champion by wins, then point difference, then points scored.'}</div>`+
+    section('g_lg', lgLabel, lgDone, n, ()=>
+      `<div class="grid g2">`+[...Array(n).keys()].map(i=>leagueMatchCard('gold',i,lgLabel)).join('')+`</div>`+
+      (src.length>2?`<div style="margin-top:12px">${leagueStandingCard('gold',src,nmG())}</div>`:''))+
+    championBanner('gold',src);
+}
 function vGold(){
+  if(goldIsLeague()) return vGoldLeague();
   const G=GOLD_TIES(); if(!G.length)
     return `<div class="note">The third-place league is switched off for this format. Turn it on in Setup.</div>`;
   const codes=G.map(x=>x[0]), gs=goldStanding();
@@ -2945,21 +3120,33 @@ function closeModal(){ modalOpen=false; document.getElementById('modalRoot').inn
    ===================================================================== */
 const SUPA_URL = 'https://utfvjsvvbifwcektzrwj.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0ZnZqc3Z2Ymlmd2Nla3R6cndqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyMTAxNzIsImV4cCI6MjEwMTc4NjE3Mn0.gSi-EVADM6NvnQiWN2TahSGNTtys3skyFpAf-E8qoSA';
-const SYNC_KEY = 'pboss35sync2';
+/* A fresh event code for 16 Oct, so tonight's rows never meet the rows left
+   on the server by earlier Fridays (a fresh phone would otherwise lose every
+   revision race to them). The device name is carried over from the old key. */
+const SYNC_KEY = 'pboss35sync3';
+const PREV_SYNC_KEY = 'pboss35sync2';
+const DEFAULT_EVENT = 'pboss35-1610';
 const PULL_MS=4000, PUSH_MS=600;
 
-let sync={ on:true, event:'pboss35', device:'', status:'off', note:'',
+let sync={ on:true, event:DEFAULT_EVENT, device:'', status:'off', note:'',
   cursor:null, rev:{}, sent:{}, dirty:{}, busy:false, pulling:false, noFilter:false, pulledOnce:false,
   lastOk:0, pending:0, log:[] };
 let pullTimer=null, pushTimer=null;
+/* A result from another court never repaints the page under someone's thumb:
+   while a score box here has the focus it waits, and goes on as soon as the
+   box is left (or with this device's own next keystroke, which repaints anyway). */
+let renderLater=false;
+document.addEventListener('focusout',()=>{ if(!renderLater) return;
+  setTimeout(()=>{ if(renderLater&&!inScoreBox()&&!modalOpen&&!S.ref) render(); },0); },true);
 
 function syncSave(){ try{ localStorage.setItem(SYNC_KEY, JSON.stringify({
   on:sync.on, event:sync.event, device:sync.device, cursor:sync.cursor,
   rev:sync.rev, sent:sync.sent })); }catch(e){} }
 function syncLoad(){
   let r=null; try{ r=JSON.parse(localStorage.getItem(SYNC_KEY)||'null'); }catch(e){}
-  if(r){ sync.on=(r.on!==false); sync.event=r.event||'pboss35'; sync.device=r.device||'';
+  if(r){ sync.on=(r.on!==false); sync.event=r.event||DEFAULT_EVENT; sync.device=r.device||'';
          sync.cursor=r.cursor||null; sync.rev=r.rev||{}; sync.sent=r.sent||{}; }
+  else { try{ const o=JSON.parse(localStorage.getItem(PREV_SYNC_KEY)||'null'); if(o&&o.device) sync.device=o.device; }catch(e){} }
   if(!sync.device) sync.device='Device '+Math.random().toString(36).slice(2,6).toUpperCase();
 }
 
@@ -2982,7 +3169,7 @@ function groupPayload(g){ const G=S.groups[g];
 function tiePayload(c){ const t=S.ko[c]||{};
   return { sa:t.sa==null?null:t.sa, sb:t.sb==null?null:t.sb, log:t.log||null,
     server:t.server||null, posA:t.posA||0, posB:t.posB||0, startLeft:t.startLeft||null, invert:!!t.invert }; }
-function leaguePayload(w,i){ const s=(w==='diamond'?S.diamond:S.platinum)[i]||{};
+function leaguePayload(w,i){ const s=lgStore(w)[i]||{};
   return { sa:s.sa==null?null:s.sa, sb:s.sb==null?null:s.sb, log:s.log||null,
     server:s.server||null, posA:s.posA||0, posB:s.posB||0, startLeft:s.startLeft||null, invert:!!s.invert }; }
 
@@ -2998,8 +3185,8 @@ function syncSnapshot(){
   o[K_BRD()]={ host:HOST(), organisers:ORGANISERS(), sponsors:SPONSORS() };
   GROUPS.forEach(g=>{ o[K_G(g)]=groupPayload(g); });
   TIE_CODES().forEach(c=>{ o[K_T(c)]=tiePayload(c); });
-  ['diamond','platinum'].forEach(w=>{
-    const n=leaguePairs((w==='diamond'?DIAMOND_SRC():PLATINUM_SRC()).length).length;
+  LEAGUE_KEYS.forEach(w=>{
+    const n=leaguePairs(lgSrc(w).length).length;
     for(let i=0;i<n;i++) o[K_L(w,i)]=leaguePayload(w,i);
   });
   return o;
@@ -3073,7 +3260,7 @@ function applyTie(c,d){ const t=S.ko[c]||(S.ko[c]={a:'',b:'',sa:null,sb:null,log
   t.sa=d&&d.sa!=null?d.sa:null; t.sb=d&&d.sb!=null?d.sb:null; t.log=(d&&d.log)||null;
   if(d){ t.server=d.server||null; t.posA=d.posA||0; t.posB=d.posB||0; t.startLeft=d.startLeft||null; t.invert=!!d.invert; }
   return true; }
-function applyLeague(w,i,d){ const store=w==='diamond'?S.diamond:S.platinum;
+function applyLeague(w,i,d){ if(LEAGUE_KEYS.indexOf(w)<0) return false; const store=lgStore(w);
   const m=store[i]||(store[i]={a:'',b:'',sa:null,sb:null,log:null});
   m.sa=d&&d.sa!=null?d.sa:null; m.sb=d&&d.sb!=null?d.sb:null; m.log=(d&&d.log)||null;
   if(d){ m.server=d.server||null; m.posA=d.posA||0; m.posB=d.posB||0; m.startLeft=d.startLeft||null; m.invert=!!d.invert; }
@@ -3127,12 +3314,23 @@ async function syncPush(){
   sync.busy=true; syncStatus('sync');
   const batch=keys.slice(0,60);
   const items=batch.map(k=>({key:k,data:JSON.parse(sync.dirty[k]),rev:sync.rev[k]}));
+  /* exactly what this request carries. A scorer typing 15 can put the 5 in
+     while the 1 is still on its way; the 5 lands in sync.dirty under the same
+     key. It must not be ticked off as sent when the 1 is confirmed — that is
+     how 15 used to come back from the server as 1. */
+  const carried={}; batch.forEach(k=>{ carried[k]=sync.dirty[k]; });
   try{
     const res=await supa('/rest/v1/rpc/osl_put',{method:'POST',
       body:JSON.stringify({items:items, by:sync.device})});
     const ok={}; (res||[]).forEach(r=>ok[r.out_key]=r.out_rev);
-    batch.forEach(k=>{ if(ok[k]!==undefined){ sync.sent[k]=sync.dirty[k]; sync.rev[k]=ok[k]; delete sync.dirty[k]; }
-      else { delete sync.dirty[k]; } });
+    batch.forEach(k=>{
+      const newer = sync.dirty[k]!==undefined && sync.dirty[k]!==carried[k];
+      if(ok[k]!==undefined){
+        sync.sent[k]=carried[k];
+        if(newer) sync.rev[k]=Math.max(sync.rev[k]||0, ok[k]+1);   // still to go, above what the server holds
+        else { sync.rev[k]=ok[k]; delete sync.dirty[k]; }
+      } else if(!newer) delete sync.dirty[k];
+    });
     sync.pending=Object.keys(sync.dirty).length;
     sync.lastOk=Date.now(); syncSave(); syncStatus('live');
     syncLog('sent '+batch.length+' change'+(batch.length>1?'s':''));
@@ -3208,7 +3406,8 @@ async function syncPull(force){
       Object.keys(snap).forEach(k=>{ if(!sync.dirty[k]) sync.sent[k]=JSON.stringify(snap[k]); }); }
     sync.lastOk=Date.now(); sync.pulledOnce=true; syncSave(); syncStatus('live');
     syncLog(changed?('received '+changed+' change'+(changed>1?'s':'')):'checked · nothing new');
-    if(changed){ if(S.ref) renderRef(); else if(!modalOpen) render(); }
+    if(changed){ if(S.ref) renderRef();
+      else if(!modalOpen){ if(inScoreBox()) renderLater=true; else render(); } }
   }catch(e){ syncLog('pull failed: '+(e.message||e)); syncStatus('off_line',String(e.message||e)); }
   finally{ sync.pulling=false; }
 }
@@ -3290,7 +3489,7 @@ function syncModal(){
      '<input type="text" id="devin" value="'+esc(sync.device)+'" placeholder="Court 1 · Ravi" onchange="sync.device=this.value.trim()||sync.device;syncSave()">'+
      '<p class="hint">Tagged on every change this device makes, so a wrong score can be traced.</p></div>';
   h+='<div style="margin:14px 0"><label class="fl">Event code</label>'+
-     '<input type="text" id="evin" value="'+esc(sync.event)+'" placeholder="pboss35" onchange="changeEvent(this.value)">'+
+     '<input type="text" id="evin" value="'+esc(sync.event)+'" placeholder="'+DEFAULT_EVENT+'" onchange="changeEvent(this.value)">'+
      '<p class="hint">All devices must share the same code. Change it to run a second event without mixing results.</p></div>';
   h+='<div class="eyebrow" style="margin:16px 2px 5px">Activity</div>'+
      '<div class="card" style="margin:0;font-size:11px;line-height:1.8;color:var(--muted);padding:10px 12px">'+
@@ -3308,7 +3507,7 @@ function syncModal(){
   h+='<button class="btn acc" style="width:100%;margin-top:10px" onclick="closeModal()">Close</button>';
   return h;
 }
-function changeEvent(v){ v=(v||'').trim()||'pboss35'; if(v===sync.event)return;
+function changeEvent(v){ v=(v||'').trim()||DEFAULT_EVENT; if(v===sync.event)return;
   sync.event=v; sync.cursor=null; sync.rev={}; sync.sent={}; sync.dirty={}; syncBaseline(); syncSave();
   if(sync.on) syncStart(); toast('Event set to '+v); }
 /* ========================================================================
@@ -3338,6 +3537,13 @@ function txtGroup(g){
   if(left) t+=`_${left} match${left>1?'es':''} still to play_\n`;
   return t+'\n';
 }
+function txtCross(rank){
+  const c=crossRank(rank), L=crossLetter(); if(!c.list.length) return '';
+  let t=`*BEST ${ordinal(rank).toUpperCase()}-PLACED · GROUP ${L}*${c.ready?'':' _(provisional)_'}\n`;
+  c.list.forEach(r=>{ const q=crossFate(rank,r.pos);
+    t+=`${L}${r.pos}. ${r.team} (Grp ${r.g}) — ${r.w}W ${r.l}L (${r.d>0?'+':''}${r.d})${q?' → '+q.label:''}\n`; });
+  return t+`_compared on ${c.base-1} matches each_\n\n`;
+}
 function txtTie(code,label){
   const t=S.ko[code]; if(!t||!t.a||!t.b) return '';
   const p=t.sa!=null&&t.sb!=null;
@@ -3362,6 +3568,7 @@ function txtFinals(){
   };
   t+=lg(S.diamond,DIAMOND_SRC(),'DIAMOND');
   t+=lg(S.platinum,PLATINUM_SRC(),'PLATINUM');
+  if(goldIsLeague()) t+=lg(lgStore('gold'),GOLDLG_SRC(),nmG().toUpperCase());
   const G=GOLD_TIES();
   const gt=G.map(([c])=>txtTie(c,nmG()+' '+c)).join('');
   if(gt){
@@ -3383,6 +3590,8 @@ function txtPodium(){
   let t='';
   if(allD&&dl[0]) t+=`🏆 *${nmD()} champions:* ${dl[0].team}\n🥈 ${dl[1]?dl[1].team:''}\n`;
   if(allP&&pl[0]) t+=`🥇 *${nmP()} champions:* ${pl[0].team}\n`;
+  if(goldIsLeague()&&fiLeagueDone('gold')){ const gl=leagueTable(lgStore('gold'),GOLDLG_SRC());
+    if(gl[0]) t+=`⭐ *${nmG()} champions:* ${gl[0].team}\n`; }
   const GT=GOLD_TIES();
   const res=GT.map(([c])=>{const x=S.ko[c];
     if(!x||x.sa==null||x.sb==null||!x.a||!x.b)return null;
@@ -3398,6 +3607,7 @@ function resultsText(scope){
   if(scope==='all'||scope==='finals') t+=txtPodium();
   if(scope==='all'||scope==='groups'){
     GROUPS.forEach(g=>{ t+=txtGroup(g); });
+    if(crossUsed(3)) t+=txtCross(3);
   } else if(scope&&scope.length===1){
     t+='\n'+txtGroup(scope);
   }
@@ -3484,15 +3694,17 @@ function exportCSV(){
     rows.push([matchTitle('t:'+c).split(' ')[0],c,'','',t.a,
       t.sa==null?'':t.sa,t.sb==null?'':t.sb,t.b,
       (t.sa!=null&&t.sb!=null)?(t.sa>t.sb?t.a:t.sb>t.sa?t.b:''):'']); });
-  ['diamond','platinum'].forEach(w=>Object.keys(w==='diamond'?S.diamond:S.platinum).forEach(i=>{
-    const m=(w==='diamond'?S.diamond:S.platinum)[i]; if(!m||!m.a||!m.b)return;
-    rows.push([w==='diamond'?'Diamond':'Platinum','R'+(i+1),'','',m.a,
+  LEAGUE_KEYS.forEach(w=>Object.keys(lgStore(w)).forEach(i=>{
+    const m=lgStore(w)[i]; if(!m||!m.a||!m.b)return;
+    rows.push([lgName(w),'R'+(+i+1),'','',m.a,
       m.sa==null?'':m.sa,m.sb==null?'':m.sb,m.b,
       (m.sa!=null&&m.sb!=null)?(m.sa>m.sb?m.a:m.sb>m.sa?m.b:''):'']); }));
   rows.push([]); rows.push(['Standings']);
   rows.push(['Group','Rank','Pair','Played','Won','Lost','For','Against','Diff']);
   GROUPS.forEach(g=>standings(g).forEach(r=>
     rows.push(['Group '+g,r.rank,r.team,r.p,r.w,r.l,r.pf,r.pa,r.d])));
+  if(crossUsed(3)) crossRank(3).list.forEach(r=>
+    rows.push(['Best 3rd (Group '+crossLetter()+')',crossLetter()+r.pos,r.team+' ('+r.g+')',r.p,r.w,r.l,r.pf,r.pa,r.d]));
   const csv=rows.map(r=>r.map(q).join(',')).join('\r\n');
   const b=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(b);
@@ -3543,12 +3755,13 @@ function clearFinalsScores(){
   TIE_CODES().forEach(c=>{ if(S.ko[c]) wipeMatch(S.ko[c]); });
   Object.keys(S.diamond).forEach(i=>wipeMatch(S.diamond[i]));
   Object.keys(S.platinum).forEach(i=>wipeMatch(S.platinum[i]));
+  Object.keys(lgStore('gold')).forEach(i=>wipeMatch(lgStore('gold')[i]));
 }
 function scoresIn(scope){
   if(scope==='finals'){
     const cnt=o=>Object.keys(o).filter(i=>{const m=o[i];return m&&m.sa!=null&&m.sb!=null;}).length;
     return TIE_CODES().filter(c=>{const t=S.ko[c];return t&&t.sa!=null&&t.sb!=null;}).length
-      +cnt(S.diamond)+cnt(S.platinum);
+      +cnt(S.diamond)+cnt(S.platinum)+cnt(lgStore('gold'));
   }
   if(scope==='groups'||scope==='all'){
     let n=0; GROUPS.forEach(g=>{ n+=S.groups[g].matches.filter(played).length; });
@@ -3687,6 +3900,7 @@ function koLocked(){
 function sourceOptions(sel, excludeCode){
   const opts=[];
   GROUPS.forEach(g=>{ for(let r=1;r<=6;r++) opts.push([g+r,'Group '+g+' · '+ordinal(r)]); });
+  for(let n=1;n<=GROUPS.length;n++) opts.push(['T3:'+n, crossLetter()+n+' · '+ordinal(n)+' best 3rd-placed']);
   ROUNDS().forEach(rd=>rd.ties.forEach(([c])=>{
     if(c===excludeCode) return;
     opts.push(['W:'+c,'Winner of '+c]); opts.push(['L:'+c,'Loser of '+c]);
@@ -3710,7 +3924,7 @@ function vSetup(){
    a tie that has its own score keeps its pairing; anything not yet played can
    be rewired, and doing so touches no other score. */
 const tiePlayed = c => { const t=S.ko[c]; return !!(t&&(t.sa!=null||t.sb!=null)); };
-const leagueStore = w => w==='diamond'?S.diamond:w==='platinum'?S.platinum:{};
+const leagueStore = w => lgStore(w);
 const leaguePlayed = w => { const st=leagueStore(w)||{};
   return Object.keys(st).some(k=>st[k]&&(st[k].sa!=null||st[k].sb!=null)); };
 const scoreText = t => (t.a||'?')+' '+(t.sa==null?'–':t.sa)+'–'+(t.sb==null?'–':t.sb)+' '+(t.b||'?');
@@ -3721,6 +3935,7 @@ function playedAfter(c){
   GOLD_TIES().forEach(t=>{ if((hit(t[1])||hit(t[2]))&&tiePlayed(t[0])) out.push(t[0]); });
   if(DIAMOND_SRC().some(hit)&&leaguePlayed('diamond')) out.push(nmD()+' League');
   if(PLATINUM_SRC().some(hit)&&leaguePlayed('platinum')) out.push(nmP()+' League');
+  if(GOLDLG_SRC().some(hit)&&leaguePlayed('gold')) out.push(nmG()+' League');
   return out;
 }
 function heldMsg(c){ toast(c+' already has a score — clear it first to change this tie'); render(); }
@@ -3737,7 +3952,7 @@ function unlockTie(c){
 }
 function unlockLeague(w){
   if(!isAdmin()) return toast('Admin only');
-  const nm=w==='diamond'?nmD():nmP();
+  const nm=lgName(w);
   if(!confirm('Clear every score in the '+nm+' League?\n\nYou can then change who plays in it.')) return;
   const st=leagueStore(w); Object.keys(st).forEach(k=>{ const m=st[k]; if(m){ m.sa=null; m.sb=null; m.log=null; } });
   drawEdited(); toast(nm+' League scores cleared');
@@ -3764,6 +3979,7 @@ function shapeSummary(sh){
   if((sh.draw.diamond||[]).length) lg.push('Diamond '+(sh.draw.diamond.length===2?'final':sh.draw.diamond.length+'-way'));
   if((sh.draw.platinum||[]).length) lg.push('Platinum '+(sh.draw.platinum.length===2?'final':sh.draw.platinum.length+'-way'));
   if((sh.draw.gold||[]).length) lg.push('Gold ×'+sh.draw.gold.length);
+  if((sh.draw.goldlg||[]).length) lg.push('Gold '+(sh.draw.goldlg.length===2?'final':sh.draw.goldlg.length+'-way'));
   return sh.groups.length+' groups · '+(rounds||'no rounds')+(lg.length?' · '+lg.join(', '):'');
 }
 function saveTemplate(){
@@ -3811,7 +4027,7 @@ function applyTemplate(id){
       teams, matches:buildMatches(teams, prev?prev.matches:null) });
   });
   S.draw=clone(t.shape.draw); S.preset='';
-  S.ko={}; S.diamond={}; S.platinum={};
+  S.ko={}; S.diamond={}; S.platinum={}; S.goldlg={};
   syncGroupKeys(); if(!S.groups[S.grp]) S.grp=GROUPS[0];
   save(); render(); toast('“'+t.name+'” applied');
   if(sync.on) drainQueue(6);
@@ -4309,12 +4525,18 @@ function setLeagueName(k,v){
    hand just to turn it on and see it. */
 function toggleThirds(){
   if(!isAdmin()) return;
-  if(GOLD_TIES().length){
+  if(goldOn()){
     if(!confirm('Turn the '+nmG()+' league off? Its ties and scores are removed, and third place stops being a qualifying position.\n\nThe knockout rounds are not affected.')) return;
     /* clear only this league's ties — the main draw must survive untouched */
     GOLD_TIES().forEach(t=>{ delete S.ko[t[0]]; });
     GOLD_DECIDERS.forEach(c=>{ delete S.ko[c]; });
-    S.draw.gold=[];
+    S.draw.gold=[]; S.draw.goldlg=[]; S.goldlg={};
+  } else if(crossUsed(3)){
+    /* the knockout already takes the best thirds, so the rest of them form a
+       round robin — the same shape the five-group preset starts with */
+    const taken=allSourceRefs().map(rankRef).filter(m=>m&&+m[1]===3).map(m=>+m[2]);
+    const out=[]; for(let i=1;i<=GROUPS.length;i++) if(taken.indexOf(i)<0) out.push('T3:'+i);
+    S.draw.gold=[]; S.draw.goldlg=out; S.goldlg={};
   } else {
     const g=GROUPS.slice(), out=[]; let n=0;
     for(let i=0;i<Math.floor(g.length/2);i++)
@@ -4351,12 +4573,14 @@ function setupLeagues(locked){
         ${PLATINUM_SRC().length?'Turn off':'Turn on'}</button></div>
     <div class="edRow"><div class="ix">★</div>
       <input class="txt" value="${attr(nmG())}" onchange="setLeagueName('g',this.value)">
-      <button class="btn sm ${GOLD_TIES().length?'':'acc'}" onclick="toggleThirds()" ${locked?'disabled':''}>
-        ${GOLD_TIES().length?'Turn off':'Turn on'}</button></div>
-    <div class="alert ${on(GOLD_TIES().length)}" style="margin-top:10px">
-      <span>${GOLD_TIES().length?'★':'○'}</span><span>
-      <b>Third place ${GOLD_TIES().length?'qualifies':'does not qualify'}</b><br>
-      ${GOLD_TIES().length
+      <button class="btn sm ${goldOn()?'':'acc'}" onclick="toggleThirds()" ${locked?'disabled':''}>
+        ${goldOn()?'Turn off':'Turn on'}</button></div>
+    <div class="alert ${on(goldOn())}" style="margin-top:10px">
+      <span>${goldOn()?'★':'○'}</span><span>
+      <b>Third place ${goldOn()?'qualifies':'does not qualify'}</b><br>
+      ${goldIsLeague()
+        ? 'The best third-placed pairs go into the knockout; the rest play the '+esc(nmG())+' round robin.'
+        : GOLD_TIES().length
         ? 'Pairs finishing third carry the '+esc(nmG())+' badge and play its ties.'
         : 'Only the positions used by the draw are marked as qualifying. Turning this on builds the ties from the groups you have.'}
       </span></div>
@@ -4387,13 +4611,14 @@ function setupDraw(locked){
     ${srcListHTML('diamond',DIAMOND_SRC(),locked)}
     <div class="eyebrow" style="margin:14px 2px 7px">${esc(nmP())} — the consolation league</div>
     ${srcListHTML('platinum',PLATINUM_SRC(),locked)}
-    <div class="eyebrow" style="margin:14px 2px 7px">${esc(nmG())} — the third-placed pairs</div>
+    <div class="eyebrow" style="margin:14px 2px 7px">${esc(nmG())} — the third-placed pairs${goldIsLeague()?' · round robin':''}</div>
+    ${goldIsLeague()?srcListHTML('gold',GOLDLG_SRC(),locked):`
     ${GOLD_TIES().map(([c,x,y],ti)=>drawTieRow(c,x,y,
         `setGoldCode(${ti},this.value)`,`setGoldSrc(${ti},0,this.value)`,
         `setGoldSrc(${ti},1,this.value)`,`removeGold(${ti})`)).join('')}
     <div class="row" style="margin-top:8px">
       <button class="btn sm" onclick="addGold()" ${locked?'disabled':''}>Add a ${esc(nmG())} tie</button>
-    </div>
+    </div>`}
     <p class="hint" style="margin-top:12px">Two sources in a league means a straight final; three or more
     means a round robin, and the champion is decided on wins then point difference.</p>
   </div>`;
@@ -4442,6 +4667,7 @@ function setTieCode(ri,ti,v){
   S.draw.rounds.forEach(rd=>rd.ties.forEach(t=>{t[1]=fix(t[1]);t[2]=fix(t[2]);}));
   S.draw.gold.forEach(t=>{t[1]=fix(t[1]);t[2]=fix(t[2]);});
   S.draw.diamond=S.draw.diamond.map(fix); S.draw.platinum=S.draw.platinum.map(fix);
+  if(S.draw.goldlg) S.draw.goldlg=S.draw.goldlg.map(fix);
   drawEdited();
 }
 function setTieSrc(ri,ti,slot,v){
@@ -4456,7 +4682,7 @@ function addTie(ri){
 function removeTie(ri,ti){
   const c=S.draw.rounds[ri].ties[ti][0]; if(tiePlayed(c)) return heldMsg(c);
   const used=TIE_CODES().filter(k=>k!==c&&(ROUNDS().concat([{ties:GOLD_TIES()}])).some(rd=>rd.ties.some(t=>t[0]===k&&(t[1].slice(2)===c||t[2].slice(2)===c))));
-  const inLg=DIAMOND_SRC().concat(PLATINUM_SRC()).some(r=>r.slice(2)===c);
+  const inLg=DIAMOND_SRC().concat(PLATINUM_SRC(),GOLDLG_SRC()).some(r=>r.slice(2)===c);
   if((used.length||inLg)&&!confirm('Other ties take their pair from '+c+'. Remove it anyway? They will show as unset until rewired.')) return;
   S.draw.rounds[ri].ties.splice(ti,1); delete S.ko[c]; drawEdited();
 }
@@ -4476,15 +4702,18 @@ function nextCode(){
   let i=1; while(used.indexOf('T'+i)>=0) i++; return 'T'+i;
 }
 function leagueHeld(w){ if(!leaguePlayed(w)) return false;
-  toast('The '+(w==='diamond'?nmD():nmP())+' League has scores — clear them first to change it'); render(); return true; }
-function setLeagueSrc(w,i,v){ if(leagueHeld(w)) return; S.draw[w][i]=v; drawEdited(); }
+  toast('The '+lgName(w)+' League has scores — clear them first to change it'); render(); return true; }
+function setLeagueSrc(w,i,v){ if(leagueHeld(w)) return; S.draw[drawKeyOf(w)][i]=v; drawEdited(); }
 function addLeagueSrc(w){
   if(leagueHeld(w)) return;
+  const k=drawKeyOf(w); S.draw[k]=S.draw[k]||[];
+  if(w==='gold'){ let i=1; while(S.draw.goldlg.indexOf('T3:'+i)>=0||allSourceRefs().indexOf('T3:'+i)>=0&&i<GROUPS.length) i++;
+    S.draw.goldlg.push('T3:'+i); return drawEdited(); }
   const last=ROUNDS()[ROUNDS().length-1];
-  S.draw[w].push(last&&last.ties.length?(w==='diamond'?'W:':'L:')+last.ties[0][0]:GROUPS[0]+'1');
+  S.draw[k].push(last&&last.ties.length?(w==='diamond'?'W:':'L:')+last.ties[0][0]:GROUPS[0]+'1');
   drawEdited();
 }
-function removeLeagueSrc(w,i){ if(leagueHeld(w)) return; S.draw[w].splice(i,1); drawEdited(); }
+function removeLeagueSrc(w,i){ if(leagueHeld(w)) return; S.draw[drawKeyOf(w)].splice(i,1); drawEdited(); }
 function setGoldCode(ti,v){
   if(tiePlayed(S.draw.gold[ti][0])) return heldMsg(S.draw.gold[ti][0]);
   v=(v||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,''); if(!v) return render();
@@ -4524,7 +4753,7 @@ function applyPreset(k){
       teams, matches:buildMatches(teams, prev?prev.matches:null) });
   });
   S.draw=clone(P.draw); S.preset=k;
-  S.ko={}; S.diamond={}; S.platinum={};
+  S.ko={}; S.diamond={}; S.platinum={}; S.goldlg={};
   syncGroupKeys(); if(!S.groups[S.grp]) S.grp=GROUPS[0];
   save(); render(); toast(P.name);
 }
@@ -4784,10 +5013,10 @@ function koTieBox(code,x,y,withData,title){
    in the seed column, exactly like a knockout box. A blank sheet used to show
    two empty rows with nothing to say who was meant to be in them. */
 function leagueBox(which,i,withData){
-  const m=(which==='diamond'?S.diamond:S.platinum)[i]||{}; const p=withData&&m.sa!=null&&m.sb!=null;
-  const src=which==='diamond'?DIAMOND_SRC():PLATINUM_SRC(), pr=leaguePairs(src.length)[i]||[];
+  const m=lgStore(which)[i]||{}; const p=withData&&m.sa!=null&&m.sb!=null;
+  const src=lgSrc(which), pr=leaguePairs(src.length)[i]||[];
   const x=printRef(src[pr[0]]), y=printRef(src[pr[1]]);
-  return `<table class="ko"><tr><th colspan="2">${esc(which==='diamond'?nmD():nmP())} · ${esc(x)} vs ${esc(y)}</th>
+  return `<table class="ko"><tr><th colspan="2">${esc(lgName(which))} · ${esc(x)} vs ${esc(y)}</th>
     <th class="c">Score</th><th class="c">W/L</th></tr>
     ${koRow(m.a,x,p?m.sa:'&nbsp;',p?(m.sa>m.sb?'W':'L'):'&nbsp;',withData)}
     ${koRow(m.b,y,p?m.sb:'&nbsp;',p?(m.sb>m.sa?'W':'L'):'&nbsp;',withData)}</table>`;
@@ -4877,13 +5106,14 @@ function finalsSheet(withData){
     });
   }
   [['diamond',nmD(),DIAMOND_SRC(),'Group winners and runners-up'],
-   ['platinum',nmP(),PLATINUM_SRC(),'Beaten semi-finalists']].forEach(([w,nm,src,who])=>{
+   ['platinum',nmP(),PLATINUM_SRC(),'Beaten semi-finalists'],
+   ['gold',nmG(),GOLDLG_SRC(),'Third-placed pairs not in the knockout']].forEach(([w,nm,src,who])=>{
     const n=leaguePairs(src.length).length; if(!n) return;
     const final=src.length<=2;
     let h=`<div class="rlbl">${final?esc(nm)+' Final':esc(nm)+' League · round robin'}</div><div class="rows">`+
       [...Array(n).keys()].map(i=>leagueBox(w,i,withData)).join('')+`</div>`;
-    if(!final) h+=`<h4 class="psec">${esc(nm)} League Table</h4>${leaguePrintTable(w==='diamond'?S.diamond:S.platinum,src,withData)}`;
-    const st=withData?leagueTable(w==='diamond'?S.diamond:S.platinum,src):[];
+    if(!final) h+=`<h4 class="psec">${esc(nm)} League Table</h4>${leaguePrintTable(lgStore(w),src,withData)}`;
+    const st=withData?leagueTable(lgStore(w),src):[];
     h+=podiumPrint(esc(nm)+' League Placings',[st[0]&&st[0].team,st[1]&&st[1].team,st[2]&&st[2].team]);
     out+=sheet(esc(nm)+(final?' Final':' League'), who, `<div class="kobig gsT" style="${LEAGUE_FIT}">${h}</div>`,
       final?'':'Wins, then point difference, then points scored.');
@@ -4915,10 +5145,12 @@ function standingsSheet(withData){
   let h='';
   const half=Math.ceil(GROUPS.length/2);
   const colA=GROUPS.slice(0,half), colB=GROUPS.slice(half);
-  const rowsOf=c=>c.reduce((n,g)=>n+S.groups[g].teams.length+1,0);
+  const rowsOf=c=>c.reduce((n,g)=>n+S.groups[g].teams.length+1,0)+(c===colB&&crossUsed(3)?GROUPS.length+3:0);
   const dsrc=DIAMOND_SRC(), psrc=PLATINUM_SRC();
   const dl=withData?leagueTable(S.diamond,dsrc):[], pl=withData?leagueTable(S.platinum,psrc):[];
-  const gs=withData?goldStanding():{rank:[]};
+  const gs=withData?(goldIsLeague()
+    ?{rank:(fiLeagueDone('gold')?leagueTable(lgStore('gold'),GOLDLG_SRC()):[]).map(r=>({win:r.team}))}
+    :goldStanding()):{rank:[]};
   const champs=withData&&(dl.length||pl.length||gs.rank.length);
   /* the tables share the page with the champions block, so the rows are made
      as deep as the space allows — big enough to read across a room, never so
@@ -4929,8 +5161,9 @@ function standingsSheet(withData){
   const fs=Math.min(13, Math.max(10, rh*1.55));
   const block=g=>`<div class="sgrp"><h4 class="psec">Group ${g} <span>· ${esc(courtLabel(g))}</span></h4>
     ${groupTable(g,withData,'').replace(/<div class="cap">[^<]*<\/div>/,'')}</div>`;
+  const xb=crossUsed(3)?crossPrint(3,withData):'';
   h+=`<div class="gsT" style="--trh:${rh.toFixed(2)}mm;--tfs:${fs.toFixed(1)}px">
-    <div class="cols sc2"><div>${colA.map(block).join('')}</div><div>${colB.map(block).join('')}</div></div></div>`;
+    <div class="cols sc2"><div>${colA.map(block).join('')}</div><div>${colB.map(block).join('')}${xb}</div></div></div>`;
   if(champs){
     h+=`<div class="champWrap">`;
     if(dl.length) h+=champBlock(esc(nmD()),[dl[0]&&dl[0].team,dl[1]&&dl[1].team,dl[2]&&dl[2].team]);
@@ -4940,6 +5173,24 @@ function standingsSheet(withData){
   }
   return sheet('Final standings','All '+GROUPS.length+' group'+(GROUPS.length===1?'':'s'), h,
     'Wins, then point difference, then head-to-head among the pairs still level, then points scored.');
+}
+/* the best third-placed pairs, printed beside the group tables */
+function crossPrint(rank,withData){
+  const c=crossRank(rank), L=crossLetter();
+  const rows=withData?c.list:GROUPS.map(()=>null);
+  return `<div class="sgrp"><h4 class="psec">Group ${L} <span>· best ${ordinal(rank)}-placed${withData&&!c.ready?' · provisional':''}</span></h4>
+    <div class="gridT"><table class="grid st">${ST_COLS}
+    <tr><th>#</th><th style="text-align:left">Pair</th><th>P</th><th>W</th><th>L</th>
+      <th>+</th><th>–</th><th>Diff</th><th>Grp</th></tr>
+    ${rows.map((r,i)=>{ const q=r?crossFate(rank,r.pos):crossFate(rank,i+1);
+      return `<tr><td class="c">${L}${i+1}</td><td class="nm">${r?esc(r.team):'&nbsp;'}</td>
+      <td class="c">${r?r.p:''}</td><td class="c">${r?r.w:''}</td><td class="c">${r?r.l:''}</td>
+      <td class="c">${r?r.pf:''}</td><td class="c">${r?r.pa:''}</td>
+      <td class="c">${r?((r.d>0?'+':'')+r.d):''}</td><td class="c">${r?r.g:''}</td></tr>`; }).join('')}
+    </table></div>
+    <div class="legend" style="margin-top:2px">${(()=>{ const by={};
+      c.list.concat(GROUPS.slice(c.list.length)).forEach((r,i)=>{ const q=crossFate(rank,i+1); if(q) (by[q.label]=by[q.label]||[]).push(L+(i+1)); });
+      return Object.keys(by).map(k=>by[k].join(', ')+' → '+esc(k)).join(' · '); })()}. Compared on ${c.base-1} matches each; wins, then difference, then points scored.</div></div>`;
 }
 /* the headline block: who actually won what, given room to breathe */
 function champBlock(title,names){
@@ -5150,7 +5401,7 @@ async function standingsCanvas(only){
           const tw=ctx.measureText(q.label.toUpperCase()).width+18;
           /* third place already sits on a bronze tint, so a pale gold chip
              disappeared into it — the badge is given its own weight */
-          ctx.fillStyle = q.cls==='tGold' ? LG_COL.gold : LG_COL.diamond;
+          ctx.fillStyle = q.cls==='tGold' ? LG_COL.gold : q.cls==='tPend' ? '#64748b' : LG_COL.diamond;
           ctx.fillRect(c+8,y+plan.rowH/2-13,Math.min(tw,cols.q-14),26);
           ctx.fillStyle = '#fff';
           ctx.fillText(fitText(ctx,q.label.toUpperCase(),cols.q-32),c+17,mid-1); } }
@@ -5315,27 +5566,27 @@ function fiPodium(ctx,y,title,names,col){
   return y+h+34;
 }
 function fiLeagueTies(which,label){
-  const store=which==='diamond'?S.diamond:S.platinum, src=which==='diamond'?DIAMOND_SRC():PLATINUM_SRC();
+  const store=lgStore(which), src=lgSrc(which);
   return leaguePairs(src.length).map((pr,i)=>{ const m=store[i]||{};
     /* "SF M L" reads like a code; on a picture it is simply the loser of M */
     const lab=r=>String(r||'').startsWith('L:')?'Loser '+r.slice(2):printRef(r);
     return {code:'', head:label+' · '+lab(src[pr[0]])+' vs '+lab(src[pr[1]]), a:m.a, b:m.b, sa:m.sa, sb:m.sb}; });
 }
 function fiLeagueDone(which){
-  const store=which==='diamond'?S.diamond:S.platinum, n=leagueRounds(which);
+  const store=lgStore(which), n=leagueRounds(which);
   return n>0 && [...Array(n).keys()].every(i=>{ const m=store[i]; return m&&m.a&&m.b&&m.sa!=null&&m.sb!=null; });
 }
 const koTieList = r => r.ties.map(([c,x,yy])=>{ const t=S.ko[c]||{};
   return {code:c, head:printRef(x)+' vs '+printRef(yy), a:t.a, b:t.b, sa:t.sa, sb:t.sb}; });
 /* who finished where in each league — empty until that league is complete */
 function leaguePlacings(w){
-  if(w==='gold'){ const gs=goldStanding(); return gs.champion?gs.rank.map(r=>r.win):[]; }
+  if(w==='gold'&&!goldIsLeague()){ const gs=goldStanding(); return gs.champion?gs.rank.map(r=>r.win):[]; }
   if(!fiLeagueDone(w)) return [];
-  return leagueTable(w==='diamond'?S.diamond:S.platinum, w==='diamond'?DIAMOND_SRC():PLATINUM_SRC()).map(r=>r.team);
+  return leagueTable(lgStore(w), lgSrc(w)).map(r=>r.team);
 }
 const leagueName = w => w==='diamond'?nmD():w==='platinum'?nmP():nmG();
 function leagueOn(w){
-  if(w==='gold') return GOLD_TIES().length>0;
+  if(w==='gold') return goldOn();
   return leagueRounds(w)>0;
 }
 /* what each choice in the share menu draws */
@@ -5358,7 +5609,7 @@ function finalsLabel(key){
 }
 function drawLeague(ctx,y,w){
   const nm=leagueName(w), col=LG_COL[w];
-  if(w==='gold'){
+  if(w==='gold'&&!goldIsLeague()){
     const GT=GOLD_TIES(), gs=goldStanding();
     y=fiHead(ctx,y,nm+' League','biggest winning margin takes it',col);
     y=fiGrid(ctx,y,GT.map(([c,x,yy])=>{ const t=S.ko[c]||{};
@@ -5387,10 +5638,10 @@ function drawLeague(ctx,y,w){
     if(gs.champion) y=fiPodium(ctx,y,nm+' League Placings',gs.rank.map(r=>r.win),col);
     return y+12;
   }
-  const src=w==='diamond'?DIAMOND_SRC():PLATINUM_SRC(), final=src.length<=2;
+  const src=lgSrc(w), final=src.length<=2;
   y=fiHead(ctx,y,nm+(final?' Final':' League'), final?'':'round robin',col);
   y=fiGrid(ctx,y,fiLeagueTies(w, final?'Final':nm));
-  const st=leagueTable(w==='diamond'?S.diamond:S.platinum,src);
+  const st=leagueTable(lgStore(w),src);
   if(!final && st.length) y=fiTable(ctx,y,st);
   if(fiLeagueDone(w)) y=fiPodium(ctx,y,nm+' League Placings',st.map(r=>r.team),col);
   return y+12;
