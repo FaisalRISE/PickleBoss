@@ -839,7 +839,7 @@ const EVENT_TITLE = 'Pickleboss Friyayy';   // defaults; editable from Setup
 const EVENT_SUB   = '16 October 2026 · DUPR < 4.3 Mixed Doubles';
 const ORGANISER   = 'RISE Sports';
 const CONTACT     = '9987029222';
-const BUILD = 'build 2026-10-16';  // bump this whenever the file is re-uploaded — open pages compare it with the site's copy
+const BUILD = 'build 2026-10-16b';  // bump this whenever the file is re-uploaded — open pages compare it with the site's copy
 const ADMIN_DEFAULT = 'Hello43556';         // the admin password, out of the box
 const MAX_TEAMS = 8;
 const MAX_COURTS = 6;     // courts a single group can be spread over
@@ -1386,11 +1386,8 @@ function allSourceRefs(){
    "T3:1" is the best of the pairs that finished third, "T3:2" the next. With
    five groups that is how the quarter-finals find their last two pairs (F1, F2
    on the draw sheet), and T3:3–T3:5 are the thirds who play for Gold.
-   Groups are not all the same size: a third-placed pair in a group of six has
-   played a match more than one in a group of five. So, as in the big football
-   tournaments, in a larger group the result against the pair(s) finishing
-   below the smallest group's size is left out, and every pair is compared on
-   the same number of matches — wins, then point difference, then points scored. */
+   Every group match counts, whatever the group's size (organiser's call, 16 Oct
+   2026): total wins, then point difference, then points scored. */
 const rankRef = r => /^T([0-9]+):([0-9]+)$/.exec(String(r||''));
 const crossUsed = rank => allSourceRefs().some(r=>{ const m=rankRef(r); return m&&+m[1]===rank; });
 const crossLetter = () => String.fromCharCode((GROUPS.length?GROUPS[GROUPS.length-1].charCodeAt(0):64)+1);
@@ -1399,7 +1396,7 @@ function crossRank(rank){
   const base=sizes.length?Math.min.apply(null,sizes):0, list=[];
   GROUPS.forEach(g=>{
     const G=S.groups[g], st=standings(g), me=st[rank-1]; if(!me) return;
-    const drop=st.slice(base).map(r=>r.team).filter(t=>t!==me.team);
+    const drop=[];                       // all matches count — nothing is left out
     const row={g,team:me.team,p:0,w:0,l:0,pf:0,pa:0,dropped:drop,done:groupDone(g)};
     G.matches.forEach(m=>{ if(!played(m)) return; let them,f,a;
       if(m.a===me.team){them=m.b;f=m.sa;a=m.sb;} else if(m.b===me.team){them=m.a;f=m.sb;a=m.sa;} else return;
@@ -2792,9 +2789,7 @@ function crossCard(rank){
         <td class="num">${r.pf}</td><td class="num">${r.pa}</td>
         <td class="num ${r.d>0?'pos':r.d<0?'neg':''}">${r.d>0?'+':''}${r.d}</td></tr>`;}).join('')}
     </tbody></table></div>
-    <div class="note" style="padding:8px 12px 12px">Every ${ordinal(rank)}-placed pair is compared on ${c.base-1} matches${anyDrop?
-      ` — in the bigger groups the result against the pair finishing below ${ordinal(c.base)} is left out`:''}.
-      Then wins, point difference, points scored.${c.ready?'':' <b>* group still playing</b> — nothing is fixed until every group is complete.'}
+    <div class="note" style="padding:8px 12px 12px">Ranked on all their group matches: total wins, then point difference, then points scored.${c.ready?'':' <b>* group still playing</b> — nothing is fixed until every group is complete.'}
       ${lvl?'<br><b style="color:var(--loss)">Two pairs are level on everything across the cut-off</b> — the order shown is by group letter; settle it on court (toss or decider) before the next round.':''}</div>
   </div>`;
 }
@@ -3542,7 +3537,7 @@ function txtCross(rank){
   let t=`*BEST ${ordinal(rank).toUpperCase()}-PLACED · GROUP ${L}*${c.ready?'':' _(provisional)_'}\n`;
   c.list.forEach(r=>{ const q=crossFate(rank,r.pos);
     t+=`${L}${r.pos}. ${r.team} (Grp ${r.g}) — ${r.w}W ${r.l}L (${r.d>0?'+':''}${r.d})${q?' → '+q.label:''}\n`; });
-  return t+`_compared on ${c.base-1} matches each_\n\n`;
+  return t+`_total wins, then point difference_\n\n`;
 }
 function txtTie(code,label){
   const t=S.ko[code]; if(!t||!t.a||!t.b) return '';
@@ -5190,7 +5185,7 @@ function crossPrint(rank,withData){
     </table></div>
     <div class="legend" style="margin-top:2px">${(()=>{ const by={};
       c.list.concat(GROUPS.slice(c.list.length)).forEach((r,i)=>{ const q=crossFate(rank,i+1); if(q) (by[q.label]=by[q.label]||[]).push(L+(i+1)); });
-      return Object.keys(by).map(k=>by[k].join(', ')+' → '+esc(k)).join(' · '); })()}. Compared on ${c.base-1} matches each; wins, then difference, then points scored.</div></div>`;
+      return Object.keys(by).map(k=>by[k].join(', ')+' → '+esc(k)).join(' · '); })()}. All group matches count: total wins, then point difference, then points scored.</div></div>`;
 }
 /* the headline block: who actually won what, given room to breathe */
 function champBlock(title,names){
